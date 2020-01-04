@@ -36,6 +36,7 @@ public:
 	void ConstructFromMatrix(const glm::mat4& Matrix);
 	void CombineTransform(const Transform& NewTransform);
 	json Serialize();
+	void Deserialize(const json& Data);
 
 	
 	// Operator overloads

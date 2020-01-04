@@ -9,6 +9,7 @@ Level::Level()
 
 Level::~Level()
 {
+	Clear(); // Clean-up memory
 }
 
 
@@ -27,6 +28,7 @@ json Level::Serialize()
 	{
 		if (*it != nullptr)
 		{
+			//std::cerr << (*it)->GetName() << std::endl;
 			objectData[OBJECTS_KEY] += (*it)->Serialize(); // Apend json objects
 		}
 
@@ -37,20 +39,22 @@ json Level::Serialize()
 	return jsonData;
 }
 
+
 void Level::Deserialize(const json & Data)
 {
 	Object::Deserialize(Data);
-
 	json objects = Data["objects"];
-	std::cerr << objects << std::endl;
+	std::cerr << objects.dump(4) << std::endl;
 
+	// For each object stored in the level
 	for (auto& x : objects.items())
 	{
+		//std::cerr << x.key() << ":" << x.value() << std::endl;
 
-		if (x.key() == "metadata")
-		{
-
-		}
+		// Create new Object type, deserialize it from JSON data
+		SceneObject* newObject = new SceneObject();	// Allocate object on heap
+		newObject->Deserialize(x.value());			// Deserialize from JSON data
+		AddSceneObject(newObject);					// Add to list
 	}
 }
 
@@ -71,7 +75,6 @@ void Level::SaveToDisk(const std::string & Filename)
 
 void Level::LoadFromDisk(const std::string & Filename)
 {
-
 	std::ifstream file(Filename);
 	if (file.is_open())
 	{
@@ -79,37 +82,32 @@ void Level::LoadFromDisk(const std::string & Filename)
 		json jsonData;
 		file >> jsonData;
 
-		for (auto&[key, val] : jsonData.items())
-		{
-			std::cerr << key << ":" << val << std::endl;
-
-		}
+		// If we successfully loaded the file from disk, then clear the level & load everything else in
+		Clear();
+		Deserialize(jsonData);
 	}
-
-	/*
-	file.open(Filename);
-
-	
-	if (file.is_open())
-	{
-		std::string jsonData;
-
-		// Accumulate buffer
-		std::string line;
-		while (std::getline(file, line))
-		{
-			jsonData += line + '\n';
-		}
-
-		file.close();
-		LoadFromJson(jsonData);
-	}
-	*/
 }
 
 void Level::AddSceneObject(SceneObject* Object)
 {
 	sceneObjects.insert(Object);
+}
+
+void Level::Clear()
+{
+	auto it = sceneObjects.begin(); // Return iterator for this set type
+	while (it != sceneObjects.end())
+	{
+		if (*it != nullptr)
+		{
+			(*it)->Destroy();	// Destroy, rely on properly implementing for sub-classes
+			delete *it;			// Delete in memory
+		}
+
+		it++; // Move to next element in set
+	}
+
+	sceneObjects.clear();		// Clear list
 }
 
 std::set<SceneObject*>& Level::GetSceneObjects()

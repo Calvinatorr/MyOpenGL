@@ -26,8 +26,9 @@ json Object::Serialize()
 
 void Object::Deserialize(const json & Data)
 {
-	name = Data["name"];
-	displayName = Data["displayName"];
+	json metadata = Data["metadata"];
+	name = metadata["name"];
+	displayName = metadata["displayName"];
 }
 
 GLint Object::GetID() const

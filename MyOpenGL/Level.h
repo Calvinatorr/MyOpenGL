@@ -11,7 +11,7 @@
 #include "SceneObject.h"
 
 
-class Level : Object
+class Level : public Object
 {
 	protected:
 		// Containers
@@ -31,6 +31,7 @@ class Level : Object
 		void SaveToDisk(const std::string& Filename);
 		void LoadFromDisk(const std::string& Filename);
 		void AddSceneObject(SceneObject* Object);
+		void Clear();
 
 
 		// Getters

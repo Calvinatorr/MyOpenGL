@@ -15,7 +15,7 @@ class SceneComponent; // Forward declaration to avoid compiler screaming at me
 
 
 // Contain scene components and top-level logic for handling of components
-class SceneObject : Object
+class SceneObject : public Object
 {
 private:
 	std::set<SceneComponent*> sceneComponents;
@@ -47,6 +47,7 @@ public:
 	virtual void Destroy();
 	// Serialize object for loading to & from disk
 	json Serialize() override;
+	void Deserialize(const json& Data) override;
 
 
 	// Getters

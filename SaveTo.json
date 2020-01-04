@@ -1,0 +1,59 @@
+{
+    "metadata": {
+        "class": "class Object *",
+        "displayName": "MyLevelIsGreat",
+        "name": "MyLevelIsGreat0"
+    },
+    "objects": [
+        {
+            "metadata": {
+                "class": "class Object *",
+                "displayName": "ARealObject",
+                "name": "ARealObject1"
+            },
+            "transform": {
+                "position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "rotation": [
+                    0.0,
+                    0.3826834559440613,
+                    0.0,
+                    0.9238795042037964
+                ],
+                "scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "metadata": {
+                "class": "class Object *",
+                "displayName": "ARealObject",
+                "name": "ARealObject0"
+            },
+            "transform": {
+                "position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "rotation": [
+                    0.0,
+                    0.7071067690849304,
+                    0.0,
+                    0.7071067690849304
+                ],
+                "scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        }
+    ]
+}

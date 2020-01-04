@@ -32,7 +32,6 @@ public:
 	// Getters
 	GLint GetID() const;
 	GLboolean IsValid() const;
-
 	// Get unique name
 	std::string GetName();
 	// Get display name

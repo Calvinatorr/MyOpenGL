@@ -111,10 +111,10 @@ int main(int argc, char* argv[])
 
 	Level level;
 	//level.LoadFromDisk("../Content/TestScene.json");
-	level.AddSceneObject(&testObject);
-	level.AddSceneObject(&testObject2);
-	level.SaveToDisk("../TestLevelSaveMe.json");
-	level.LoadFromDisk("../TestLevelSaveMe.json");
+	//level.AddSceneObject(&testObject);
+	//level.AddSceneObject(&testObject2);
+	level.LoadFromDisk("../LoadFrom.json");
+	level.SaveToDisk("../SaveTo.json");
 	std::system("pause");
 
 

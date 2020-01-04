@@ -2,28 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="cd9fc0cf-4a52-4485-b80c-4022da7d3c63" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/OpenGLPy.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/JsonViewer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../MyOpenGL/MyOpenGL.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../MyOpenGL/MyOpenGL.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../MyOpenGL/Shader.h" beforeDir="false" afterPath="$PROJECT_DIR$/../MyOpenGL/Shader.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Shaders/BRDFs.glsl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Shaders/Common.glsl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Shaders/CommonFragment.glsl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Shaders/Cubemap/Fragment.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/../Shaders/Cubemap/Fragment.glsl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Shaders/Cubemap/Vertex.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/../Shaders/Cubemap/Vertex.glsl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Shaders/Lights.glsl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Shaders/Main/Compiled/Fragment.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/../Shaders/Main/Compiled/Fragment.glsl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Shaders/Main/Compiled/Vertex.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/../Shaders/Main/Compiled/Vertex.glsl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Shaders/Main/Fragment.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/../Shaders/Main/Fragment.glsl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Shaders/Main/Vertex.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/../Shaders/Main/Vertex.glsl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Shaders/Material.glsl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Shaders/Unlit/Compiled/Fragment.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/../Shaders/Unlit/Compiled/Fragment.glsl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Shaders/Unlit/Compiled/Vertex.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/../Shaders/Unlit/Compiled/Vertex.glsl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Shaders/Unlit/Fragment.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/../Shaders/Unlit/Fragment.glsl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Shaders/Unlit/Vertex.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/../Shaders/Unlit/Vertex.glsl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../MyOpenGL/Level.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../MyOpenGL/Level.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../MyOpenGL/Object.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../MyOpenGL/Object.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../MyOpenGL/Serialization.h" beforeDir="false" afterPath="$PROJECT_DIR$/../MyOpenGL/Serialization.h" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -78,6 +59,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -89,7 +71,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
