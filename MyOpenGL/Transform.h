@@ -9,6 +9,8 @@
 #include <glm/gtx/quaternion.hpp>
 #include "glm/gtx/string_cast.hpp"
 
+#include "Serialization.h"
+
 class Transform
 {
 public:
@@ -33,6 +35,7 @@ public:
 	// Methods
 	void ConstructFromMatrix(const glm::mat4& Matrix);
 	void CombineTransform(const Transform& NewTransform);
+	json Serialize();
 
 	
 	// Operator overloads

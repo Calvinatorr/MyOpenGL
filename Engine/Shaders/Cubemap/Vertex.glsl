@@ -9,7 +9,7 @@ layout (location = 3) in vec3 aNormal;	 // Input normal
 uniform mat4 Model;
 uniform mat4 View;
 uniform mat4 Projection;
-#include "../Common.glsl"
+#include "../Common/Common.glsl"
 
 
 // Outputs

@@ -35,6 +35,18 @@ void Transform::CombineTransform(const Transform & NewTransform)
 	ConstructFromMatrix(a);
 }
 
+json Transform::Serialize()
+{
+	json jsonData = {
+		{"transform", {
+			{"position", {position.x, position.y, position.z			}},
+			{"rotation", {rotation.x, rotation.y, rotation.z, rotation.w}},
+			{"scale",	 {scale.x, scale.y, scale.z						}},
+		}}
+	};
+	return jsonData;
+}
+
 Transform Transform::operator*(const Transform & NewTransform)
 {
 	*this *= NewTransform;

@@ -1,17 +1,25 @@
 #pragma once
 
-#include "SceneComponent.h"
 
+#include "Serialization.h"
+#include "SceneComponent.h"
+#include "Object.h"
+
+#include <iostream>
 #include <vector>
 #include <set>
 
+
+
 class SceneComponent; // Forward declaration to avoid compiler screaming at me
 
+
 // Contain scene components and top-level logic for handling of components
-class SceneObject
+class SceneObject : Object
 {
 private:
 	std::set<SceneComponent*> sceneComponents;
+
 
 protected:
 	// Register newly created scene component with internal set
@@ -37,6 +45,8 @@ public:
 	virtual void Update();
 	// Destroy all scene components & perform any cleanup necessary, invoked from scene manager
 	virtual void Destroy();
+	// Serialize object for loading to & from disk
+	json Serialize() override;
 
 
 	// Getters

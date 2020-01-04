@@ -10,8 +10,12 @@
 #include "Mesh.h"
 #include "EditorCamera.h"
 #include "StaticMeshObject.h"
+#include "Level.h"
 
-#include "jsoncpp/json/json.h"
+
+
+// Python wrapper
+//#include <pybind11/pybind11.h>
 
 
 const GLuint SRC_WIDTH = 1280;
@@ -21,6 +25,8 @@ EditorCamera camera;
 Shader shaderProgram, unlitShader, cubemapShader;
 
 double elapsedTime = 0.0f, deltaTime = 0.0f;
+
+
 
 // ===================================== EVENTS ============================================
 
@@ -93,21 +99,23 @@ int main(int argc, char* argv[])
 
 	glEnable(GL_DEPTH_TEST);
 
-	/*std::ifstream inFile("../Content/alice.json");
-	Json::StreamWriterBuilder reader;
-	Json::Reader reader;
-	Json::Value obj;
-	reader.parse(inFile, obj);
-	std::cout << "Book: " << obj["book"].asString() << std::endl;
-	std::cout << "Year: " << obj["year"].asUInt() << std::endl;
-	
-	const Json::Value& characters = obj["characters"]; // Array of characters
-	for (int i = 0; i < characters.size(); i++)
-	{
-		std::cout << "	name: " << characters[i]["name"].asString();
-		std::cout << "	chapter: " << characters[i]["chapter"].asUInt();
-		std::cout << "\n";
-	}*/
+
+
+	StaticMeshObject testObject;
+	testObject.Construct();
+	testObject.transform.rotation = glm::quat(glm::radians(glm::vec3(0.0f, 45.0f, 0.0f)));
+
+	StaticMeshObject testObject2;
+	testObject2.Construct();
+	testObject2.transform.rotation = glm::quat(glm::radians(glm::vec3(0.0f, 90.0f, 0.0f)));
+
+	Level level;
+	//level.LoadFromDisk("../Content/TestScene.json");
+	level.AddSceneObject(&testObject);
+	level.AddSceneObject(&testObject2);
+	level.SaveToDisk("../TestLevelSaveMe.json");
+	level.LoadFromDisk("../TestLevelSaveMe.json");
+	std::system("pause");
 
 
 	// ===================================== CAMERA ============================================
@@ -143,9 +151,9 @@ int main(int argc, char* argv[])
 
 	// ===================================== SHADERS & MATERIALS ============================================
 
-	shaderProgram.Compile("../Shaders/Main");
-	unlitShader.Compile("../Shaders/Unlit");
-	cubemapShader.Compile("../Shaders/Cubemap");
+	shaderProgram.Compile(SHADER_PATH + "Main");
+	unlitShader.Compile(SHADER_PATH + "Unlit");
+	cubemapShader.Compile(SHADER_PATH + "Cubemap");
 
 
 	Material unlitMaterial(&unlitShader);
@@ -183,7 +191,8 @@ int main(int argc, char* argv[])
 	boxMesh.material = &unlitMaterial;
 
 	Mesh sphereMesh;
-	sphereMesh.LoadMeshObj("../Content/Sphere_SM.obj");
+	//sphereMesh.LoadMeshObj("../Content/Sphere_SM.obj");
+	sphereMesh.LoadMeshObj("../Content/MaterialTest_SM.obj");
 	sphereMesh.material = &sphereMaterial;
 	//sphere.transform.position = glm::vec3(-2.0f, -.3f, 1.0f);
 
@@ -271,6 +280,7 @@ int main(int argc, char* argv[])
 
 	// ===================================== SCENE OBJECTS ============================================
 
+
 	StaticMeshObject boxMeshObject;
 	boxMeshObject.staticMeshComponent = StaticMeshComponent(&boxMesh);
 	boxMeshObject.Construct();
@@ -280,6 +290,7 @@ int main(int argc, char* argv[])
 	sphereMeshObject.staticMeshComponent = StaticMeshComponent(&sphereMesh);
 	sphereMeshObject.Construct();
 	sphereMeshObject.transform.position = glm::vec3(-2.0f, -.3f, 1.0f);
+
 
 
 	// ===================================== MAIN THREAD ============================================

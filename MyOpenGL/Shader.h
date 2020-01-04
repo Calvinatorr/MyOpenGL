@@ -17,6 +17,11 @@
 #include <algorithm>
 
 
+#ifndef SHADER_PATH
+#define SHADER_PATH std::string("../Engine/Shaders/")
+#endif
+
+
 class Shader : public Object
 {
 private:

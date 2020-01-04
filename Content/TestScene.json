@@ -1,0 +1,16 @@
+{
+    "LevelObjects": [
+        {
+            "class": "StaticMeshObject",
+            "name": "BoxMeshObject",
+            "displayName": "Some Box Mesh",
+            "transform": [
+                {
+                    "position": [ -2.0, -1.0, 1.0 ],
+                    "rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+                    "scale": [ 1.0, 1.0, 1.0 ]
+                }
+            ]
+        }
+    ]
+}

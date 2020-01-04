@@ -11,16 +11,16 @@ in mat4 LocalToWorld;
 in vec3 LocalPosition;
 in vec3 WorldPosition;
 
-#include "../Common.glsl"
-#include "../CommonFragment.glsl"
+#include "../Common/Common.glsl"
+#include "../Common/CommonFragment.glsl"
 
 // Samplers
 uniform sampler2D tex;
 uniform sampler2D tex2;
 
-#include "../Material.glsl"
-#include "../BRDFs.glsl"
-#include "../Lights.glsl"
+#include "../Common/Material.glsl"
+#include "../Common/BRDFs.glsl"
+#include "../Common/Lights.glsl"
 
 
 // ========================================= LIGHTS =============================================
@@ -38,8 +38,10 @@ void main()
 	vec4 t2 = texture(tex2, TexCoord.xy);
 	//outMaterial.Albedo *= vec3( mix( t, t2, t2.a ) );
 	outMaterial.Albedo *= vec3(t2);
+	outMaterial.Albedo = vec3(.8f);
 	
 	vec3 localUVW = GetLocalUVW(LocalPosition);
+	outMaterial.Roughness = localUVW.r;
 	
 	//outMaterial.Albedo = vec3(mix(t, t2, t2.a));
 	//outMaterial.Albedo = vec3(1.0f, 0.0f, 0.0f);
@@ -96,7 +98,7 @@ void main()
 	// Gamma tonemapping
 	colour = colour / (colour + vec3(1.0f));
 	colour = pow(colour, vec3(1.0f / 2.2f));
-
+	
 	FragColour = vec4(colour, 1.0f);
 	
 	//FragColour = vec4(outMaterial.Albedo, 1.0f);
