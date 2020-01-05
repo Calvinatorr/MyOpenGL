@@ -53,6 +53,13 @@ std::string Object::GetDisplayName()
 
 std::string Object::GetClassName()
 {
-	//return "Object";
-	return typeid(this).name();
+	std::string name = typeid(*this).name(); // COMPILER SPECIFIC
+
+	// Strip "class " from string if inserted by the compiler 
+	const std::string SUB_STRING = "class ";
+	int foundPos = name.find(SUB_STRING);
+	if (foundPos != std::string::npos)
+		name.erase(name.begin() + foundPos, name.begin() + foundPos + SUB_STRING.length());
+
+	return name;
 }

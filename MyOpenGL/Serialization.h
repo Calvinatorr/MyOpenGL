@@ -19,6 +19,19 @@ using json = nlohmann::json;
 #include "glm/gtx/string_cast.hpp"
 
 
+
+// ===================================== TYPE-DEFS ============================================
+
+typedef unsigned char		byte;
+typedef unsigned char		uint8;
+typedef unsigned short int	uint16;
+typedef unsigned int		uint32;
+typedef unsigned long int	uint64;
+typedef unsigned long		ulong;
+using string = std::string;
+
+
+
 // ===================================== REFLECTION ============================================
 
 #include <type_traits> // C++11 (Boost)

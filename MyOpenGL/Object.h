@@ -37,6 +37,6 @@ public:
 	// Get display name
 	std::string GetDisplayName();
 	// Get name of class
-	virtual std::string GetClassName();
+	std::string GetClassName();
 };
 

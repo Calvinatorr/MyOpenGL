@@ -1,13 +1,13 @@
 {
     "metadata": {
-        "class": "class Object *",
+        "class": "Level",
         "displayName": "MyLevelIsGreat",
         "name": "MyLevelIsGreat0"
     },
     "objects": [
         {
             "metadata": {
-                "class": "class Object *",
+                "class": "SceneObject",
                 "displayName": "ARealObject",
                 "name": "ARealObject0"
             },
@@ -32,7 +32,7 @@
         },
         {
             "metadata": {
-                "class": "class Object *",
+                "class": "SceneObject",
                 "displayName": "ARealObject",
                 "name": "ARealObject1"
             },
