@@ -113,10 +113,10 @@ SubShader::~SubShader()
 
 GLint SubShader::CompileSource(const std::string& Source)
 {
-	std::ofstream inFile;
+	/*std::ofstream inFile;
 	inFile.open(Source); // Try to open file
 
-	inFile.close();
+	inFile.close();*/
 
 
 	const GLchar* source_cstr = Source.c_str();
@@ -129,11 +129,11 @@ GLint SubShader::CompileSource(const std::string& Source)
 
 	if (success)
 	{
-		Log::Print("Sub-shader successfully compiled, TYPE:'" + GetShaderType() + "'");
+		Log::Print("'" + GetShaderType() + "' Sub-shader successfully compiled");
 	}
 	else
 	{
-		Log::PrintError("Sub-shader failed to compile compiled, TYPE:'" + GetShaderType() + "'\n" + std::string(infoLog));
+		Log::PrintError("'" + GetShaderType() + "' Sub-shader failed to compile\n" + std::string(infoLog));
 	}
 
 	return success;
