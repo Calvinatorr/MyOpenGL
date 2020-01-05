@@ -9,16 +9,18 @@
 #include "glm/gtx/string_cast.hpp"
 
 
+#include "Utility.h"
 #include "Texture.h"
 #include "SubShader.h"
 #include "Camera.h"
+
 
 #include <set>
 #include <algorithm>
 
 
 #ifndef SHADER_PATH
-#define SHADER_PATH std::string("../Engine/Shaders/")
+#define SHADER_PATH std::string(ENGINE_PATH + "Shaders/")
 #endif
 
 

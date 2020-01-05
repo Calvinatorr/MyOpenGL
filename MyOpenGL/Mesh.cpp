@@ -208,12 +208,14 @@ void Mesh::LoadMeshObj(const std::string & File)
 			}
 		}*/
 
-		std::cout << "Mesh successfully loaded: '" << File << "'\n";
-		std::cout << "	" << std::to_string(vertices.size()) << " vertices\n";
-		std::cout << "	" << std::to_string(indices.size() / 3) << " faces\n";
+		Log::Print("Mesh successfully loaded '" + File + "\n" +
+			"	" + std::to_string(vertices.size()) + " vertices\n" +
+			"	" + std::to_string(indices.size() / 3) + " faces");
 	}
 	else
-		std::cout << "Error: Mesh failed to load: '" << File << "'\n";
+	{
+		Log::PrintError("Mesh failed to load '" + File + "'");
+	}
 
 	inFile.close();
 

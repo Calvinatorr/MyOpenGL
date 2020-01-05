@@ -128,9 +128,13 @@ GLint SubShader::CompileSource(const std::string& Source)
 	GLint success = GetLog(infoLog);
 
 	if (success)
-		std::cout << "Shader successfully compiled: " << GetShaderType() << std::endl;
+	{
+		Log::Print("Sub-shader successfully compiled, TYPE:'" + GetShaderType() + "'");
+	}
 	else
-		std::cout << "Error: Shader failed to compile: " << GetShaderType() << "\n" << std::string(infoLog) << std::endl;
+	{
+		Log::PrintError("Sub-shader failed to compile compiled, TYPE:'" + GetShaderType() + "'\n" + std::string(infoLog));
+	}
 
 	return success;
 }

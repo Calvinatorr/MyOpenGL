@@ -69,10 +69,13 @@ GLint Shader::LinkShaders()
 	if (!success)
 	{
 		glGetProgramInfoLog(ID, 512, NULL, infoLog);
-		std::cout << "Error: Failed to link sub-shaders: '" << source << "'\n" << infoLog << std::endl;
+
+		Log::PrintError("Failed to link sub-shaders '" + source + "'\n" + infoLog);
 	}
 	else
-		std::cout << "Sub-shaders successfully linked: '" << source << "'" << std::endl;
+	{
+		Log::Print("Successfully linked sub-shaders '" + source + "'");
+	}
 
 	glDeleteShader(vertexShader.GetID());
 	glDeleteShader(fragmentShader.GetID());
@@ -108,7 +111,7 @@ void Shader::RecompileAll()
 		if (*it != nullptr)
 		{
 			(*it)->Recompile();
-			std::cout << "Recompiling '" << (*it)->source << std::endl;
+			Log::Print("Recompiling '" + (*it)->source + "'");
 		}
 
 		it++; // Move to next element in set

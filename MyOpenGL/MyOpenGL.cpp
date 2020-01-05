@@ -74,6 +74,12 @@ void EditorInput(const float& DeltaTime)
 
 int main(int argc, char* argv[])
 {
+	// Initialize utilities
+	Utility::InitializeStartDateTime();
+	Log::InitializeLog();
+
+
+
 	// GLFW initialize
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -93,7 +99,7 @@ int main(int argc, char* argv[])
 	// Initialize GLAD: load all function pointers
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) // Load address of OpenGL function pointers to handle OS-specifics
 	{
-		std::cout << "Failed to initialize GLAD" << std::endl; // Error
+		Log::PrintError("Failed to initialize GLAD");
 		return -1; // Return error code
 	}
 
@@ -110,12 +116,11 @@ int main(int argc, char* argv[])
 	testObject2.transform.rotation = glm::quat(glm::radians(glm::vec3(0.0f, 90.0f, 0.0f)));
 
 	Level level;
-	//level.LoadFromDisk("../Content/TestScene.json");
 	//level.AddSceneObject(&testObject);
 	//level.AddSceneObject(&testObject2);
 	level.LoadFromDisk("../LoadFrom.json");
-	level.SaveToDisk("../SaveTo.json");
-	std::system("pause");
+	//level.SaveToDisk("../SaveTo.json");
+	//std::system("pause");
 
 
 	// ===================================== CAMERA ============================================
@@ -149,7 +154,10 @@ int main(int argc, char* argv[])
 	environmentMap.SetWrapMode(Texture::WrapMode::ClampToEdge);
 	environmentMap.LoadResource("../Content/small_hangar_01_1k.hdr");
 
+
+
 	// ===================================== SHADERS & MATERIALS ============================================
+
 
 	shaderProgram.Compile(SHADER_PATH + "Main");
 	unlitShader.Compile(SHADER_PATH + "Unlit");
@@ -184,6 +192,8 @@ int main(int argc, char* argv[])
 
 	// ===================================== VAO & VBO ============================================
 	
+
+
 	Mesh boxMesh;
 	boxMesh.LoadMeshObj("../Content/Box_SM.obj");
 	//box.transform.rotation = glm::quat(glm::radians(glm::vec3(0.0f, 45.0f, 0.0f)));
@@ -196,7 +206,7 @@ int main(int argc, char* argv[])
 	sphereMesh.material = &sphereMaterial;
 	//sphere.transform.position = glm::vec3(-2.0f, -.3f, 1.0f);
 
-
+	/*
 	Primitive planeMesh;
 
 	planeMesh.AddVertex(Primitive::Vertex({  0.5f,  0.0f, -0.5f }, { 1.0f, 1.0f })); // Front - Top right
@@ -276,9 +286,9 @@ int main(int argc, char* argv[])
 
 	primMesh.Construct();
 	std::vector<glm::vec3> positions = { glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(2.0f, -1.0f, -.5f), glm::vec3(-2.0f, 1.5f, -2.0f) };
+	*/
 
-
-	// ===================================== SCENE OBJECTS ============================================
+	// ===================================== LEVELS ============================================
 
 
 	StaticMeshObject boxMeshObject;
@@ -291,6 +301,10 @@ int main(int argc, char* argv[])
 	sphereMeshObject.Construct();
 	sphereMeshObject.transform.position = glm::vec3(-2.0f, -.3f, 1.0f);
 
+
+	level.AddSceneObject(&boxMeshObject);
+	level.AddSceneObject(&sphereMeshObject);
+	level.Load();
 
 
 	// ===================================== MAIN THREAD ============================================
@@ -310,6 +324,9 @@ int main(int argc, char* argv[])
 		camera.Update(deltaTime);
 		EditorInput(deltaTime);
 
+		// Level managet
+		LevelManager::Update();
+
 
 		// Clear screen with colour
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0);
@@ -317,8 +334,9 @@ int main(int argc, char* argv[])
 
 
 		//Draw meshes
-		boxMeshObject.Draw();
-		sphereMeshObject.Draw();
+		//boxMeshObject.Draw();
+		//sphereMeshObject.Draw();
+		LevelManager::Draw();
 
 		/*
 		box.Draw();
@@ -349,6 +367,10 @@ int main(int argc, char* argv[])
 
 	Shader::Cleanup();
 	Primitive::Cleanup();
+	LevelManager::Cleanup();
+	Log::Print("Closing program", false);
+	Log::Dump(); // Dump rest of the log
+
 	glfwTerminate(); // Clean up GLFW context
 	return 0; // Return success code
 }
