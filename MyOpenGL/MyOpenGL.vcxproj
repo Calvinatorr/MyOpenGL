@@ -144,7 +144,6 @@
     <ClInclude Include="StaticMeshComponent.h" />
     <ClInclude Include="StaticMeshObject.h" />
     <ClInclude Include="stb_image.h" />
-    <ClInclude Include="SubShader.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Texture2D.h" />
     <ClInclude Include="Transform.h" />
@@ -171,7 +170,6 @@
     <ClCompile Include="StaticMeshComponent.cpp" />
     <ClCompile Include="StaticMeshObject.cpp" />
     <ClCompile Include="stb_image.cpp" />
-    <ClCompile Include="SubShader.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Texture2D.cpp" />
     <ClCompile Include="Transform.cpp" />
