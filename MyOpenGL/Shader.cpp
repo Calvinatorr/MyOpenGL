@@ -40,8 +40,6 @@ std::string SubShader::GetSource(const std::string& File, const bool& OutputCons
 
 			filename = File.substr(found + 1);
 		}
-		Log::Print("shaderFolder `" + shaderFolder + "`");
-		Log::Print("filename `" + filename + "`");
 
 
 		// Parse file
