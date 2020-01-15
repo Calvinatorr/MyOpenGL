@@ -12,14 +12,14 @@ in vec3 WorldPosition;
 
 
 // Uniforms
-#include "../Common/Common.glsl"
-#include "../Common/CommonFragment.glsl"
+#include "Common/Common.glsl"
+#include "Common/CommonFragment.glsl"
 
 // Samplers
 uniform sampler2D tex;
 uniform sampler2D tex2;
 
-#include "../Common/Material.glsl"
+#include "Common/Material.glsl"
 
 
 // ========================================= MAIN RENDER =============================================

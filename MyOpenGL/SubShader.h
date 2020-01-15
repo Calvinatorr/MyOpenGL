@@ -10,6 +10,15 @@
 #include <filesystem>
 
 
+#ifndef SHADER_PATH
+#define SHADER_PATH std::string(ENGINE_PATH + "Shaders/")
+#endif
+
+#ifndef SAVED_SHADERS_PATH
+#define SAVED_SHADERS_PATH std::string(SAVED_PATH + "Shaders/")
+#endif
+
+
 class SubShader : public Object
 {
 private:

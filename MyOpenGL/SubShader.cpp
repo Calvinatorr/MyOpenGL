@@ -23,14 +23,24 @@ std::string SubShader::GetSource(const std::string& File, const bool& OutputCons
 	if (inFile.is_open()) // If open
 	{
 		std::vector<std::string> includes;							  // List of files we've already included
-		std::string path = std::filesystem::canonical(File).string(); // Get absolute (canonical) path of the shader file
-		path = path.substr(0, path.find_last_of("\\"));				  // Remove filename to get absolute path
+
 
 		// Isolate filename from directory
 		std::string filename;
+		std::string shaderFolder;
 		std::size_t found = File.find_last_of("/");
 		if (found != std::string::npos)
+		{
+			shaderFolder = File.substr(0, found);
+			auto found2 = shaderFolder.find_last_of("/");
+			if (found2 != std::string::npos)
+				shaderFolder = shaderFolder.substr(found2 + 1);
+
 			filename = File.substr(found + 1);
+		}
+		Log::Print("shaderFolder `" + shaderFolder + "`");
+		Log::Print("filename `" + filename + "`");
+
 
 		// Parse file
 		std::string line;
@@ -40,7 +50,7 @@ std::string SubShader::GetSource(const std::string& File, const bool& OutputCons
 
 			if (line.find("#include") != std::string::npos) // Found an include
 			{
-				// Get file in-between " characters, i.e. #include "myfile"
+				// Parse string
 				std::size_t first = line.find_first_of("\"");
 				std::size_t last = line.find_last_of("\"");
 
@@ -49,15 +59,28 @@ std::string SubShader::GetSource(const std::string& File, const bool& OutputCons
 				{
 					if (std::find(includes.begin(), includes.end(), subFilename) == includes.end()) // If we haven't already included this file
 					{
-						includes.push_back(subFilename); // Add to list of includes to ignore
-						std::filesystem::path cachePath = std::filesystem::current_path(); // Cache the current working directory
+						includes.push_back(subFilename);									// Add to list of includes to ignore
+						std::filesystem::path cachePath = std::filesystem::current_path();	// Cache the current working directory
 
-						try { std::filesystem::current_path(path); }					   // This become our working directory
+						try { std::filesystem::current_path(std::filesystem::canonical(File).string()); } // This become our working directory
 						catch (...) {}
 
 						std::ifstream f;
-						f.open(subFilename);											   // Try to open file
-						std::filesystem::current_path(cachePath);						   // Restore working directory
+						f.open(subFilename);												// Try to open file from local directory first
+
+
+						// If we couldn't find the file from the local directory, try opening it from the SHADER_PATH in the engine directory
+						if (!f.is_open())
+						{
+							std::filesystem::current_path(cachePath); // Restore working directory
+							try { std::filesystem::current_path(SHADER_PATH); }
+							catch (...) { }
+
+							f.open(subFilename);
+						}
+
+						std::filesystem::current_path(cachePath);							// Restore working directory
+						// If we managed to open the file, append the contents to our compiled shader file
 						if (f.is_open())
 						{
 							std::string newLine;
@@ -70,17 +93,23 @@ std::string SubShader::GetSource(const std::string& File, const bool& OutputCons
 
 							f.close();
 						}
+						else // Error
+						{
+							Log::PrintError("Failed to find shader include `" + subFilename + "`");
+						}
 					}
 				}
 			}
 			else
+			{
 				source.append(line + "\n");
+			}
 		}
 
 
 		if (OutputConsolidatedFile)
 		{
-			std::string outPath = path + "\\Compiled\\";
+			std::string outPath = SAVED_SHADERS_PATH + "/" + shaderFolder + "/";
 			if (!std::filesystem::exists(outPath)) // If the directory doesn't already exist
 				std::filesystem::create_directory(outPath);
 

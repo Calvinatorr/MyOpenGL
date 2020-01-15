@@ -11,16 +11,16 @@ in mat4 LocalToWorld;
 in vec3 LocalPosition;
 in vec3 WorldPosition;
 
-#include "../Common/Common.glsl"
-#include "../Common/CommonFragment.glsl"
+#include "Common/Common.glsl"
+#include "Common/CommonFragment.glsl"
 
 // Samplers
 uniform sampler2D tex;
 uniform sampler2D tex2;
 
-#include "../Common/Material.glsl"
-#include "../Common/BRDFs.glsl"
-#include "../Common/Lights.glsl"
+#include "Common/Material.glsl"
+#include "Common/BRDFs.glsl"
+#include "Common/Lights.glsl"
 
 
 // ========================================= LIGHTS =============================================
