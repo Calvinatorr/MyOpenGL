@@ -160,6 +160,7 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="EditorCamera.cpp" />
     <ClCompile Include="glad.c" />
+    <ClCompile Include="GUI.cpp" />
     <ClCompile Include="Level.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />

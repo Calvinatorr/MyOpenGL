@@ -1,7 +1,23 @@
-#include <glad/glad.h>  // Hardware-specific loader
-#include <GLFW/glfw3.h> // Window & input handler
-#include "stb_image.h"  // Image loading library
+// ===================================== GLAD & GLFW ============================================
 
+#include <glad/glad.h>  // Initialize with gladLoadGL()
+#include <GLFW/glfw3.h> // Window & input handler
+
+
+// ===================================== ImGui & GUI/Widgets ============================================
+
+// IMGUI - https://github.com/ocornut/imgui/
+#include "imgui.cpp"
+#include "imgui_demo.cpp"
+#include "imgui_draw.cpp"
+#include "imgui_widgets.cpp"
+#include "examples/imgui_impl_glfw.cpp"
+#include "examples/imgui_impl_opengl3.cpp"
+// Includes glad and GLFW
+#include "GUI.h"
+
+
+// ===================================== OUR INCLUDES ============================================
 
 // Our classes
 #include "Window.h"
@@ -11,7 +27,6 @@
 #include "EditorCamera.h"
 #include "StaticMeshObject.h"
 #include "Level.h"
-
 
 
 // Python wrapper
@@ -70,8 +85,9 @@ void EditorInput(const float& DeltaTime)
 	}
 }
 
-// ===================================== MAIN ============================================
 
+
+// ===================================== MAIN ============================================
 int main(int argc, char* argv[])
 {
 	// Initialize utilities
@@ -79,9 +95,11 @@ int main(int argc, char* argv[])
 	Log::InitializeLog();
 
 
-
 	// GLFW initialize
-	glfwInit();
+	glfwSetErrorCallback(GLFW_ErrorCallback);
+	if (!glfwInit())
+		return 1;
+	const std::string GLSL_VERSION = "#version 130";
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -89,9 +107,12 @@ int main(int argc, char* argv[])
 
 	// GLFW create window
 	window = Window(SRC_WIDTH, SRC_HEIGHT, "MyOpenGL");
+	if (window.window == nullptr)
+		return 1;
 	glfwSetScrollCallback(window.window, ScrollCallback);
 	glfwSetCursorPosCallback(window.window, MouseCallback);
-	glfwSetInputMode(window.window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); // Capture cursor input but always reset cursor to screen centre
+	//glfwSetInputMode(window.window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); // Capture cursor input but always reset cursor to screen centre
+
 
 
 	// ===================================== LOAD IN OPENGL CONTEXT ============================================
@@ -102,9 +123,33 @@ int main(int argc, char* argv[])
 		Log::PrintError("Failed to initialize GLAD");
 		return -1; // Return error code
 	}
+	{
+		const GLubyte* version = glGetString(GL_VERSION);
+		std::stringstream s;
+		s << "Using OpenGL version `" << version << "`";
+		Log::Print(s.str(), false);
+	}
 
 	glEnable(GL_DEPTH_TEST);
 
+
+	// Setup Dear ImGUI context
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+
+	// Setup Dear ImGui style
+	//ImGui::StyleColorsDark();
+	ImGui::StyleColorsClassic();
+
+	// Setup Platform/Renderer bindings
+	ImGui_ImplGlfw_InitForOpenGL(window.window, true);
+	ImGui_ImplOpenGL3_Init(GLSL_VERSION.c_str());
+
+
+	// ===================================== TEST LEVEL ============================================
 
 
 	StaticMeshObject testObject;
@@ -202,7 +247,7 @@ int main(int argc, char* argv[])
 
 	Mesh sphereMesh;
 	//sphereMesh.LoadMeshObj("../Content/Sphere_SM.obj");
-	sphereMesh.LoadMeshObj("../Content/MaterialTest_SM.obj");
+	//sphereMesh.LoadMeshObj("../Content/MaterialTest_SM.obj");
 	sphereMesh.material = &sphereMaterial;
 	//sphere.transform.position = glm::vec3(-2.0f, -.3f, 1.0f);
 
@@ -312,6 +357,9 @@ int main(int argc, char* argv[])
 	window.Bind();
 	camera.Bind();
 
+	// ImGui test crap
+	bool bShowDemoWindow = true;
+
 	while( !glfwWindowShouldClose(Window::GetCurrent()) ) // While window is open
 	{
 		// Delta & elapsed time
@@ -319,18 +367,40 @@ int main(int argc, char* argv[])
 		deltaTime = time - elapsedTime;
 		elapsedTime = time;
 
+		glfwPollEvents(); // Check if any events (i.e. inputs) have been triggered
 
 		// Camera controls
 		camera.Update(deltaTime);
 		EditorInput(deltaTime);
 
-		// Level managet
+		// Level manager
 		LevelManager::Update();
 
 
+		// Start Dear ImGUI frame
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+
+		// Do ImGui stuff
+
+		// imgui demo win
+		if (bShowDemoWindow)
+		{
+			ImGui::ShowDemoWindow(&bShowDemoWindow);
+		}
+		if (ImGui::Button("Yeah do some stuff"))
+		{
+			Shader::RecompileAll();
+		}
+
+
+		// Render ImGui
+		ImGui::Render();
 		// Clear screen with colour
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear screen & depth buffers with bitwise operation on flags
+		
 
 
 		//Draw meshes
@@ -352,13 +422,14 @@ int main(int argc, char* argv[])
 		}*/
 
 
+		// Draw ImGui data to screen - after we've rendered our scene
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
 		// Check events to call & swap buffers
 		window.SwapBuffers();
 
 		// Safely unbind last shader
 		Shader::Unbind();
-
-		glfwPollEvents(); // Check if any events (i.e. inputs) have been triggered
 	}
 
 
@@ -371,6 +442,14 @@ int main(int argc, char* argv[])
 	Log::Print("Closing program", false);
 	Log::Dump(); // Dump rest of the log
 
+	// Clean-up ImGui
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
+
+	// Clean-up window
+	if ( Window::GetCurrentObject()->window != nullptr )
+		glfwDestroyWindow(Window::GetCurrentObject()->window);
 	glfwTerminate(); // Clean up GLFW context
 	return 0; // Return success code
 }

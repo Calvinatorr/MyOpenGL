@@ -1,21 +1,46 @@
 #pragma once
 
+#include <glad/glad.h>  // Initialize with gladLoadGL()
+#include <GLFW/glfw3.h> // Window & input handler
+
+
 // IMGUI - https://github.com/ocornut/imgui/
 #include "imgui.h"
-#include "imgui.cpp"
-#include "imgui_demo.cpp"
-#include "imgui_draw.cpp"
-#include "imgui_widgets.cpp"
 #include "examples/imgui_impl_glfw.h"
-#include "examples/imgui_impl_glfw.cpp"
 #include "examples/imgui_impl_opengl3.h"
-#include "examples/imgui_impl_opengl3.cpp"
-
 
 #include "Utility.h"
 
 
-void GLFW_ErrorCallback(int Error, const char* Description)
+//#include <vector>
+//#include <algorithm>
+
+
+
+void GLFW_ErrorCallback(int Error, const char* Description);
+
+
+/*
+class Widget
 {
-	Log::PrintError("GLFW Error " + std::to_string(Error) + "+: " + std::string(Description) + "\n");
-}
+private:
+	static std::vector<Widget> allWidgets;
+	bool bIsVisible = true;
+
+
+public:
+
+	Widget();
+	~Widget();
+
+
+	// Methods
+	virtual void DrawLayout();
+	
+	// Getters
+	bool IsVisible();
+
+	// Setters
+	void SetVisible(bool NewVisibility);
+};
+*/
