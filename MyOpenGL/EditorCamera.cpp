@@ -47,6 +47,13 @@ void EditorCamera::Update(const float& DeltaTime)
 
 void EditorCamera::UpdateMouse(const float & DeltaTime, const glm::vec2& CursorPosition)
 {
+	GLFWwindow* window = Window::GetCurrent();
+	if (window == nullptr)
+		return;
+
+	if (!glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_2))
+		return;
+
 	float xoffset = CursorPosition.x - cursorPosition.x;
 	float yoffset = cursorPosition.y - CursorPosition.y;
 	cursorPosition = CursorPosition;
