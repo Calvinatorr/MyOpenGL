@@ -2,6 +2,7 @@
 out vec4 FragColour; 
 
 
+
 in vec2 TexCoord;
 in vec3 VertexColour;
 in vec3 VertexNormal;
@@ -9,8 +10,6 @@ in vec3 VertexNormal;
 in mat4 LocalToWorld;
 in vec3 LocalPosition;
 in vec3 WorldPosition;
-
-
 
 
 
@@ -37,12 +36,24 @@ vec3 GetLocalUVW(vec3 LocalPosition)
 }
 
 
-uniform sampler2D tex;
-uniform sampler2D tex2;
+
+const vec2 INV_ATAN = vec2(0.1591, 0.3183);
+
+vec2 SphericalUVsFromPosition(vec3 v)
+{
+	vec2 uv = vec2(atan(v.z, v.x), asin(v.y));
+	uv *= INV_ATAN;
+	uv += 0.5f;
+	return uv;
+}
 
 
 vec3 PixelNormal = normalize(VertexNormal); 
 vec3 ViewDirection = normalize(CameraPosition - WorldPosition);
+
+
+uniform sampler2D tex;
+uniform sampler2D tex2;
 
 
 
@@ -98,7 +109,7 @@ float GeometrySmith(float NoV, float NoL, float Roughness)
 
 vec3 FresnelSchlick(float CosTheta, vec3 F0, float Roughness)
 {
-	return F0 + (1.0f + F0) * pow(1.0f - CosTheta, 5.0f);
+	return F0 + (1.0f - F0) * pow(1.0f - CosTheta, 5.0f);
 }
 
 
@@ -211,8 +222,6 @@ vec3 CalculateSpotLight(SpotLight Light)
 		return vec3(0.0f);
 }
 
-uniform float MyParameter = 0.0f;
-
 
 
 
@@ -228,7 +237,11 @@ void main()
 	vec4 t = texture(tex, TexCoord.xy);
 	vec4 t2 = texture(tex2, TexCoord.xy);
 	
+	outMaterial.Albedo *= vec3(t2);
+	outMaterial.Albedo = vec3(.8f);
+	
 	vec3 localUVW = GetLocalUVW(LocalPosition);
+	outMaterial.Roughness = localUVW.r;
 	
 	
 	
@@ -285,8 +298,9 @@ void main()
 	
 	colour = colour / (colour + vec3(1.0f));
 	colour = pow(colour, vec3(1.0f / 2.2f));
-
+	
 	FragColour = vec4(colour, 1.0f);
+	
 	
 	
 	

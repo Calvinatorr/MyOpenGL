@@ -1,0 +1,6 @@
+{
+    "source": "../Content/Box_SM.obj",
+    "materials": [
+        {"name": "Checker_MI"}
+    ]
+}

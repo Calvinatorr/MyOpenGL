@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Utility.h"
 #include "Object.h"
 
 #include "stb_image.h"

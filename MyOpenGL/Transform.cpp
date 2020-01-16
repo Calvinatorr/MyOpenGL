@@ -35,6 +35,32 @@ void Transform::CombineTransform(const Transform & NewTransform)
 	ConstructFromMatrix(a);
 }
 
+json Transform::Serialize()
+{
+	json jsonData = {
+		{"transform", {
+			{"position", {position.x, position.y, position.z			}},
+			{"rotation", {rotation.x, rotation.y, rotation.z, rotation.w}},
+			{"scale",	 {scale.x, scale.y, scale.z						}},
+		}}
+	};
+	return jsonData;
+}
+
+void Transform::Deserialize(const json & Data)
+{
+	// If the transform isn't empty
+	if (!Data.empty())
+	{
+		auto pos = Data["position"];
+		position = glm::vec3(pos[0], pos[1], pos[2]);
+		auto rot = Data["rotation"];
+		rotation.x = rot[0]; rotation.y = rot[1]; rotation.z = rot[2]; rotation.w = rot[3];
+		auto s = Data["scale"];
+		scale = glm::vec3(s[0], s[1], s[2]);
+	}
+}
+
 Transform Transform::operator*(const Transform & NewTransform)
 {
 	*this *= NewTransform;

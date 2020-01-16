@@ -50,6 +50,21 @@ void SceneObject::Destroy()
 	}
 }
 
+ json SceneObject::Serialize()
+{
+	json jsonData = Object::Serialize();
+	jsonData.update(transform.Serialize());
+
+	return jsonData;
+}
+
+ void SceneObject::Deserialize(const json & Data)
+ {
+	 Object::Deserialize(Data);
+	 transform.Deserialize(Data["transform"]);
+ }
+
+
 std::set<SceneComponent*>& SceneObject::GetAllSceneComponents()
 {
 	return sceneComponents;

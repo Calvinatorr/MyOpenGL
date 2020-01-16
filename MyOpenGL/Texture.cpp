@@ -10,7 +10,7 @@ void Texture::Generate() // Add to our texture pool
 
 	SetType(type);
 
-	std::cout << "Generated texture object: " << ID << std::endl;
+	Log::Print("Texture object generated, ID:'" + std::to_string(ID) + "'");
 }
 
 void Texture::Init()
@@ -51,7 +51,9 @@ void Texture::Bind()
 		}
 	}
 	else
-		std::cout << "Error: Failed to bind texture object: `" << source << std::endl;
+	{
+		Log::PrintError("Texture object failed to find '" + source + "'");
+	}
 }
 
 void Texture::Unbind()
@@ -101,16 +103,20 @@ GLint Texture::LoadResource(const GLchar* File)
 			if (GenerateMipMaps)
 				glGenerateMipmap(type);
 
-			std::cout << "Texture successfully loaded: '" << File << "'\n";
+			Log::Print("Texture successfully loaded '" + std::string(File) + "'");
 			success = 1;
 		}
 		else
-			std::cout << "ERROR: Failed to load texture: '" << File << "'\n";
+		{
+			Log::PrintError("Failed to load texture '" + std::string(File) + "'");
+		}
 
 		stbi_image_free(data); // Free up memory
 	}
 	else
-		std::cout << "ERROR: Texture object invalid: '" << File << "'\n";
+	{
+		Log::PrintError("Texture object invalid '" + std::string(File) + "'");
+	}
 
 	return success;
 }

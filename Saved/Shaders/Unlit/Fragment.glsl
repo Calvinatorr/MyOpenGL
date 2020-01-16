@@ -14,6 +14,7 @@ in vec3 WorldPosition;
 
 
 
+
 uniform vec3 MinBounds;
 uniform vec3 MaxBounds;
 vec3 Size = MaxBounds - MinBounds;
@@ -36,12 +37,24 @@ vec3 GetLocalUVW(vec3 LocalPosition)
 }
 
 
-uniform sampler2D tex;
-uniform sampler2D tex2;
+
+const vec2 INV_ATAN = vec2(0.1591, 0.3183);
+
+vec2 SphericalUVsFromPosition(vec3 v)
+{
+	vec2 uv = vec2(atan(v.z, v.x), asin(v.y));
+	uv *= INV_ATAN;
+	uv += 0.5f;
+	return uv;
+}
 
 
 vec3 PixelNormal = normalize(VertexNormal); 
 vec3 ViewDirection = normalize(CameraPosition - WorldPosition);
+
+
+uniform sampler2D tex;
+uniform sampler2D tex2;
 
 
 

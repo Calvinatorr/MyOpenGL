@@ -35,6 +35,18 @@ vec3 GetLocalUVW(vec3 LocalPosition)
 
 
 
+const vec2 INV_ATAN = vec2(0.1591, 0.3183);
+
+vec2 SphericalUVsFromPosition(vec3 v)
+{
+	vec2 uv = vec2(atan(v.z, v.x), asin(v.y));
+	uv *= INV_ATAN;
+	uv += 0.5f;
+	return uv;
+}
+
+
+
 out vec2 TexCoord;
 out vec3 VertexColour;
 out vec3 VertexNormal;
@@ -46,7 +58,24 @@ out vec3 WorldPosition;
 
 void main()
 {
+	float angle = -ElapsedTime * .5f;
+	float cosAngle = cos(angle);
+	float sinAngle = sin(angle);
+	mat4 rot = mat4(
+		cosAngle, 0.0f, sinAngle, 0.0f,
+		0.0f, 1.0f, 0.0f, 0.0f,
+		-sinAngle, 0.0f, cosAngle, 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f
+	);
+	/*mat4 rot = mat4(
+		cosAngle, -sinAngle, 0.0f, 0.0f,
+		sinAngle, cosAngle, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f
+	);*/
+	
 	mat4 NewModel = Model;
+	
 	mat4 Transform = Projection * View * NewModel;
 	
 	LocalToWorld = transpose(inverse(NewModel)); 
@@ -58,4 +87,7 @@ void main()
 	VertexNormal = normalize(vec3(LocalToWorld * vec4(aNormal, 1.0f))); 
 
 	gl_Position = Transform * vec4(aPos, 1.0f);
+	gl_Position.y += abs(sin(ElapsedTime)) * 0.5f;
+	
+    
 }

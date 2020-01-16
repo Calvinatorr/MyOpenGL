@@ -40,5 +40,5 @@ float GeometrySmith(float NoV, float NoL, float Roughness)
 
 vec3 FresnelSchlick(float CosTheta, vec3 F0, float Roughness)
 {
-	return F0 + (1.0f + F0) * pow(1.0f - CosTheta, 5.0f);
+	return F0 + (1.0f - F0) * pow(1.0f - CosTheta, 5.0f);
 }
