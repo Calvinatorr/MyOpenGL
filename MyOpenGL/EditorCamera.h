@@ -21,8 +21,8 @@ public:
 
 
 	// Methods
-	void Update(const float& DeltaTime);
-	void UpdateMouse(const float& DeltaTime, const glm::vec2& CursorPosition);
-	void UpdateFOV(const float& DeltaTime, const glm::vec2& ScrollOffset);
+	void Update		(const double& DeltaTime);
+	void UpdateMouse(const double& DeltaTime, const glm::vec2& CursorPosition);
+	void UpdateFOV	(const double& DeltaTime, const glm::vec2& ScrollOffset);
 };
 

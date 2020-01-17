@@ -103,3 +103,8 @@ bool Log::Dump(bool bClearLog)
 
 	return false;
 }
+
+std::string Log::GetLog()
+{
+	return log;
+}

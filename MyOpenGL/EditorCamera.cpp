@@ -11,11 +11,14 @@ EditorCamera::~EditorCamera()
 {
 }
 
-void EditorCamera::Update(const float& DeltaTime)
+void EditorCamera::Update(const double& DeltaTime)
 {
 	GLFWwindow* window = Window::GetCurrent();
 	if (window == nullptr)
 		return;
+
+	float fDeltaTime = float(DeltaTime);
+
 
 	glm::vec3 forward = GetForward();
 	glm::vec3 right = GetRight();
@@ -24,17 +27,17 @@ void EditorCamera::Update(const float& DeltaTime)
 	float s = glfwGetKey(Window::GetCurrent(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ? speed * shiftMultiplier : speed;
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		transform.position += forward * DeltaTime * s;
+		transform.position += forward * fDeltaTime * s;
 	else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		transform.position -= forward *DeltaTime * s;
+		transform.position -= forward * fDeltaTime * s;
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		transform.position -= right * DeltaTime * s;
+		transform.position -= right * fDeltaTime * s;
 	else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		transform.position += right * DeltaTime * s;
+		transform.position += right * fDeltaTime * s;
 	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
-		transform.position += up * DeltaTime * s;
+		transform.position += up * fDeltaTime * s;
 	else if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
-		transform.position -= up *DeltaTime * s;
+		transform.position -= up * fDeltaTime * s;
 
 	if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS) // Reset camera
 	{
@@ -45,7 +48,7 @@ void EditorCamera::Update(const float& DeltaTime)
 	}
 }
 
-void EditorCamera::UpdateMouse(const float & DeltaTime, const glm::vec2& CursorPosition)
+void EditorCamera::UpdateMouse(const double& DeltaTime, const glm::vec2& CursorPosition)
 {
 	GLFWwindow* window = Window::GetCurrent();
 	if (window == nullptr)
@@ -54,11 +57,12 @@ void EditorCamera::UpdateMouse(const float & DeltaTime, const glm::vec2& CursorP
 	if (!glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_2))
 		return;
 
+
 	float xoffset = CursorPosition.x - cursorPosition.x;
 	float yoffset = cursorPosition.y - CursorPosition.y;
 	cursorPosition = CursorPosition;
 
-	glm::vec2 s = sensitivity * DeltaTime;
+	glm::vec2 s = sensitivity * float(DeltaTime);
 	xoffset *= s.x;
 	yoffset *= s.y;
 
@@ -66,7 +70,7 @@ void EditorCamera::UpdateMouse(const float & DeltaTime, const glm::vec2& CursorP
 	yaw -= xoffset; // Yaw
 }
 
-void EditorCamera::UpdateFOV(const float& DeltaTime, const glm::vec2& ScrollOffset)
+void EditorCamera::UpdateFOV(const double& DeltaTime, const glm::vec2& ScrollOffset)
 {
 	fieldOfView = std::clamp((fieldOfView - ScrollOffset.y * 2.5f), 1.0f, 90.0f);
 }

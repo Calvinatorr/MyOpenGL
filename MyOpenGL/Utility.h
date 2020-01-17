@@ -18,6 +18,7 @@
 
 typedef unsigned char		byte;
 typedef unsigned char		uint8;
+typedef uint8				uint;
 typedef unsigned short int	uint16;
 typedef unsigned int		uint32;
 typedef unsigned long int	uint64;
@@ -94,4 +95,7 @@ namespace Log
 
 	/* Called at end of program */
 	bool Dump(bool bClearLog = true);
+
+	/* Returns log dump from string */
+	std::string GetLog();
 }

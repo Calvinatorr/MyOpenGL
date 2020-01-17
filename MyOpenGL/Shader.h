@@ -14,6 +14,7 @@
 #include "glm/gtx/string_cast.hpp"
 
 
+#include "GUI.h"
 #include "Utility.h"
 #include "Object.h"
 #include "Texture.h"
@@ -131,4 +132,3 @@ public:
 	static Shader* GetCurrent();
 	static void Unbind(); // Call at the end of the render thread
 };
-
