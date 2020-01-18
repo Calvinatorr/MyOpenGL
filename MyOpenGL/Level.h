@@ -63,14 +63,14 @@ public:
 };
 
 
-// ===================================== LEVEL ============================================
+// ===================================== SCENE OUTLINER ============================================
 
 
-class LevelManager
+class SceneOutliner
 {
 private:
 	static std::set<Level*> loadedLevels;
-
+	static std::set<Object*> selection;
 
 public:
 
@@ -90,9 +90,22 @@ public:
 
 
 
-	// Getters
-
 	/* Return all levels contained by the manager */
 	static std::set<Level*>& GetLoadedLevels();
 
+
+	/* Select object*/
+	static void Select(Object*			 NewSelection,	const bool& bClearSelection = false);
+	/* Select multiple objects*/
+	static void Select(std::set<Object*> NewSelection,	const bool& bClearSelection = false);
+	/* Deselect object */
+	static void Deselect(Object*		 NewDeslection, const bool& bClearSelection = false);
+	/* Toggle whether object is selected */
+	static void ToggleSelection(Object*  NewSelection,	const bool& bClearSelection = false);
+	/* Return whether object exists in current selection */
+	static bool IsSelected(Object*		SelectionToFind);
+	/* Clear selecred assets */
+	static void ClearSelection();
+	/* Returns set of all objects selected by manager */
+	static const std::set<Object*>& GetSelection();
 };

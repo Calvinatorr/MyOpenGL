@@ -127,7 +127,7 @@ void Level::Load()
 	{
 		loaded = true;
 
-		LevelManager::LoadLevel(this);
+		SceneOutliner::LoadLevel(this);
 	}
 }
 
@@ -137,7 +137,7 @@ void Level::Unload()
 	{
 		loaded = false;
 
-		LevelManager::UnloadLevel(this);
+		SceneOutliner::UnloadLevel(this);
 	}
 }
 
@@ -216,10 +216,11 @@ void Level::Cleanup()
 // ===================================== LEVEL MANAGER ============================================
 
 
-std::set<Level*> LevelManager::loadedLevels = std::set<Level*>();
+std::set<Level*> SceneOutliner::loadedLevels = std::set<Level*>();
+std::set<Object*> SceneOutliner::selection = std::set<Object*>();
 
 
-bool LevelManager::LoadLevel(Level * NewLevel)
+bool SceneOutliner::LoadLevel(Level * NewLevel)
 {
 	try
 	{
@@ -233,7 +234,8 @@ bool LevelManager::LoadLevel(Level * NewLevel)
 	return true;
 }
 
-bool LevelManager::UnloadLevel(Level * LevelToUnload)
+
+bool SceneOutliner::UnloadLevel(Level * LevelToUnload)
 {
 	try
 	{
@@ -255,7 +257,8 @@ bool LevelManager::UnloadLevel(Level * LevelToUnload)
 	return true;
 }
 
-void LevelManager::Update()
+
+void SceneOutliner::Update()
 {
 	for (auto it = loadedLevels.begin(); it != loadedLevels.end(); ++it)
 	{
@@ -266,7 +269,8 @@ void LevelManager::Update()
 	}
 }
 
-void LevelManager::Draw()
+
+void SceneOutliner::Draw()
 {
 	for (auto it = loadedLevels.begin(); it != loadedLevels.end(); ++it)
 	{
@@ -277,7 +281,8 @@ void LevelManager::Draw()
 	}
 }
 
-void LevelManager::Cleanup()
+
+void SceneOutliner::Cleanup()
 {
 	for (auto it = loadedLevels.begin(); it != loadedLevels.end(); ++it)
 	{
@@ -288,7 +293,62 @@ void LevelManager::Cleanup()
 	}
 }
 
-std::set<Level*>& LevelManager::GetLoadedLevels()
+
+std::set<Level*>& SceneOutliner::GetLoadedLevels()
 {
 	return loadedLevels;
+}
+
+
+void SceneOutliner::Select(Object* NewSelection, const bool & bClearSelection)
+{
+	if (bClearSelection)
+		SceneOutliner::ClearSelection();
+
+	SceneOutliner::selection.insert(NewSelection);
+}
+
+
+void SceneOutliner::Select(std::set<Object*> NewSelection, const bool & bClearSelection)
+{
+	if (bClearSelection)
+		SceneOutliner::ClearSelection();
+
+	SceneOutliner::selection.insert(NewSelection.begin(), NewSelection.end());
+}
+
+
+void SceneOutliner::Deselect(Object * NewDeslection, const bool& bClearSelection)
+{
+	if (bClearSelection)
+		SceneOutliner::ClearSelection();
+
+	SceneOutliner::selection.erase(NewDeslection);
+}
+
+
+void SceneOutliner::ToggleSelection(Object * NewSelection, const bool& bClearSelection)
+{
+	if (SceneOutliner::IsSelected(NewSelection))
+		SceneOutliner::Deselect(NewSelection, bClearSelection);
+	else
+		SceneOutliner::Select(NewSelection, bClearSelection);
+}
+
+
+bool SceneOutliner::IsSelected(Object * SelectionToFind)
+{
+	return SceneOutliner::selection.find(SelectionToFind) != SceneOutliner::selection.end();
+}
+
+
+void SceneOutliner::ClearSelection()
+{
+	SceneOutliner::selection.clear();
+}
+
+
+const std::set<Object*>& SceneOutliner::GetSelection()
+{
+	return selection;
 }

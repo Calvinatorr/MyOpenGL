@@ -25,22 +25,34 @@ public:
 		ImGui::Begin("Scene Outliner", &bIsActive, ImGuiWindowFlags_NoCollapse);
 
 		// For each level
-		for (auto level : LevelManager::GetLoadedLevels())
+		for (auto level : SceneOutliner::GetLoadedLevels())
 		{
-			if (ImGui::TreeNodeEx(level->GetDisplayName().c_str(),
-				ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed))
+			if (ImGui::TreeNodeEx((level->GetDisplayName() + " (level)").c_str(),
+				ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanFullWidth))
 			{
 
 				// For each object in the level
 				for (auto object : level->GetSceneObjects())
 				{
-					if (ImGui::TreeNodeEx(object->GetDisplayName().c_str(),
-						ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_Leaf))
-	
+					ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_Leaf;
+					if (SceneOutliner::IsSelected(object))
+						flags |= ImGuiTreeNodeFlags_Bullet | ImGuiTreeNodeFlags_Selected;
+
+					ImGui::Columns(3);
+					if (ImGui::TreeNodeEx((object->GetDisplayName()).c_str(), flags))
 					{
 
 						ImGui::TreePop();
 					}
+
+					if (ImGui::IsItemClicked())
+						SceneOutliner::ToggleSelection(object, !(glfwGetKey(Window::GetCurrent(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS));
+
+					ImGui::NextColumn();
+					ImGui::Text(object->GetDisplayName().c_str());
+					ImGui::NextColumn();
+					ImGui::Text(object->GetClassNameA().c_str());
+					ImGui::NextColumn();
 				}
 
 				ImGui::TreePop();

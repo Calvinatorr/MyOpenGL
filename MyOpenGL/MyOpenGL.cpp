@@ -421,6 +421,8 @@ int main(int argc, char* argv[])
 	level.AddSceneObject(&sphereMeshObject);
 	level.Load();
 
+	SceneOutliner::Select(&boxMeshObject);
+
 
 	// ===================================== MAIN THREAD ============================================
 
@@ -447,7 +449,7 @@ int main(int argc, char* argv[])
 
 
 		// Level manager
-		LevelManager::Update();
+		SceneOutliner::Update();
 
 
 		// Start Dear ImGUI frame
@@ -472,7 +474,7 @@ int main(int argc, char* argv[])
 		//Draw meshes
 		//boxMeshObject.Draw();
 		//sphereMeshObject.Draw();
-		LevelManager::Draw();
+		SceneOutliner::Draw();
 
 		/*
 		box.Draw();
@@ -504,7 +506,7 @@ int main(int argc, char* argv[])
 
 	Shader::Cleanup();
 	Primitive::Cleanup();
-	LevelManager::Cleanup();
+	SceneOutliner::Cleanup();
 	EditorCamera::CleanupDefaultCamera();
 	Log::Print("Closing program", false);
 	Log::Dump(); // Dump rest of the log
