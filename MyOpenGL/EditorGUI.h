@@ -36,6 +36,14 @@ public:
 		{
 			if (ImGui::BeginMenu("File"))
 			{
+				ImGui::Separator();
+
+				// Close editor
+				if (ImGui::MenuItem("Close"))
+				{
+					glfwSetWindowShouldClose(Window::GetCurrent(), true);
+				}
+
 				ImGui::EndMenu();
 			}
 

@@ -105,7 +105,7 @@ int main(int argc, char* argv[])
 
 
 	// GLFW create window
-	window = Window(SRC_WIDTH, SRC_HEIGHT, "MyOpenGL");
+	window.Create(SRC_WIDTH, SRC_HEIGHT, "MyOpenGL", true);
 	if (window.window == nullptr)
 		return 1;
 	glfwSetScrollCallback(window.window, ScrollCallback);

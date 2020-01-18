@@ -25,6 +25,13 @@ typedef unsigned long int	uint64;
 typedef unsigned long		ulong;
 using string = std::string;
 
+#ifndef True
+#define True true
+#endif
+#ifndef False
+#define False false
+#endif
+
 
 
 // ===================================== UTILITY MISC ============================================
