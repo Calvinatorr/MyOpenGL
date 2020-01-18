@@ -8,22 +8,114 @@
 #include "Shader.h"
 #include "EditorCamera.h"
 
+#include "Level.h"
+
 #include <string>
+
+
+class SceneOutlinerGUI : public Widget
+{
+private:
+
+
+public:
+
+	void Layout() override
+	{
+		ImGui::Begin("Scene Outliner", &bIsActive, ImGuiWindowFlags_NoCollapse);
+
+		// For each level
+		for (auto level : LevelManager::GetLoadedLevels())
+		{
+			if (ImGui::TreeNodeEx(level->GetDisplayName().c_str(),
+				ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed))
+			{
+
+				// For each object in the level
+				for (auto object : level->GetSceneObjects())
+				{
+					if (ImGui::TreeNodeEx(object->GetDisplayName().c_str(),
+						ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_Leaf))
+	
+					{
+
+						ImGui::TreePop();
+					}
+				}
+
+				ImGui::TreePop();
+			}
+		}
+
+		ImGui::End();
+	}
+};
+
+
+class ContentBrowserGUI : public Widget
+{
+private:
+	void DrawTreeNodesInDirectory(const std::string& path)
+	{
+		for (const auto& entry : std::filesystem::directory_iterator(path))
+		{
+			auto path = entry.path();
+			bool bIsDirectory = std::filesystem::is_directory(path);
+
+			ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;
+			if (!bIsDirectory)
+				flags |= ImGuiTreeNodeFlags_Leaf;
+			else
+				flags |= ImGuiTreeNodeFlags_Framed;
+
+			if (ImGui::TreeNodeEx(path.filename().u8string().c_str(), flags))
+			{
+				if (bIsDirectory)
+				{
+					DrawTreeNodesInDirectory(path.u8string());
+				}
+
+				ImGui::TreePop();
+			}
+		}
+	}
+
+
+public:
+
+	void Layout() override
+	{
+		ImGui::Begin("Content Browser", &bIsActive, ImGuiWindowFlags_NoCollapse);
+
+		DrawTreeNodesInDirectory(CONTENT_PATH);
+
+		ImGui::End();
+	}
+};
 
 
 
 class EditorGUI : public Widget
 {
 private:
+
+	// Properties
 	bool bShowDemoWindow = false;
 
+	ContentBrowserGUI contentBrowser = ContentBrowserGUI();
+	SceneOutlinerGUI sceneOutliner = SceneOutlinerGUI();
 	bool bShowStats = false;
 	bool bShowConsoleLog = true;
 	
 	float wireframeWidth = 1.0f;
 
 
+
 public:
+
+	// Properties
+	float clearColour[4] = { 0.2f, 0.3f, 0.3f, 1.0f };
+
 
 	void Layout() override
 	{
@@ -58,7 +150,13 @@ public:
 
 			if (ImGui::BeginMenu("Windows"))
 			{
-				if (ImGui::MenuItem("Output Log", ""))
+				if (ImGui::MenuItem("Content Browser", ""))
+					contentBrowser.ToggleActive();
+
+				if (ImGui::MenuItem("Scene Outliner", ""))
+					sceneOutliner.ToggleActive();
+
+				if (ImGui::MenuItem("Console Log", ""))
 					bShowConsoleLog = !bShowConsoleLog;
 
 				ImGui::Separator();
@@ -82,6 +180,9 @@ public:
 					Shader::RecompileAll();
 				}
 
+				if (ImGui::MenuItem("Clear Console Log", ""))
+					Log::Dump(true);
+
 				ImGui::Separator();
 
 
@@ -100,55 +201,62 @@ public:
 
 
 				// View mode selection
-				const char* items[] = { "Lit", "Wireframe", "Points" };
-				static const char* currentItem = items[0];
-
-				if (ImGui::BeginCombo("View Mode##combo", currentItem))
 				{
-					for (int n = 0; n < IM_ARRAYSIZE(items); n++)
+					const char* items[] = { "Lit", "Wireframe", "Points" };
+					static const char* currentItem = items[0];
+
+					if (ImGui::BeginCombo("View Mode##combo", currentItem))
 					{
-						bool isSelected = (currentItem == items[n]);
-						if (ImGui::Selectable(items[n], isSelected))
+						for (int n = 0; n < IM_ARRAYSIZE(items); n++)
 						{
-							currentItem = items[n];
+							bool isSelected = (currentItem == items[n]);
+							if (ImGui::Selectable(items[n], isSelected))
+							{
+								currentItem = items[n];
 
-							// Change viewmode
-							if (items[n] == items[0])
-							{
-								glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+								// Change viewmode
+								if (items[n] == items[0])
+								{
+									glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+								}
+								else if (items[n] == items[1])
+								{
+									glLineWidth(wireframeWidth);
+									glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+								}
+								else
+								{
+									glLineWidth(4.0f);
+									glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
+								}
 							}
-							else if (items[n] == items[1])
-							{
-								glLineWidth(wireframeWidth);
-								glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-							}
-							else
-							{
-								glLineWidth(4.0f);
-								glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
-							}
+							if (isSelected)
+								ImGui::SetItemDefaultFocus();
+
 						}
-						if (isSelected)
-							ImGui::SetItemDefaultFocus();
-
+						ImGui::EndCombo();
 					}
-					ImGui::EndCombo();
-				}
 
-				// Wireframe width slider
-				if (currentItem == items[1])
-				{
-					if (ImGui::SliderFloat("", &wireframeWidth, 1.0f, 5.0f))
-						glLineWidth(wireframeWidth);
-					if (ImGui::IsItemHovered())
+					// Wireframe width slider
+					if (currentItem == items[1])
 					{
-						ImGui::BeginTooltip();
-						ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-						ImGui::TextUnformatted("Wireframe width");
-						ImGui::PopTextWrapPos();
-						ImGui::EndTooltip();
+						if (ImGui::SliderFloat("", &wireframeWidth, 1.0f, 5.0f))
+							glLineWidth(wireframeWidth);
+						if (ImGui::IsItemHovered())
+						{
+							ImGui::BeginTooltip();
+							ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+							ImGui::TextUnformatted("Wireframe width");
+							ImGui::PopTextWrapPos();
+							ImGui::EndTooltip();
+						}
 					}
 				}
+
+				
+				// Clear colour picker
+				ImGui::ColorEdit4("Clear Colour##4", clearColour);
+
 
 
 				ImGui::EndMenu();
@@ -181,7 +289,7 @@ public:
 		{
 			//ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 			//ImGui::Begin("Stats", &bShowStats, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
-			ImGui::Begin("Console Log", &bShowConsoleLog);
+			ImGui::Begin("Console Log", &bShowConsoleLog, ImGuiWindowFlags_NoCollapse);
 
 			//ImGui::LabelText(std::to_string(Game::GetFPS()).c_str(), "FPS");
 			std::istringstream iss(Log::GetLog());

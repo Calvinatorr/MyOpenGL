@@ -465,7 +465,7 @@ int main(int argc, char* argv[])
 		Log::DrawScreenLog();
 		ImGui::Render();
 		// Clear screen with colour
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0);
+		glClearColor(editorGUI.clearColour[0], editorGUI.clearColour[1], editorGUI.clearColour[2], editorGUI.clearColour[3]);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear screen & depth buffers with bitwise operation on flags
 
 

@@ -54,6 +54,10 @@ using string = std::string;
 #define SAVED_PATH std::string("../Saved/")
 #endif
 
+#ifndef CONTENT_PATH
+#define CONTENT_PATH std::string("../Content/")
+#endif
+
 
 namespace Utility
 {

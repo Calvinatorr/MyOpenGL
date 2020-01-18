@@ -44,6 +44,7 @@ public:
 
 	// Setters
 	void SetVisible(bool NewVisibility);
+	void ToggleActive();
 
 	// Static methods
 	static void Draw();

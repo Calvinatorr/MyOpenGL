@@ -36,11 +36,16 @@ void Widget::SetVisible(bool NewVisibility)
 	bIsVisible = NewVisibility;
 }
 
+void Widget::ToggleActive()
+{
+	bIsActive = !bIsActive;
+}
+
 void Widget::Draw()
 {
 	for (auto t = Widget::all.begin(); t != Widget::all.end(); ++t)
 	{
-		if (*t != nullptr)
+		if (*t != nullptr && (*t)->bIsActive)
 		{
 			(*t)->Layout();
 		}
