@@ -6,16 +6,17 @@
 #include "Game.h"
 #include "Window.h"
 #include "Shader.h"
-
+#include "EditorCamera.h"
 
 #include <string>
+
 
 
 class EditorGUI : public Widget
 {
 private:
 	bool bShowStats = false;
-	bool bShowConsoleLog = false;
+	bool bShowConsoleLog = true;
 	
 	float wireframeWidth = 1.0f;
 
@@ -39,7 +40,7 @@ public:
 				ImGui::Separator();
 
 				// Close editor
-				if (ImGui::MenuItem("Close"))
+				if (ImGui::MenuItem("Exit"))
 				{
 					glfwSetWindowShouldClose(Window::GetCurrent(), true);
 				}
@@ -49,17 +50,6 @@ public:
 
 			if (ImGui::BeginMenu("Edit"))
 			{
-				ImGui::EndMenu();
-			}
-
-			if (ImGui::BeginMenu("Tools"))
-			{
-				if (ImGui::MenuItem("Recompile Shaders", ""))
-				{
-					Log::PrintToLog("Recompiling all shaders..");
-					Shader::RecompileAll();
-				}
-
 				ImGui::EndMenu();
 			}
 
@@ -73,11 +63,31 @@ public:
 			}
 
 
-
-			if (ImGui::BeginMenu("Stats"))
+			if (ImGui::BeginMenu("Editor"))
 			{
+				// Toggle stats (FPS)
 				if (ImGui::MenuItem("Toggle Stats"))
 					bShowStats = !bShowStats;
+
+				if (ImGui::MenuItem("Recompile Shaders", ""))
+				{
+					Log::PrintToLog("Recompiling all shaders..");
+					Shader::RecompileAll();
+				}
+
+				ImGui::Separator();
+
+
+				// Camera properties
+				EditorCamera* defaultCamera = EditorCamera::GetDefaultCamera();
+				if (defaultCamera != nullptr)
+				{
+					ImGui::SliderFloat("Camera FOV", &defaultCamera->fieldOfView, 1.0f, 120.0f);
+				}
+				else
+				{
+					ImGui::LabelText("", "No editor camera found");
+				}
 
 				ImGui::Separator();
 
@@ -86,7 +96,7 @@ public:
 				const char* items[] = { "Lit", "Wireframe", "Points" };
 				static const char* currentItem = items[0];
 
-				if (ImGui::BeginCombo("##combo", currentItem))
+				if (ImGui::BeginCombo("View Mode##combo", currentItem))
 				{
 					for (int n = 0; n < IM_ARRAYSIZE(items); n++)
 					{

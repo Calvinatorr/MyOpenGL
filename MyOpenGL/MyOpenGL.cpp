@@ -38,7 +38,7 @@
 const GLuint SRC_WIDTH = 1280;
 const GLuint SRC_HEIGHT = 720;
 Window window;
-EditorCamera camera;
+//EditorCamera camera;
 Shader shaderProgram, unlitShader, cubemapShader;
 
 
@@ -46,18 +46,22 @@ Shader shaderProgram, unlitShader, cubemapShader;
 
 void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 {
-	camera.UpdateFOV(Game::GetDeltaTime(), glm::vec2(xoffset, yoffset));
+	/*EditorCamera* defaultCamera = EditorCamera::GetDefaultCamera();
+	if (defaultCamera != nullptr)
+		defaultCamera->UpdateFOV(Game::GetDeltaTime(), glm::vec2(xoffset, yoffset));*/
 }
 
 void MouseCallback(GLFWwindow* window, double xpos, double ypos)
 {
-	camera.UpdateMouse(Game::GetDeltaTime(), glm::vec2(xpos, ypos));
+	EditorCamera* defaultCamera = EditorCamera::GetDefaultCamera();
+	if (defaultCamera != nullptr)
+		defaultCamera->UpdateMouse(Game::GetDeltaTime(), glm::vec2(xpos, ypos));
 }
 
 void EditorInput(const float& DeltaTime)
 {
 	// Input
-	if (glfwGetKey(Window::GetCurrent(), GLFW_KEY_ESCAPE) == GLFW_PRESS) // Close window on escape press
+	/*if (glfwGetKey(Window::GetCurrent(), GLFW_KEY_ESCAPE) == GLFW_PRESS) // Close window on escape press
 		glfwSetWindowShouldClose(Window::GetCurrent(), true);
 
 	else if (glfwGetKey(Window::GetCurrent(), GLFW_KEY_1) == GLFW_PRESS)
@@ -81,7 +85,7 @@ void EditorInput(const float& DeltaTime)
 	{
 		std::cout << "SHADERS HOT RECOMPILE" << std::endl;
 		Shader::RecompileAll();
-	}
+	}*/
 }
 
 
@@ -232,11 +236,15 @@ int main(int argc, char* argv[])
 
 	// ===================================== CAMERA ============================================
 
-	camera.fieldOfView = 65.0f;
-	camera.transform.position = glm::vec3(0.0f, 0.0f, 3.0f);
-	camera.cursorPosition = glm::vec2((GLfloat)window.GetSize().x / 2.0f, (GLfloat)window.GetSize().y / 2.0f);
-	//camera.transform.rotation = glm::quat(glm::vec3(0.0f, glm::radians(180.0f), 0.0));
 
+	EditorCamera* defaultCamera = EditorCamera::GetDefaultCamera();
+	if (defaultCamera != nullptr)
+	{
+		defaultCamera->fieldOfView = 65.0f;
+		defaultCamera->transform.position = glm::vec3(0.0f, 0.0f, 3.0f);
+		defaultCamera->cursorPosition = glm::vec2((GLfloat)window.GetSize().x / 2.0f, (GLfloat)window.GetSize().y / 2.0f);
+		//camera.transform.rotation = glm::quat(glm::vec3(0.0f, glm::radians(180.0f), 0.0));
+	}
 
 	// ===================================== FRAME BUFFER ============================================
 
@@ -419,7 +427,7 @@ int main(int argc, char* argv[])
 	Game::Initialize();
 
 	window.Bind();
-	camera.Bind();
+	defaultCamera->Bind();
 
 	// ImGui test crap
 	bool bShowDemoWindow = true;
@@ -438,7 +446,7 @@ int main(int argc, char* argv[])
 
 
 		// Camera controls
-		camera.Update(deltaTime);
+		defaultCamera->Update(deltaTime);
 		EditorInput(deltaTime);
 
 
@@ -505,6 +513,7 @@ int main(int argc, char* argv[])
 	Shader::Cleanup();
 	Primitive::Cleanup();
 	LevelManager::Cleanup();
+	EditorCamera::CleanupDefaultCamera();
 	Log::Print("Closing program", false);
 	Log::Dump(); // Dump rest of the log
 

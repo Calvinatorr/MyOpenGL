@@ -7,6 +7,9 @@
 
 class EditorCamera : public Camera
 {
+private:
+	static EditorCamera* defaultCamera;
+
 public:
 
 	// Properties
@@ -24,5 +27,9 @@ public:
 	void Update		(const double& DeltaTime);
 	void UpdateMouse(const double& DeltaTime, const glm::vec2& CursorPosition);
 	void UpdateFOV	(const double& DeltaTime, const glm::vec2& ScrollOffset);
-};
 
+
+	// Static methods (singleton)
+	static void CleanupDefaultCamera();
+	static EditorCamera* GetDefaultCamera();
+};

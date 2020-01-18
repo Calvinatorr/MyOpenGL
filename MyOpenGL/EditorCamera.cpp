@@ -1,6 +1,8 @@
 #include "EditorCamera.h"
 
 
+EditorCamera* EditorCamera::defaultCamera = new EditorCamera();
+
 
 EditorCamera::EditorCamera()
 {
@@ -73,4 +75,15 @@ void EditorCamera::UpdateMouse(const double& DeltaTime, const glm::vec2& CursorP
 void EditorCamera::UpdateFOV(const double& DeltaTime, const glm::vec2& ScrollOffset)
 {
 	fieldOfView = std::clamp((fieldOfView - ScrollOffset.y * 2.5f), 1.0f, 90.0f);
+}
+
+
+void EditorCamera::CleanupDefaultCamera()
+{
+	delete(defaultCamera);
+}
+
+EditorCamera* EditorCamera::GetDefaultCamera()
+{
+	return defaultCamera;
 }
