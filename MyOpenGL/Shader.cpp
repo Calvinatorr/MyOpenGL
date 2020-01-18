@@ -159,7 +159,7 @@ GLint SubShader::CompileSource(const std::string& Source)
 
 	if (success)
 	{
-		Log::Print("'" + GetShaderType() + "' Sub-shader successfully compiled");
+		Log::PrintInfo("'" + GetShaderType() + "' Sub-shader successfully compiled");
 	}
 	else
 	{
@@ -274,11 +274,11 @@ GLint Shader::LinkShaders()
 	{
 		glGetProgramInfoLog(ID, 512, NULL, infoLog);
 
-		Log::PrintError("Failed to link sub-shaders '" + source + "'\n" + infoLog);
+		Log::PrintError("Failed to link sub-shaders '" + source + "'\n" + infoLog, 5.0f);
 	}
 	else
 	{
-		Log::Print("Successfully linked sub-shaders '" + source + "'");
+		Log::PrintInfo("Successfully linked sub-shaders '" + source + "'");
 	}
 
 	glDeleteShader(vertexShader.GetID());
@@ -315,7 +315,7 @@ void Shader::RecompileAll()
 		if (*it != nullptr)
 		{
 			(*it)->Recompile();
-			Log::Print("Recompiling '" + (*it)->source + "'");
+			Log::PrintInfo("Recompiling '" + (*it)->source + "'");
 		}
 
 		it++; // Move to next element in set

@@ -429,10 +429,6 @@ int main(int argc, char* argv[])
 	window.Bind();
 	defaultCamera->Bind();
 
-	// ImGui test crap
-	bool bShowDemoWindow = true;
-
-	
 
 	while( !glfwWindowShouldClose(Window::GetCurrent()) ) // While window is open
 	{
@@ -463,18 +459,14 @@ int main(int argc, char* argv[])
 
 		// imgui demo win
 		Widget::Draw(); // Draw all widgets (ImGui expected)
-		if (bShowDemoWindow)
-		{
-			ImGui::ShowDemoWindow(&bShowDemoWindow);
-		}
 
 
 		// Render ImGui
+		Log::DrawScreenLog();
 		ImGui::Render();
 		// Clear screen with colour
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear screen & depth buffers with bitwise operation on flags
-		
 
 
 		//Draw meshes

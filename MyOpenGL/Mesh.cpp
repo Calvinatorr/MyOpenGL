@@ -208,7 +208,7 @@ void Mesh::LoadMeshObj(const std::string & File)
 			}
 		}*/
 
-		Log::Print("Mesh successfully loaded '" + File + "\n" +
+		Log::PrintInfo("Mesh successfully loaded '" + File + "\n" +
 			"	" + std::to_string(vertices.size()) + " vertices\n" +
 			"	" + std::to_string(indices.size() / 3) + " faces");
 	}

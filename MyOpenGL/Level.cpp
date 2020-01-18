@@ -69,11 +69,11 @@ void Level::SaveToDisk(const std::string & Filename)
 		// Write JSON data to file at indentation level 4
 		file << jsonData.dump(4) << std::endl;
 		file.close();
-		Log::Print("Saved level '" + Filename + "'");
+		Log::PrintInfo("Saved level '" + Filename + "'");
 	}
 	else
 	{
-		Log::PrintError("Failed to save level '" + Filename + "'");
+		Log::PrintError("Failed to save level '" + Filename + "'", false);
 	}
 }
 
@@ -91,11 +91,11 @@ void Level::LoadFromDisk(const std::string & Filename)
 		Clear();
 		Deserialize(jsonData);
 
-		Log::Print("Loaded level '" + Filename + "'");
+		Log::PrintInfo("Loaded level '" + Filename + "'");
 	}
 	else
 	{
-		Log::PrintError("Failed to load level '" + Filename + "'");
+		Log::PrintError("Failed to load level '" + Filename + "'", false);
 	}
 }
 

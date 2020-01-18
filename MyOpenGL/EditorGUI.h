@@ -15,6 +15,8 @@
 class EditorGUI : public Widget
 {
 private:
+	bool bShowDemoWindow = false;
+
 	bool bShowStats = false;
 	bool bShowConsoleLog = true;
 	
@@ -59,6 +61,11 @@ public:
 				if (ImGui::MenuItem("Output Log", ""))
 					bShowConsoleLog = !bShowConsoleLog;
 
+				ImGui::Separator();
+
+				if (ImGui::MenuItem("ImGui Demo Window", ""))
+					bShowDemoWindow = !bShowDemoWindow;
+
 				ImGui::EndMenu();
 			}
 
@@ -71,7 +78,7 @@ public:
 
 				if (ImGui::MenuItem("Recompile Shaders", ""))
 				{
-					Log::PrintToLog("Recompiling all shaders..");
+					Log::PrintToScreen("Recompiling all shaders..", 10.0f, ImVec4(183.0f / 255.0f, 46.0f / 255.0f, 201.0f / 255.0f, 1.0f));
 					Shader::RecompileAll();
 				}
 
@@ -158,7 +165,7 @@ public:
 			ImGui::SetNextWindowBgAlpha(0.0f);
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(.956f, .46f, .203f, 1.0f));
-			ImGui::Begin("Stats", &bShowStats, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+			ImGui::Begin("Stats", &bShowStats, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoMouseInputs);
 			
 			ImGui::LabelText(std::to_string(Game::GetFPS()).c_str(), "FPS");
 
@@ -186,6 +193,14 @@ public:
 
 			ImGui::End();
 			//ImGui::PopStyleVar();
+		}
+
+
+
+		// Demo window
+		if (bShowDemoWindow)
+		{
+			ImGui::ShowDemoWindow(&bShowDemoWindow);
 		}
 	};
 };
