@@ -1,12 +1,14 @@
 #pragma once
 
 #include "Shader.h"
+#include "Object.h"
+
 
 #include <map>
 
+class Object;
 
-
-class Material
+class Material : public Object
 {
 public:
 	template <class T> class Parameter

@@ -9,6 +9,8 @@
 #include "EditorCamera.h"
 
 #include "Level.h"
+#include "StaticMeshObject.h"
+
 
 #include <string>
 #include "PythonEnvironment.h"
@@ -29,7 +31,7 @@ public:
 		for (auto level : SceneOutliner::GetLoadedLevels())
 		{
 			if (ImGui::TreeNodeEx((level->GetDisplayName() + " (level)").c_str(),
-				ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanFullWidth))
+				ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanFullWidth))
 			{
 
 				// For each object in the level
@@ -57,6 +59,103 @@ public:
 				}
 
 				ImGui::TreePop();
+			}
+		}
+
+		ImGui::End();
+	}
+};
+
+
+class ObjectDetailsGUI : public Widget
+{
+private:
+
+public:
+
+	void Layout() override
+	{
+		ImGui::Begin("Object Details", &bIsActive, ImGuiWindowFlags_NoCollapse);
+
+		auto selection = SceneOutliner::GetSelection();
+		//if (ImGui::TreeNodeEx((object->GetDisplayName()).c_str(), flags))
+
+		std::string label;
+		if (selection.size() > 1)
+			label = "Multiple SceneObjects selected (" + std::to_string(selection.size()) + ")";
+		else if (selection.size() > 0)
+			label = (*selection.begin())->GetDisplayName();
+		else
+			label = "No SceneObjects selected";
+		ImGui::Text(label.c_str());
+		ImGui::Separator();
+
+		if (selection.size() == 1)
+		{
+			auto object = *selection.begin();
+
+			// Components
+			{
+				ImGui::BeginChild("##ScrollingRegion", ImVec2(0, ImGui::GetFontSize() * 5), false, ImGuiWindowFlags_HorizontalScrollbar);
+				for (auto comp : object->GetAllSceneComponents())
+				{
+					ImGui::Text(("(" + comp->GetClassNameA() + ") " + comp->GetDisplayName()).c_str());
+				}
+				ImGui::EndChild();
+			}
+
+
+			// Transform widget
+			{
+				ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanFullWidth;
+				if (ImGui::TreeNodeEx("Transform", flags))
+				{
+					float alpha = .2f;
+					ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(1.0f, 0.0f, 0.0f, alpha));
+					ImGui::DragFloat3("Position", glm::value_ptr(object->transform.position), .01f, .0f, .0f, "%.3f", .05f);
+					ImGui::PopStyleColor();
+					ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.0f, 0.0f, 1.0f, alpha));
+					ImGui::DragFloat4("Rotation", glm::value_ptr(object->transform.rotation), .01f, -1, 1, "%.3f", .05f);
+					ImGui::PopStyleColor();
+					ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.0f, 1.0f, 0.0f, alpha));
+					ImGui::DragFloat3("Scale", glm::value_ptr(object->transform.scale), .01f, .0f, .0f, "%.3f", .05f);
+
+					ImGui::PopStyleColor();
+					ImGui::TreePop();
+				}
+			}
+
+
+			// StaticMeshObject specific - replace this eventually 
+			{
+				auto staticMeshObject = dynamic_cast<StaticMeshObject*>(object);
+				if (staticMeshObject != nullptr)
+				{	
+					ImGui::Separator();
+
+					auto components = object->GetAllSceneComponents();
+					if (components.size() > 0)
+					{
+						auto firstComponent = *(components.begin());
+						auto staticMeshComponent = dynamic_cast<StaticMeshComponent*>(firstComponent);
+						if (staticMeshComponent != nullptr)
+						{
+							auto staticMeshAsset = staticMeshComponent->staticMesh;
+							ImGui::LabelText("Static Mesh Asset", staticMeshAsset->GetDisplayName().c_str());
+
+							ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DefaultOpen;
+							if (ImGui::TreeNodeEx("Materials", flags))
+							{
+								// We will change this when multiple materials are functional
+								if (ImGui::TreeNodeEx(staticMeshAsset->material->GetDisplayName().c_str(), ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Leaf))
+								{
+									ImGui::TreePop();
+								}
+								ImGui::TreePop();
+							}
+						}
+					}
+				}
 			}
 		}
 
@@ -140,7 +239,7 @@ public:
 		std::string line;
 		while (getline(iss, line))
 		{
-			ImGui::LabelText("", line.c_str());
+			ImGui::Text(line.c_str());
 		}
 		ImGui::EndChild();
 
@@ -154,7 +253,7 @@ public:
 			memset(pythonCommand, 0, sizeof(pythonCommand)); // Clear python command
 		}
 		ImGui::NextColumn();
-		ImGui::InputText("", pythonCommand, IM_ARRAYSIZE(pythonCommand));
+		ImGui::InputText("Command", pythonCommand, IM_ARRAYSIZE(pythonCommand));
 
 		//context.Font->FontSize = cachedFontSize;
 		ImGui::End();
@@ -183,6 +282,7 @@ public:
 
 	// Widgets
 	ConsoleLogGUI consoleLog = ConsoleLogGUI();
+	ObjectDetailsGUI objectDetails = ObjectDetailsGUI();
 	ContentBrowserGUI contentBrowser = ContentBrowserGUI();
 	SceneOutlinerGUI sceneOutliner = SceneOutlinerGUI();
 
@@ -225,6 +325,9 @@ public:
 
 				if (ImGui::MenuItem("Scene Outliner", ""))
 					sceneOutliner.ToggleActive();
+
+				if (ImGui::MenuItem("Object Details", ""))
+					objectDetails.ToggleActive();
 
 				if (ImGui::MenuItem("Console Log", ""))
 					consoleLog.ToggleActive();

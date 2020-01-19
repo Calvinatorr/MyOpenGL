@@ -217,7 +217,7 @@ void Level::Cleanup()
 
 
 std::set<Level*> SceneOutliner::loadedLevels = std::set<Level*>();
-std::set<Object*> SceneOutliner::selection = std::set<Object*>();
+std::set<SceneObject*> SceneOutliner::selection = std::set<SceneObject*>();
 
 
 bool SceneOutliner::LoadLevel(Level * NewLevel)
@@ -300,7 +300,7 @@ std::set<Level*>& SceneOutliner::GetLoadedLevels()
 }
 
 
-void SceneOutliner::Select(Object* NewSelection, const bool & bClearSelection)
+void SceneOutliner::Select(SceneObject* NewSelection, const bool & bClearSelection)
 {
 	if (bClearSelection)
 		SceneOutliner::ClearSelection();
@@ -309,7 +309,7 @@ void SceneOutliner::Select(Object* NewSelection, const bool & bClearSelection)
 }
 
 
-void SceneOutliner::Select(std::set<Object*> NewSelection, const bool & bClearSelection)
+void SceneOutliner::Select(std::set<SceneObject*> NewSelection, const bool & bClearSelection)
 {
 	if (bClearSelection)
 		SceneOutliner::ClearSelection();
@@ -318,7 +318,7 @@ void SceneOutliner::Select(std::set<Object*> NewSelection, const bool & bClearSe
 }
 
 
-void SceneOutliner::Deselect(Object * NewDeslection, const bool& bClearSelection)
+void SceneOutliner::Deselect(SceneObject * NewDeslection, const bool& bClearSelection)
 {
 	if (bClearSelection)
 		SceneOutliner::ClearSelection();
@@ -327,7 +327,7 @@ void SceneOutliner::Deselect(Object * NewDeslection, const bool& bClearSelection
 }
 
 
-void SceneOutliner::ToggleSelection(Object * NewSelection, const bool& bClearSelection)
+void SceneOutliner::ToggleSelection(SceneObject * NewSelection, const bool& bClearSelection)
 {
 	if (SceneOutliner::IsSelected(NewSelection))
 		SceneOutliner::Deselect(NewSelection, bClearSelection);
@@ -336,7 +336,7 @@ void SceneOutliner::ToggleSelection(Object * NewSelection, const bool& bClearSel
 }
 
 
-bool SceneOutliner::IsSelected(Object * SelectionToFind)
+bool SceneOutliner::IsSelected(SceneObject * SelectionToFind)
 {
 	return SceneOutliner::selection.find(SelectionToFind) != SceneOutliner::selection.end();
 }
@@ -348,7 +348,7 @@ void SceneOutliner::ClearSelection()
 }
 
 
-const std::set<Object*>& SceneOutliner::GetSelection()
+const std::set<SceneObject*>& SceneOutliner::GetSelection()
 {
 	return selection;
 }
