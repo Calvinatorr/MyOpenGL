@@ -11,6 +11,7 @@
 #include "Level.h"
 
 #include <string>
+#include "PythonEnvironment.h"
 
 
 class SceneOutlinerGUI : public Widget
@@ -67,11 +68,19 @@ public:
 class ContentBrowserGUI : public Widget
 {
 private:
+
+	ImGuiTextFilter filter;
+
 	void DrawTreeNodesInDirectory(const std::string& path)
 	{
 		for (const auto& entry : std::filesystem::directory_iterator(path))
 		{
 			auto path = entry.path();
+
+			// If filtered out then skip this treenode
+			if (!filter.PassFilter(path.filename().u8string().c_str()))
+				continue;
+
 			bool bIsDirectory = std::filesystem::is_directory(path);
 
 			ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;
@@ -99,11 +108,59 @@ public:
 	{
 		ImGui::Begin("Content Browser", &bIsActive, ImGuiWindowFlags_NoCollapse);
 
+		filter.Draw();
+		ImGui::Columns(2);
 		DrawTreeNodesInDirectory(CONTENT_PATH);
+		ImGui::NextColumn();
+		ImGui::Button("hello");
 
 		ImGui::End();
 	}
 };
+
+
+class ConsoleLogGUI : public Widget
+{
+private:
+	static const uint SIZE_OF_PYTHON_COMMAND = 255;
+	char pythonCommand[SIZE_OF_PYTHON_COMMAND];
+
+public:
+
+	void Layout() override
+	{
+		ImGui::Begin("Console Log", &bIsActive, ImGuiWindowFlags_NoCollapse);
+		/*ImGuiContext& context = *ImGui::GetCurrentContext();
+		float cachedFontSize = context.Font->FontSize;
+		context.Font->FontSize = 10*/
+
+		//ImGui::SetNextWindowContentSize(ImVec2(1500.0f, 0.0f));
+		ImGui::BeginChild("##ScrollingRegion", ImVec2(0, ImGui::GetFontSize() * 20), false, ImGuiWindowFlags_HorizontalScrollbar);
+		std::istringstream iss(Log::GetLog());
+		std::string line;
+		while (getline(iss, line))
+		{
+			ImGui::LabelText("", line.c_str());
+		}
+		ImGui::EndChild();
+
+		ImGui::Columns(2);
+		ImGui::SetColumnWidth(0, 60);
+
+		// Execute python command
+		if (ImGui::Button("Python"))
+		{
+			Python::ExecuteCommand(pythonCommand);
+			memset(pythonCommand, 0, sizeof(pythonCommand)); // Clear python command
+		}
+		ImGui::NextColumn();
+		ImGui::InputText("", pythonCommand, IM_ARRAYSIZE(pythonCommand));
+
+		//context.Font->FontSize = cachedFontSize;
+		ImGui::End();
+	}
+};
+
 
 
 
@@ -113,11 +170,7 @@ private:
 
 	// Properties
 	bool bShowDemoWindow = false;
-
-	ContentBrowserGUI contentBrowser = ContentBrowserGUI();
-	SceneOutlinerGUI sceneOutliner = SceneOutlinerGUI();
 	bool bShowStats = false;
-	bool bShowConsoleLog = true;
 	
 	float wireframeWidth = 1.0f;
 
@@ -127,6 +180,11 @@ public:
 
 	// Properties
 	float clearColour[4] = { 0.2f, 0.3f, 0.3f, 1.0f };
+
+	// Widgets
+	ConsoleLogGUI consoleLog = ConsoleLogGUI();
+	ContentBrowserGUI contentBrowser = ContentBrowserGUI();
+	SceneOutlinerGUI sceneOutliner = SceneOutlinerGUI();
 
 
 	void Layout() override
@@ -169,7 +227,7 @@ public:
 					sceneOutliner.ToggleActive();
 
 				if (ImGui::MenuItem("Console Log", ""))
-					bShowConsoleLog = !bShowConsoleLog;
+					consoleLog.ToggleActive();
 
 				ImGui::Separator();
 
@@ -293,28 +351,6 @@ public:
 			ImGui::PopStyleColor();
 			ImGui::PopStyleVar();
 		}
-
-
-
-		// Console log
-		if (bShowConsoleLog)
-		{
-			//ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-			//ImGui::Begin("Stats", &bShowStats, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
-			ImGui::Begin("Console Log", &bShowConsoleLog, ImGuiWindowFlags_NoCollapse);
-
-			//ImGui::LabelText(std::to_string(Game::GetFPS()).c_str(), "FPS");
-			std::istringstream iss(Log::GetLog());
-			std::string line;
-			while( getline(iss, line))
-			{
-				ImGui::LabelText("", line.c_str());
-			}
-
-			ImGui::End();
-			//ImGui::PopStyleVar();
-		}
-
 
 
 		// Demo window

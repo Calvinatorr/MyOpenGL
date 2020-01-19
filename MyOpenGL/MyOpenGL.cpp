@@ -19,6 +19,9 @@
 
 // ===================================== OUR INCLUDES ============================================
 
+// Python environment
+#include "PythonEnvironment.h"
+
 // Our classes
 #include "Game.h"
 #include "EditorGUI.h"
@@ -96,6 +99,7 @@ int main(int argc, char* argv[])
 	// Initialize utilities
 	Utility::InitializeStartDateTime();
 	Log::InitializeLog();
+	Python::Initialize();
 
 
 	// GLFW initialize
@@ -508,6 +512,7 @@ int main(int argc, char* argv[])
 	Primitive::Cleanup();
 	SceneOutliner::Cleanup();
 	EditorCamera::CleanupDefaultCamera();
+	Python::Cleanup();
 	Log::Print("Closing program", false);
 	Log::Dump(); // Dump rest of the log
 
