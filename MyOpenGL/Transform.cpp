@@ -93,8 +93,7 @@ glm::mat4 Transform::GetMatrix() const
 	glm::mat4 r = glm::toMat4(rotation);
 	glm::mat4 t = glm::translate(position);
 
-	//glm::mat4 transform = t * r * s;
-	glm::mat4 transform = s * r * t;
+	glm::mat4 transform = t * r * s;
 	return transform;
 }
 
