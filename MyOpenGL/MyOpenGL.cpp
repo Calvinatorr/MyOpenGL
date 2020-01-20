@@ -464,7 +464,7 @@ int main(int argc, char* argv[])
 		// Do ImGui stuff
 
 		// imgui demo win
-		Widget::Draw(); // Draw all widgets (ImGui expected)
+		EditorWidget::DrawAll(); // Draw all widgets (ImGui expected)
 
 
 		// Render ImGui

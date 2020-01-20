@@ -7,11 +7,14 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
 #include <glm/gtx/quaternion.hpp>
+#include <glm/gtc/constants.hpp>
 #include "glm/gtx/string_cast.hpp"
 
 #include "Serialization.h"
+#include "GUI.h"
 
-class Transform
+
+class Transform : public EditorDrawableGUI
 {
 public:
 
@@ -50,5 +53,9 @@ public:
 	glm::vec3 GetRight() const;
 	glm::mat4 GetMatrix() const;
 	glm::mat4 GetMatrixWithoutScale() const;
+
+
+	// Overrides
+	void DrawGUI() override;
 };
 

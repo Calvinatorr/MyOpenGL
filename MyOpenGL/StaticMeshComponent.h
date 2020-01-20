@@ -20,5 +20,6 @@ public:
 
 	// Events
 	virtual void Draw() override;
+	virtual void DrawGUI() override;
 };
 

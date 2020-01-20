@@ -93,7 +93,8 @@ glm::mat4 Transform::GetMatrix() const
 	glm::mat4 r = glm::toMat4(rotation);
 	glm::mat4 t = glm::translate(position);
 
-	glm::mat4 transform = t * r * s;
+	//glm::mat4 transform = t * r * s;
+	glm::mat4 transform = s * r * t;
 	return transform;
 }
 
@@ -104,4 +105,73 @@ glm::mat4 Transform::GetMatrixWithoutScale() const
 
 	glm::mat4 transform = t * r;
 	return transform;
+}
+
+void Transform::DrawGUI()
+{
+#if WITH_EDITOR
+	if (ImGui::TreeNodeEx("Transform", panelFlags))
+	{
+		float alpha = .2f;
+
+		// Position
+		ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(1.0f, 0.0f, 0.0f, alpha));
+		ImGui::DragFloat3("Position", glm::value_ptr(position), .01f, .0f, .0f, "%.3f", .05f);
+
+		const auto defaultPosition = glm::vec3();
+		if (position != defaultPosition)
+		{
+			ImGui::SameLine();
+			ImGui::PopStyleColor();
+			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0f, 1.0f, 0.0f, alpha));
+			if (ImGui::Button("r##position"))
+			{
+				position = defaultPosition;
+			}
+		}
+
+
+		// Rotation
+		ImGui::PopStyleColor();
+		ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.0f, 0.0f, 1.0f, alpha));
+		//ImGui::DragFloat4("Rotation", glm::value_ptr(rotation), .01f, -1, 1, "%.3f", .05f);
+		glm::vec3 eulerRotation = glm::eulerAngles(rotation) * (180.0f / glm::pi<float>()); // Degrees and euler
+		ImGui::DragFloat3("Rotation", glm::value_ptr(eulerRotation), .1f, -180.0f, 180.0f, "%.3f", 1.0f);
+		rotation = glm::highp_quat(eulerRotation * (glm::pi<float>() / 180.0f));
+
+		const auto defaultRotation = glm::vec3();
+		if (eulerRotation != defaultRotation)
+		{
+			ImGui::SameLine();
+			ImGui::PopStyleColor();
+			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0f, 1.0f, 0.0f, alpha));
+			if (ImGui::Button("r##rotation"))
+			{
+				rotation = glm::highp_quat();
+			}
+		}
+
+
+		// Scale
+		ImGui::PopStyleColor();
+		ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.0f, 1.0f, 0.0f, alpha));
+		ImGui::DragFloat3("Scale", glm::value_ptr(scale), .01f, .0f, .0f, "%.3f", .05f);
+
+		const auto defaultScale = glm::vec3(1.0f, 1.0f, 1.0f);
+		if (scale != defaultScale)
+		{
+			ImGui::SameLine();
+			ImGui::PopStyleColor();
+			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0f, 1.0f, 0.0f, alpha));
+			if (ImGui::Button("r##scale"))
+			{
+				scale = defaultScale;
+			}
+		}
+
+
+		ImGui::PopStyleColor();
+		ImGui::TreePop();
+	}
+#endif
 }

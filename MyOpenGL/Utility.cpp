@@ -50,6 +50,7 @@ void Log::PrintToScreen(const std::string & Message, const float& Duration, cons
 	// We iterate through each line in the message and insert it into the screen log in reverse order
 	// so that the message as a whole floats to the top, but keeps the message top to bottom
 
+#if WITH_EDITOR
 	if (Duration > 0)
 	{
 		std::stringstream ss(Message);
@@ -65,6 +66,7 @@ void Log::PrintToScreen(const std::string & Message, const float& Duration, cons
 			screenLog.push_back(newMessage);
 		}
 	}
+#endif
 }
 
 void Log::PrintToConsole(const std::string & Message)

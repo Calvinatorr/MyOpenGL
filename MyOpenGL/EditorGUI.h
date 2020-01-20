@@ -16,14 +16,14 @@
 #include "PythonEnvironment.h"
 
 
-class SceneOutlinerGUI : public Widget
+class SceneOutlinerGUI : public EditorWidget
 {
 private:
 
 
 public:
 
-	void Layout() override
+	void DrawGUI() override
 	{
 		ImGui::Begin("Scene Outliner", &bIsActive, ImGuiWindowFlags_NoCollapse);
 
@@ -67,13 +67,14 @@ public:
 };
 
 
-class ObjectDetailsGUI : public Widget
+class ObjectDetailsGUI : public EditorWidget
 {
 private:
+	void* selected = nullptr;
 
 public:
 
-	void Layout() override
+	void DrawGUI() override
 	{
 		ImGui::Begin("Object Details", &bIsActive, ImGuiWindowFlags_NoCollapse);
 
@@ -97,63 +98,62 @@ public:
 			// Components
 			{
 				ImGui::BeginChild("##ScrollingRegion", ImVec2(0, ImGui::GetFontSize() * 5), false, ImGuiWindowFlags_HorizontalScrollbar);
-				for (auto comp : object->GetAllSceneComponents())
+
+				const ImGuiTreeNodeFlags baseFlags = ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Leaf;
+				const ImGuiTreeNodeFlags selectedFlags = ImGuiTreeNodeFlags_Selected | ImGuiTreeNodeFlags_Bullet;
+				ImGuiTreeNodeFlags rootFlags = baseFlags;
+				if (selected == nullptr)
+					rootFlags |= selectedFlags;
+
+				if (ImGui::TreeNodeEx("(SceneObject Root)", rootFlags))
 				{
-					ImGui::Text(("(" + comp->GetClassNameA() + ") " + comp->GetDisplayName()).c_str());
+					// If we selected the root, then deselect component
+					if (ImGui::IsItemClicked())
+						selected = nullptr;
+
+					for (auto comp : object->GetAllSceneComponents())
+					{
+						ImGuiTreeNodeFlags compFlags = baseFlags;
+						if (selected == comp)
+							compFlags |= selectedFlags;
+
+						if (ImGui::TreeNodeEx(("(" + comp->GetClassNameA() + ") " + comp->GetDisplayName()).c_str(), compFlags))
+						{
+							ImGui::TreePop();
+						}
+
+						// Toggle selection
+						if (ImGui::IsItemClicked())
+						{
+							if (selected == nullptr)
+								selected = comp;
+							else
+								selected = nullptr;
+						}
+
+					}
+
+					ImGui::TreePop();
 				}
+
+
 				ImGui::EndChild();
 			}
 
 
-			// Transform widget
+			// Draw the root GUI if unselected
 			{
-				ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanFullWidth;
-				if (ImGui::TreeNodeEx("Transform", flags))
+				if (selected == nullptr)
 				{
-					float alpha = .2f;
-					ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(1.0f, 0.0f, 0.0f, alpha));
-					ImGui::DragFloat3("Position", glm::value_ptr(object->transform.position), .01f, .0f, .0f, "%.3f", .05f);
-					ImGui::PopStyleColor();
-					ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.0f, 0.0f, 1.0f, alpha));
-					ImGui::DragFloat4("Rotation", glm::value_ptr(object->transform.rotation), .01f, -1, 1, "%.3f", .05f);
-					ImGui::PopStyleColor();
-					ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.0f, 1.0f, 0.0f, alpha));
-					ImGui::DragFloat3("Scale", glm::value_ptr(object->transform.scale), .01f, .0f, .0f, "%.3f", .05f);
-
-					ImGui::PopStyleColor();
-					ImGui::TreePop();
-				}
-			}
-
-
-			// StaticMeshObject specific - replace this eventually 
-			{
-				auto staticMeshObject = dynamic_cast<StaticMeshObject*>(object);
-				if (staticMeshObject != nullptr)
-				{	
+					object->transform.DrawGUI();
 					ImGui::Separator();
-
-					auto components = object->GetAllSceneComponents();
-					if (components.size() > 0)
+				}
+				else if (selected != nullptr && object->GetAllSceneComponents().size() > 0)
+				{
+					auto comp = static_cast<SceneComponent*>(selected);
+					if (comp != nullptr && object->GetAllSceneComponents().find(comp) != object->GetAllSceneComponents().end())
 					{
-						auto firstComponent = *(components.begin());
-						auto staticMeshComponent = dynamic_cast<StaticMeshComponent*>(firstComponent);
-						if (staticMeshComponent != nullptr)
-						{
-							auto staticMeshAsset = staticMeshComponent->staticMesh;
-							ImGui::LabelText("Static Mesh Asset", staticMeshAsset->GetDisplayName().c_str());
-
-							ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DefaultOpen;
-							if (ImGui::TreeNodeEx("Materials", flags))
-							{
-								// We will change this when multiple materials are functional
-								if (ImGui::TreeNodeEx(staticMeshAsset->material->GetDisplayName().c_str(), ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Leaf))
-								{
-									ImGui::TreePop();
-								}
-								ImGui::TreePop();
-							}
-						}
+						comp->DrawGUI();
 					}
 				}
 			}
@@ -164,7 +164,7 @@ public:
 };
 
 
-class ContentBrowserGUI : public Widget
+class ContentBrowserGUI : public EditorWidget
 {
 private:
 
@@ -203,7 +203,7 @@ private:
 
 public:
 
-	void Layout() override
+	void DrawGUI() override
 	{
 		ImGui::Begin("Content Browser", &bIsActive, ImGuiWindowFlags_NoCollapse);
 
@@ -218,7 +218,7 @@ public:
 };
 
 
-class ConsoleLogGUI : public Widget
+class ConsoleLogGUI : public EditorWidget
 {
 private:
 	static const uint SIZE_OF_PYTHON_COMMAND = 255;
@@ -226,7 +226,7 @@ private:
 
 public:
 
-	void Layout() override
+	void DrawGUI() override
 	{
 		ImGui::Begin("Console Log", &bIsActive, ImGuiWindowFlags_NoCollapse);
 		/*ImGuiContext& context = *ImGui::GetCurrentContext();
@@ -263,7 +263,7 @@ public:
 
 
 
-class EditorGUI : public Widget
+class EditorGUI : public EditorWidget
 {
 private:
 
@@ -287,7 +287,7 @@ public:
 	SceneOutlinerGUI sceneOutliner = SceneOutlinerGUI();
 
 
-	void Layout() override
+	void DrawGUI() override
 	{
 		// Window properties
 		Window* window = Window::GetCurrentObject();

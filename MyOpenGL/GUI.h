@@ -21,24 +21,32 @@
 void GLFW_ErrorCallback(int Error, const char* Description);
 
 
-class Widget
+class EditorDrawableGUI
+{
+protected:
+	static const ImGuiTreeNodeFlags panelFlags = ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanFullWidth;
+
+public:
+	virtual void DrawGUI() {};
+};
+
+
+class EditorWidget : public EditorDrawableGUI
 {
 private:
-	static std::vector<Widget*> all;
+	static std::vector<EditorWidget*> all;
 	bool bIsVisible = true;
 
 protected:
 	bool bIsActive = true;
+	static const ImGuiTreeNodeFlags panelFlags = ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanFullWidth;
 
 public:
 
-	Widget();
-	~Widget();
+	EditorWidget();
+	~EditorWidget();
 
 
-	// Methods
-	virtual void Layout();
-	
 	// Getters
 	bool IsVisible();
 
@@ -47,5 +55,5 @@ public:
 	void ToggleActive();
 
 	// Static methods
-	static void Draw();
+	static void DrawAll();
 };

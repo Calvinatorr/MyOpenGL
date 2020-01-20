@@ -8,47 +8,49 @@ void GLFW_ErrorCallback(int Error, const char * Description)
 
 
 
-std::vector<Widget*> Widget::all = std::vector<Widget*>();
+std::vector<EditorWidget*> EditorWidget::all = std::vector<EditorWidget*>();
 
 
-Widget::Widget()
+EditorWidget::EditorWidget()
 {
-	Widget::all.push_back(this);
+#if WITH_EDITOR
+	EditorWidget::all.push_back(this);
+#endif
 }
 
-Widget::~Widget()
+EditorWidget::~EditorWidget()
 {
-	auto found = std::find(Widget::all.begin(), Widget::all.end(), this);
-	Widget::all.erase(found);
+#if WITH_EDITOR
+	auto found = std::find(EditorWidget::all.begin(), EditorWidget::all.end(), this);
+	EditorWidget::all.erase(found);
+#endif
 }
 
-void Widget::Layout()
-{
-}
-
-bool Widget::IsVisible()
+bool EditorWidget::IsVisible()
 {
 	return bIsVisible;
 }
 
-void Widget::SetVisible(bool NewVisibility)
+void EditorWidget::SetVisible(bool NewVisibility)
 {
 	bIsVisible = NewVisibility;
 }
 
-void Widget::ToggleActive()
+void EditorWidget::ToggleActive()
 {
 	bIsActive = !bIsActive;
 }
 
-void Widget::Draw()
+void EditorWidget::DrawAll()
 {
-	for (auto t = Widget::all.begin(); t != Widget::all.end(); ++t)
+#if WITH_EDITOR
+	for (auto t = EditorWidget::all.begin(); t != EditorWidget::all.end(); ++t)
 	{
 		if (*t != nullptr && (*t)->bIsActive)
 		{
-			(*t)->Layout();
+			(*t)->DrawGUI();
 		}
 	}
+#endif
 }
 

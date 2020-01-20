@@ -14,6 +14,11 @@ void SceneComponent::Destroy()
 {
 }
 
+void SceneComponent::DrawGUI()
+{
+	localTransform.DrawGUI();
+}
+
 SceneComponent::SceneComponent()
 {
 }
@@ -42,7 +47,8 @@ glm::mat4 SceneComponent::GetWorldTransformMatrix() const
 
 	// Apply SceneObject transform
 	if (owner != nullptr)
-		t *= owner->transform.GetMatrix();
+		//t *= owner->transform.GetMatrix();
+		t = owner->transform.GetMatrix() * t;
 
 	return t; // Return the final matrix
 }

@@ -18,6 +18,5 @@ public:
 
 	// Virtual methods
 	void Construct() override;
-
 };
 

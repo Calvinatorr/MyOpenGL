@@ -4,12 +4,14 @@
 #include "Object.h"
 #include "SceneObject.h"
 
+#include "GUI.h"
+
 
 class Object;
 class SceneObject; // Forward declaration to avoid compiler screaming at me
 
 // Abstract component which is added to a SceneObject
-class SceneComponent : public Object
+class SceneComponent : public Object, public EditorDrawableGUI
 {
 public:
 
@@ -33,6 +35,6 @@ public:
 	virtual void Draw();
 	virtual void Update();
 	virtual void Destroy();
-
+	virtual void DrawGUI() override;
 };
 

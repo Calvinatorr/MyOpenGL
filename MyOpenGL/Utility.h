@@ -46,6 +46,12 @@ using string = std::string;
 // ===================================== UTILITY MISC ============================================
 
 
+// Change me to 0 for release builds
+#ifndef WITH_EDITOR
+#define WITH_EDITOR 1
+#endif
+
+
 #ifndef ENGINE_PATH
 #define ENGINE_PATH std::string("../Engine/")
 #endif
