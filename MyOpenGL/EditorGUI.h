@@ -430,10 +430,9 @@ public:
 				// Clear colour picker
 				ImGui::ColorEdit4("Clear Colour##4", clearColour);
 
-
-
 				ImGui::EndMenu();
 			}
+
 
 			ImGui::EndMainMenuBar();
 		}

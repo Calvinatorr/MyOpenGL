@@ -14,7 +14,7 @@ public:
 
 	// Properties
 	glm::vec2 cursorPosition;
-	glm::vec2 sensitivity = glm::vec2(90.0f, 90.0f);
+	glm::vec2 sensitivity = glm::vec2(50.0f, 50.0f);
 	float speed = 5.0f, shiftMultiplier = 2.5f;
 
 
