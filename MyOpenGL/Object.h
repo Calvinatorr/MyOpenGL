@@ -32,11 +32,16 @@ public:
 	// Getters
 	GLint GetID() const;
 	GLboolean IsValid() const;
-	// Get unique name
-	std::string GetName();
-	// Get display name
-	std::string GetDisplayName();
-	// Get name of class
-	std::string GetClassName();
+	/* Get unique name */
+	std::string GetName() const;
+	/* Get display name */
+	std::string GetDisplayName() const;
+	/* Get name of class */
+	std::string GetClassName() const;
+
+
+	// Setters
+	/* Set display name */
+	void SetDisplayName(const std::string& NewDisplayName);
 };
 

@@ -41,17 +41,22 @@ GLboolean Object::IsValid() const
 	return ID >= 0;
 }
 
-std::string Object::GetName()
+void Object::SetDisplayName(const std::string & NewDisplayName)
+{
+	displayName = NewDisplayName;
+}
+
+std::string Object::GetName() const
 {
 	return name;
 }
 
-std::string Object::GetDisplayName()
+std::string Object::GetDisplayName() const
 {
 	return displayName;
 }
 
-std::string Object::GetClassName()
+std::string Object::GetClassName() const
 {
 	std::string name = typeid(*this).name(); // COMPILER SPECIFIC
 

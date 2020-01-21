@@ -284,14 +284,14 @@ int main(int argc, char* argv[])
 
 
 	Material unlitMaterial(&unlitShader);
-	unlitMaterial.name = "Unlit_MI";
+	unlitMaterial.SetDisplayName("Unlit_MI");
 
 	Material cubemapMaterial(&cubemapShader);
-	cubemapMaterial.name = "Cubemap_MI";
+	cubemapMaterial.SetDisplayName("Cubemap_MI");
 	cubemapMaterial.SetTextureParameter("EquirectangularMap", &environmentMap);
 
 	Material checkerMaterial(&shaderProgram);
-	checkerMaterial.name = "Checker_MI";
+	checkerMaterial.SetDisplayName("Checker_MI");
 	checkerMaterial.SetTextureParameter("tex", &tex);
 	checkerMaterial.SetTextureParameter("tex2", &environmentMap);
 	checkerMaterial.SetVectorParameter("inMaterial.Albedo", glm::vec3(1.0f));
@@ -300,7 +300,7 @@ int main(int argc, char* argv[])
 	checkerMaterial.SetFloatParameter("inMaterial.AmbientOcclusion", 1.0f);
 
 	Material sphereMaterial(&shaderProgram);
-	sphereMaterial.name = "Sphere_MI";
+	sphereMaterial.SetDisplayName("Sphere_MI");
 	sphereMaterial.SetTextureParameter("tex", &tex);
 	sphereMaterial.SetTextureParameter("tex2", &tex2);
 	sphereMaterial.SetVectorParameter("inMaterial.Albedo", glm::vec3(1.0f, 0.1f, 0.7f));
