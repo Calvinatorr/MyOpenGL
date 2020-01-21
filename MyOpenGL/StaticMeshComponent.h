@@ -1,7 +1,7 @@
 #pragma once
 
 #include "SceneComponent.h"
-#include "Mesh.h"
+#include "StaticMesh.h"
 
 // Container for static mesh in the scene
 class StaticMeshComponent : public SceneComponent
@@ -10,12 +10,12 @@ public:
 
 	// Constructors & Destructors
 	StaticMeshComponent();
-	StaticMeshComponent(Mesh* StaticMesh);
+	StaticMeshComponent(StaticMesh* StaticMesh);
 	~StaticMeshComponent();
 
 
 	// Properties
-	Mesh* staticMesh;
+	StaticMesh* staticMesh;
 
 
 	// Events

@@ -1,8 +1,8 @@
-#include "Mesh.h"
+#include "StaticMesh.h"
 
 
 
-std::vector<std::string> Mesh::ConvertToTokens(const std::string & Line, const char & Deliminator)
+std::vector<std::string> StaticMesh::ConvertToTokens(const std::string & Line, const char & Deliminator)
 {
 	std::vector<std::string> tokens;
 	std::string token;
@@ -14,7 +14,7 @@ std::vector<std::string> Mesh::ConvertToTokens(const std::string & Line, const c
 	return tokens;
 }
 
-int Mesh::FindToken(const std::vector<std::string>& Tokens, const std::string & Snippet)
+int StaticMesh::FindToken(const std::vector<std::string>& Tokens, const std::string & Snippet)
 {
 	for (unsigned int i = 0; i < Tokens.size(); i++)
 		if (Tokens[i].find(Snippet) != std::string::npos) // Found
@@ -23,7 +23,7 @@ int Mesh::FindToken(const std::vector<std::string>& Tokens, const std::string & 
 	return -1; // Fail
 }
 
-std::string Mesh::CleanupToken(std::string Token)
+std::string StaticMesh::CleanupToken(std::string Token)
 {
 	const char offendingCharacters[] = "[,";
 	for (char c : offendingCharacters)
@@ -32,29 +32,29 @@ std::string Mesh::CleanupToken(std::string Token)
 	return Token;
 }
 
-float Mesh::FloatToken(std::string Token)
+float StaticMesh::FloatToken(std::string Token)
 {
 	Token = CleanupToken(Token);
 	return std::stof(Token);
 }
 
-int Mesh::IntToken(std::string Token)
+int StaticMesh::IntToken(std::string Token)
 {
 	Token = CleanupToken(Token);
 	return std::stoi(Token);
 }
 
-glm::vec3 Mesh::Vec3Token(const std::vector<std::string>& Tokens)
+glm::vec3 StaticMesh::Vec3Token(const std::vector<std::string>& Tokens)
 {
 	return glm::vec3(FloatToken(Tokens[1]), FloatToken(Tokens[2]), FloatToken(Tokens[3]));
 }
 
-glm::vec2 Mesh::Vec2Token(const std::vector<std::string>& Tokens)
+glm::vec2 StaticMesh::Vec2Token(const std::vector<std::string>& Tokens)
 {
 	return glm::vec2(FloatToken(Tokens[1]), FloatToken(Tokens[2]));
 }
 
-std::vector<int> Mesh::DecodeIndicesFromToken(const std::string & Token)
+std::vector<int> StaticMesh::DecodeIndicesFromToken(const std::string & Token)
 {
 	std::vector<std::string> pt = ConvertToTokens(Token, '/');
 	std::vector<int> indices;
@@ -77,17 +77,17 @@ std::vector<int> Mesh::DecodeIndicesFromToken(const std::string & Token)
 	return indices;
 }
 
-Mesh::Mesh()
+StaticMesh::StaticMesh()
 {
 }
 
 
-Mesh::~Mesh()
+StaticMesh::~StaticMesh()
 {
 }
 
 
-void Mesh::LoadMeshObj(const std::string & File)
+void StaticMesh::LoadMeshObj(const std::string & File)
 {
 	std::ifstream inFile;
 	inFile.open(File); // Try to open file
@@ -208,18 +208,18 @@ void Mesh::LoadMeshObj(const std::string & File)
 			}
 		}*/
 
-		Log::PrintInfo("Mesh successfully loaded '" + File + "\n" +
+		Log::PrintInfo("StaticMesh successfully loaded '" + File + "\n" +
 			"	" + std::to_string(vertices.size()) + " vertices\n" +
 			"	" + std::to_string(indices.size() / 3) + " faces");
 	}
 	else
 	{
-		Log::PrintError("Mesh failed to load '" + File + "'");
+		Log::PrintError("StaticMesh failed to load '" + File + "'");
 	}
 
 	inFile.close();
 
-	// Optimise mesh
+	// Optimise StaticMesh
 	//WeldAllVertices();
 	//RemoveIsolatedVertices();
 

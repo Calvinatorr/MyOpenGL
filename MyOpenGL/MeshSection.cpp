@@ -1,9 +1,9 @@
-#include "Primitive.h"
+#include "MeshSection.h"
 
-std::set<Primitive*> Primitive::all = std::set<Primitive*>();
+std::set<MeshSection*> MeshSection::all = std::set<MeshSection*>();
 
 
-std::vector<GLfloat> Primitive::GetRawVertices() const
+std::vector<GLfloat> MeshSection::GetRawVertices() const
 {
 	std::vector<GLfloat> rawVertices;
 
@@ -36,18 +36,18 @@ std::vector<GLfloat> Primitive::GetRawVertices() const
 	return rawVertices;
 }
 
-Primitive::Primitive()
+MeshSection::MeshSection()
 {
 	
 }
 
 
-Primitive::~Primitive()
+MeshSection::~MeshSection()
 {
 	Destroy();
 }
 
-void Primitive::Construct()
+void MeshSection::Construct()
 {
 	Destroy(); // First destroy to make sure we don't cause a memory leak
 
@@ -98,10 +98,10 @@ void Primitive::Construct()
 
 	CalculateBounds();
 
-	all.insert(this); // Insert unique reference to this primitive, set so each element is unique
+	all.insert(this); // Insert unique reference to this MeshSection, set so each element is unique
 }
 
-void Primitive::Draw(const glm::mat4& Transform)
+void MeshSection::Draw(const glm::mat4& Transform)
 {
 	// Draw mesh section
 	if (material != nullptr) // If we have a material assigned
@@ -113,6 +113,8 @@ void Primitive::Draw(const glm::mat4& Transform)
 	{
 		// Set uniforms specific to this mesh
 		shaderProgram->SetModelMatrix(Transform);
+
+		// Move this to object?
 		shaderProgram->SetVec3("MinBounds", minBounds);
 		shaderProgram->SetVec3("MaxBounds", maxBounds);
 	}
@@ -124,29 +126,29 @@ void Primitive::Draw(const glm::mat4& Transform)
 	// Allow for drawing without EBO
 	switch (drawMode)
 	{
-	case Primitive::DrawMode::DrawElements:
+	case MeshSection::DrawMode::DrawElements:
 		glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0); // Consolidate me for variable size
 		break;
 	default:
-	case Primitive::DrawMode::DrawArrays:
+	case MeshSection::DrawMode::DrawArrays:
 		glDrawArrays(GL_TRIANGLES, 0, vertices.size());
 		break;
 	}
 }
 
-/*void Primitive::Draw()
+/*void MeshSection::Draw()
 {
 	Draw(transform.GetMatrix());
 }*/
 
-void Primitive::Destroy()
+void MeshSection::Destroy()
 {
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 	glDeleteBuffers(1, &EBO);
 }
 
-void Primitive::WeldAllVertices()
+void MeshSection::WeldAllVertices()
 {
 	/*std::cout << "Pre-optimised mesh stats:" << std::endl;
 	std::cout << "vertices size = " << std::to_string(vertices.size()) << std::endl;
@@ -172,12 +174,12 @@ void Primitive::WeldAllVertices()
 	std::cout << std::endl;*/
 }
 
-void Primitive::WeldVertices(const std::vector<int>& Indices)
+void MeshSection::WeldVertices(const std::vector<int>& Indices)
 {
 
 }
 
-void Primitive::RemoveIsolatedVertices()
+void MeshSection::RemoveIsolatedVertices()
 {
 	if (vertices.size() > 0)
 	{
@@ -189,7 +191,7 @@ void Primitive::RemoveIsolatedVertices()
 	}
 }
 
-void Primitive::CalculateBounds()
+void MeshSection::CalculateBounds()
 {
 	glm::vec3 min = glm::vec3(0.0f), max = glm::vec3(0.0f);
 	GLboolean first = GL_TRUE;
@@ -220,7 +222,7 @@ void Primitive::CalculateBounds()
 	maxBounds = max;
 }
 
-void Primitive::Cleanup()
+void MeshSection::Cleanup()
 {
 	auto it = all.begin();
 	while (it != all.end())
@@ -232,38 +234,38 @@ void Primitive::Cleanup()
 	}
 }
 
-void Primitive::AddVertex(const Vertex & NewVertex)
+void MeshSection::AddVertex(const Vertex & NewVertex)
 {
 	vertices.push_back(NewVertex);
 }
 
-void Primitive::SetColour(const glm::vec3 & Colour)
+void MeshSection::SetColour(const glm::vec3 & Colour)
 {
 	for (int i = 0; i < vertices.size(); i++)
 		vertices[i].colour = Colour;
 }
 
-GLuint Primitive::GetVBO() const
+GLuint MeshSection::GetVBO() const
 {
 	return VBO;
 }
 
-GLuint Primitive::GetVAO() const
+GLuint MeshSection::GetVAO() const
 {
 	return VAO;
 }
 
-GLuint Primitive::GetEBO() const
+GLuint MeshSection::GetEBO() const
 {
 	return EBO;
 }
 
-glm::vec3 Primitive::GetMinBounds() const
+glm::vec3 MeshSection::GetMinBounds() const
 {
 	return minBounds;
 }
 
-glm::vec3 Primitive::GetMaxBounds() const
+glm::vec3 MeshSection::GetMaxBounds() const
 {
 	return maxBounds;
 }

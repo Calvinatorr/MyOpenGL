@@ -1,12 +1,14 @@
 #pragma once
 
 #include "Utility.h"
-#include "Primitive.h"
+#include "Object.h"
+#include "MeshSection.h"
 
 #include <algorithm>
 #include <iterator>
 
-class Mesh : public Primitive
+
+class StaticMesh : public MeshSection
 {
 private:
 	// OBJ parser methods
@@ -26,8 +28,8 @@ public:
 	
 
 	// Constructors & destructors
-	Mesh();
-	~Mesh();
+	StaticMesh();
+	~StaticMesh();
 
 
 	// Methods

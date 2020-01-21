@@ -138,9 +138,9 @@
     <ClInclude Include="GUI.h" />
     <ClInclude Include="Level.h" />
     <ClInclude Include="Material.h" />
-    <ClInclude Include="Mesh.h" />
+    <ClInclude Include="StaticMesh.h" />
     <ClInclude Include="Object.h" />
-    <ClInclude Include="Primitive.h" />
+    <ClInclude Include="MeshSection.h" />
     <ClInclude Include="PythonEnvironment.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SceneComponent.h" />
@@ -168,10 +168,10 @@
     <ClCompile Include="GUI.cpp" />
     <ClCompile Include="Level.cpp" />
     <ClCompile Include="Material.cpp" />
-    <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="StaticMesh.cpp" />
     <ClCompile Include="MyOpenGL.cpp" />
     <ClCompile Include="Object.cpp" />
-    <ClCompile Include="Primitive.cpp" />
+    <ClCompile Include="MeshSection.cpp" />
     <ClCompile Include="PythonEnvironment.cpp" />
     <ClCompile Include="SceneComponent.cpp" />
     <ClCompile Include="SceneObject.cpp" />

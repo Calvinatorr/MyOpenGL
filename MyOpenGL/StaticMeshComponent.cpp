@@ -6,7 +6,7 @@ StaticMeshComponent::StaticMeshComponent()
 {
 }
 
-StaticMeshComponent::StaticMeshComponent(Mesh * StaticMesh)
+StaticMeshComponent::StaticMeshComponent(StaticMesh * StaticMesh)
 {
 	this->staticMesh = StaticMesh;
 }
