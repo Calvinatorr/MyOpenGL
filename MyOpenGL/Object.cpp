@@ -46,6 +46,18 @@ void Object::SetDisplayName(const std::string & NewDisplayName)
 	displayName = NewDisplayName;
 }
 
+void Object::Construct()
+{
+}
+
+void Object::Cleanup()
+{
+}
+
+void Object::Update()
+{
+}
+
 std::string Object::GetName() const
 {
 	return name;

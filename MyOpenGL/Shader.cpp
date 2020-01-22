@@ -173,6 +173,7 @@ GLint SubShader::CompileSource(const std::string& Source)
 GLint SubShader::CompileFile(const std::string& File)
 {
 	std::string source = SubShader::GetSource(File);
+	SetDisplayName(File.substr(File.rfind("/") + 1, File.length() - 1));
 	return CompileSource(source);
 }
 
@@ -292,6 +293,9 @@ GLint Shader::Compile(const std::string & Folder)
 	GLint success = 1;
 	success = success && CompileShadersFromFolder(Folder);
 	LinkShaders();
+
+	if (success)
+		SetDisplayName(Folder.substr(Folder.rfind("/") + 1, Folder.length() - 1));
 
 	return success;
 }

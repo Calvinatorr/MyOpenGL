@@ -4,7 +4,7 @@ out vec4 FragColour;
 
 
 in vec2 TexCoord;
-in vec3 VertexColour;
+in vec4 VertexColour;
 in vec3 VertexNormal;
 
 in mat4 LocalToWorld;
@@ -240,8 +240,9 @@ void main()
 	outMaterial.Albedo *= vec3(t2);
 	outMaterial.Albedo = vec3(.8f);
 	
-	vec3 localUVW = GetLocalUVW(LocalPosition);
-	outMaterial.Roughness = localUVW.r;
+	
+	
+	outMaterial.Roughness = .7;
 	
 	
 	
@@ -300,6 +301,10 @@ void main()
 	colour = pow(colour, vec3(1.0f / 2.2f));
 	
 	FragColour = vec4(colour, 1.0f);
+	
+	
+	
+	
 	
 	
 	

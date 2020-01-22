@@ -80,7 +80,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>C:\Users\Calvinatorr\AppData\Local\Programs\Python\Python37-32\include;E:\Documents\PostUniversity\OpenGL\json\single_include;E:\Documents\PostUniversity\OpenGL\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Calvinatorr\AppData\Local\Programs\Python\Python37-32\include;E:\Documents\PostUniversity\OpenGL\json\single_include;E:\Documents\PostUniversity\OpenGL\assimp\assimp-4.1.0\include;E:\Documents\PostUniversity\OpenGL\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -105,7 +105,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\Calvinatorr\AppData\Local\Programs\Python\Python37-32\include;E:\Documents\PostUniversity\OpenGL\json\single_include;E:\Documents\PostUniversity\OpenGL\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Calvinatorr\AppData\Local\Programs\Python\Python37-32\include;E:\Documents\PostUniversity\OpenGL\json\single_include;E:\Documents\PostUniversity\OpenGL\assimp\assimp-4.1.0\include;E:\Documents\PostUniversity\OpenGL\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>

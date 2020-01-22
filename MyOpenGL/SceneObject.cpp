@@ -44,7 +44,9 @@ void SceneObject::Destroy()
 	while (it != components.end())
 	{
 		if (*it != nullptr)
-			(*it)->Destroy();
+		{
+			(*it)->Cleanup();
+		}
 
 		it++; // Move to next element in set
 	}

@@ -210,6 +210,8 @@ void Level::Cleanup()
 			x->Destroy();
 		}
 	}
+
+	sceneObjects.clear();
 }
 
 

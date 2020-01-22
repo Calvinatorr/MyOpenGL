@@ -77,6 +77,53 @@ std::vector<int> StaticMesh::DecodeIndicesFromToken(const std::string & Token)
 	return indices;
 }
 
+
+void StaticMesh::CalculateBounds()
+{
+	if (meshSections.size() <= 0)
+		return;
+
+	glm::vec3 min = glm::vec3(0.0f), max = glm::vec3(0.0f);
+	bool first = true;
+
+
+	// For each mesh section
+	for (auto& m : meshSections)
+	{
+		// For each vertex in the current mesh section
+		for (int i = 0; i < m.vertices.size(); i++)
+		{
+			if (first)
+			{
+				min = m.vertices[i].position;
+				max = m.vertices[i].position;
+				first = false;
+			}
+			else
+			{
+				glm::vec3 p = m.vertices[i].position;
+
+				min.x = std::min(p.x, min.x);
+				min.y = std::min(p.y, min.y);
+				min.y = std::min(p.z, min.z);
+
+				max.x = std::max(p.x, max.x);
+				max.y = std::max(p.y, max.y);
+				max.y = std::max(p.z, max.z);
+			}
+		}
+	}
+
+	minBounds = min;
+	maxBounds = max;
+}
+
+void StaticMesh::CalculateMetaData()
+{
+	CalculateBounds();
+}
+
+
 StaticMesh::StaticMesh()
 {
 }
@@ -89,7 +136,7 @@ StaticMesh::~StaticMesh()
 
 void StaticMesh::LoadMeshObj(const std::string & File)
 {
-	std::ifstream inFile;
+	/*std::ifstream inFile;
 	inFile.open(File); // Try to open file
 	source = File;	   // Reference to source file in-case we ever need to reload this
 
@@ -150,11 +197,6 @@ void StaticMesh::LoadMeshObj(const std::string & File)
 		{
 			std::vector<std::string> tokens = ConvertToTokens(line, ' '); // Parse line into tokens by splitting whitespaces
 
-			// Print file tokens
-			/*for (int i = 0; i < tokens.size(); i++)
-				std::cout << tokens[i] << "||";
-			std::cout << std::endl;*/
-
 
 			// Parse line
 			if (tokens[0] == "v") // Position
@@ -176,37 +218,9 @@ void StaticMesh::LoadMeshObj(const std::string & File)
 				VertexFromIndex(tokens[1]);
 				VertexFromIndex(tokens[2]);
 				VertexFromIndex(tokens[3]);
-				/*
-				if (tokens.size() > 4) // Quad, size includes f token
-				{
-					VertexFromIndex(tokens[4]);
-				}
-				else
-				{
-
-				}*/
 			}
 		}
 
-
-		/*// Parse file again after we've construced geometry. This is safer to avoid invalid accessing of memory.
-		inFile.clear(); // Clear stream
-		inFile.seekg(0, std::ios::beg); // Reset
-		while (std::getline(inFile, line))
-		{
-			std::vector<std::string> tokens = ConvertToTokens(line, ' '); // Parse line into tokens by splitting whitespaces
-
-			// Parse line
-			if (tokens[0] == "f") // End of geometry, start pairing up vertices
-			{
-				VertexFromIndex(tokens[1]);
-				VertexFromIndex(tokens[2]);
-				VertexFromIndex(tokens[3]);
-
-				//if (tokens.size() > 4) // Quad, size includes f token
-				//	VertexFromIndex(tokens[4]);
-			}
-		}*/
 
 		Log::PrintInfo("StaticMesh successfully loaded '" + File + "\n" +
 			"	" + std::to_string(vertices.size()) + " vertices\n" +
@@ -223,5 +237,241 @@ void StaticMesh::LoadMeshObj(const std::string & File)
 	//WeldAllVertices();
 	//RemoveIsolatedVertices();
 
-	Construct();
+	Construct();*/
+}
+
+
+void StaticMesh::ProcessMeshSection(MeshSection* MeshSection, aiMesh * Mesh, const aiScene * Scene)
+{
+	// If null pointer then exit early
+	if (MeshSection == nullptr)
+	{
+		Log::PrintError("Assimp: Null mesh section");
+		return;
+	}
+
+	uint numVertices	= Mesh->mNumVertices;
+	uint numFaces		= Mesh->mNumFaces;
+	Log::PrintInfo("Processing mesh; " + std::to_string(numVertices) + " vertices; " + std::to_string(numFaces) + " faces");
+	
+	for (uint i = 0; i < numVertices; i++)
+	{
+		Vertex vertex;
+
+		// Process vertex attributes
+		vertex.position.x = Mesh->mVertices[i].x;
+		vertex.position.y = Mesh->mVertices[i].y;
+		vertex.position.z = Mesh->mVertices[i].z;
+		vertex.normal.x = Mesh->mNormals[i].x;
+		vertex.normal.y = Mesh->mNormals[i].y;
+		vertex.normal.z = Mesh->mNormals[i].z;
+
+		// If the mesh has tex coords
+		if (Mesh->mTextureCoords[0])
+		{
+			vertex.texCoord.x = Mesh->mTextureCoords[0][i].x;
+			vertex.texCoord.y = Mesh->mTextureCoords[0][i].y;
+		}
+		else
+		{
+			vertex.texCoord = glm::vec2(0.0f, 0.0f);
+		}
+
+		// If the mesh has vertex colours
+		if (Mesh->mColors[0])
+		{
+			vertex.colour.x = Mesh->mColors[0][i].r;
+			vertex.colour.y = Mesh->mColors[0][i].g;
+			vertex.colour.z = Mesh->mColors[0][i].b;
+			vertex.colour.w = Mesh->mColors[0][i].a;
+		}
+
+		// If the mesh has tangents
+		if (Mesh->mTangents)
+		{
+			vertex.tangent.x = Mesh->mTangents[i].x;
+			vertex.tangent.y = Mesh->mTangents[i].y;
+			vertex.tangent.z = Mesh->mTangents[i].z;
+		}
+
+		MeshSection->vertices.push_back(vertex);
+	}
+
+	// Process indices
+	for (uint i = 0; i < numFaces; i++)
+	{
+		aiFace face = Mesh->mFaces[i];
+		for (uint j = 0; j < face.mNumIndices; j++)
+		{
+			MeshSection->indices.push_back(face.mIndices[j]);
+		}
+	}
+
+
+	// Process material
+	if (Mesh->mMaterialIndex >= 0)
+	{
+
+	}
+
+	MeshSection->Construct(drawMode);
+	Log::PrintInfo("Generated mesh section; " + std::to_string(MeshSection->vertices.size()) + " vertices; " + std::to_string(MeshSection->indices.size()) + " indices");
+}
+
+
+void StaticMesh::ProcessNode(aiNode* Node, const aiScene* Scene)
+{
+	Log::PrintInfo("Processing node '" + std::string(Node->mName.C_Str()) + "'; " + std::to_string(Node->mNumMeshes) + " meshes; " + std::to_string(Node->mNumChildren) + " children");
+
+	// Process all the node's meshes (if there are any)
+	for (uint i = 0; i < Node->mNumMeshes; i++)
+	{
+		aiMesh* sectionData = Scene->mMeshes[Node->mMeshes[i]];
+		meshSections.push_back(MeshSection());
+		ProcessMeshSection(&meshSections.back(), sectionData, Scene);
+	}
+
+	// Process each of its children (recursive)
+	for (uint i = 0; i < Node->mNumChildren; i++)
+	{
+		ProcessNode(Node->mChildren[i], Scene);
+	}
+}
+
+
+bool StaticMesh::LoadMeshFromDisk(const std::string & Filename)
+{
+	Clear();
+	source = Filename;
+	Log::PrintInfo("Attempting to load mesh from disk '" + Filename + "'..");
+
+	Assimp::Importer importer;
+	const aiScene* scene = importer.ReadFile(Filename, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenNormals);
+
+	// Check scene root is not null, data is not incomplete
+	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
+	{
+		std::stringstream ss;
+		ss << "Assimp: " << importer.GetErrorString() << std::endl;
+		Log::PrintError(ss.str());
+		return false;
+	}
+
+	std::string directory = Filename.substr(0, Filename.find_last_of('/'));
+	ProcessNode(scene->mRootNode, scene);
+
+	Log::PrintInfo("Loaded mesh from disk '" + Filename + "'"
+	"\n		Mesh sections " + std::to_string(meshSections.size())
+	);
+
+	CalculateMetaData();
+
+	return true;
+}
+
+bool StaticMesh::Reimport()
+{
+	if (source.size() > 0)
+	{
+		auto materials = GetMaterials();
+		bool success = LoadMeshFromDisk(source);
+
+		uint i = 0;
+		for (auto& m : materials)
+		{
+			SetMaterial(i++, m);
+		}
+
+		Log::Print("Reimported StaticMesh '" + source + "'");
+
+		return success;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+
+void StaticMesh::Draw(const glm::mat4& Transform)
+{
+	for (auto& m : meshSections)
+	{
+		if (m.material != nullptr)
+		{
+			m.material->Bind();
+		}
+
+
+		// Bind static mesh specific uniforms
+		Shader* shaderProgram = Shader::GetCurrent();
+		if (shaderProgram != nullptr && shaderProgram->IsValid())
+		{
+			// Set uniforms specific to this mesh
+			shaderProgram->SetModelMatrix(Transform);
+
+			// Move this to object?
+			shaderProgram->SetVec3("MinBounds", minBounds);
+			shaderProgram->SetVec3("MaxBounds", maxBounds);
+		}
+
+		m.Draw(drawMode);
+	}
+}
+
+void StaticMesh::Clear()
+{
+	for (auto& m : meshSections)
+	{
+		m.Destroy();
+	}
+	meshSections.clear();
+}
+
+void StaticMesh::Cleanup()
+{
+	// Clean-up references
+	// ...
+
+	Clear();
+}
+
+std::vector<Material*> StaticMesh::GetMaterials() const
+{
+	std::vector<Material*> result;
+
+	for (auto& m : meshSections)
+	{
+		result.push_back(m.material);
+	}
+
+	return result;
+}
+
+bool StaticMesh::SetMaterial(const uint & Index, Material* NewMaterial)
+{
+	if (Index < meshSections.size())
+	{
+		meshSections[Index].material = NewMaterial;
+		return true; // Return success
+	}
+	else
+	{
+		return false; // Return failure
+	}
+}
+
+const std::vector<MeshSection>& StaticMesh::GetMeshSections() const
+{
+	return meshSections;
+}
+
+glm::vec3 StaticMesh::GetMinBounds() const
+{
+	return minBounds;
+}
+
+glm::vec3 StaticMesh::GetMaxBounds() const
+{
+	return maxBounds;
 }

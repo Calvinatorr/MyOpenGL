@@ -16,7 +16,7 @@
 class Object // Base class for all resources
 {
 protected:
-	std::string name = "", displayName = "";
+	std::string name = "", displayName = "UNTITLED";
 	GLint ID = -1;
 
 public:
@@ -24,7 +24,7 @@ public:
 	~Object();
 
 
-	// Methods
+	// Serialisation
 	virtual json Serialize();
 	virtual void Deserialize(const json& Data);
 
@@ -43,5 +43,11 @@ public:
 	// Setters
 	/* Set display name */
 	void SetDisplayName(const std::string& NewDisplayName);
+
+
+	// Methods
+	virtual void Construct();
+	virtual void Cleanup();
+	virtual void Update();
 };
 

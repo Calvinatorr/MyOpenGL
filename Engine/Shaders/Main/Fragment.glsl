@@ -4,7 +4,7 @@ out vec4 FragColour; // Output
 // Uniforms
 // Inputs marshalled through vertex shader
 in vec2 TexCoord;
-in vec3 VertexColour;
+in vec4 VertexColour;
 in vec3 VertexNormal;
 
 in mat4 LocalToWorld;
@@ -40,8 +40,9 @@ void main()
 	outMaterial.Albedo *= vec3(t2);
 	outMaterial.Albedo = vec3(.8f);
 	
-	vec3 localUVW = GetLocalUVW(LocalPosition);
-	outMaterial.Roughness = localUVW.r;
+	//vec3 localUVW = GetLocalUVW(LocalPosition);
+	//outMaterial.Roughness = localUVW.r;
+	outMaterial.Roughness = .7;
 	
 	//outMaterial.Albedo = vec3(mix(t, t2, t2.a));
 	//outMaterial.Albedo = vec3(1.0f, 0.0f, 0.0f);
@@ -106,4 +107,8 @@ void main()
 	
 	//FragColour = vec4(ViewDirection, 1.0f);
 	//FragColour = vec4(max(dot(ViewDirection, PixelNormal), 0.0f));
+	
+	//FragColour = vec4(ViewDirection.xyz, 1.0f);
+	
+	//FragColour = vec4(ViewDirection.xyz, 1.0f);
 } 

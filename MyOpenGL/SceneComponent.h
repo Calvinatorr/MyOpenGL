@@ -34,7 +34,7 @@ public:
 	// Virtual events
 	virtual void Draw();
 	virtual void Update();
-	virtual void Destroy();
+	virtual void Cleanup();
 	virtual void DrawGUI() override;
 };
 

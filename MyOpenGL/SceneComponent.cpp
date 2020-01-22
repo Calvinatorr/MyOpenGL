@@ -10,7 +10,7 @@ void SceneComponent::Update()
 {
 }
 
-void SceneComponent::Destroy()
+void SceneComponent::Cleanup()
 {
 }
 

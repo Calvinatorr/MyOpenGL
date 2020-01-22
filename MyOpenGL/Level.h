@@ -57,9 +57,9 @@ public:
 
 
 		// Management
-		void Update();
+		void Update() override;
 		void Draw();
-		void Cleanup();
+		void Cleanup() override;
 };
 
 

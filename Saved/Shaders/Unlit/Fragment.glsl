@@ -3,7 +3,7 @@ out vec4 FragColour;
 
 
 in vec2 TexCoord;
-in vec3 VertexColour;
+in vec4 VertexColour;
 in vec3 VertexNormal;
 
 in mat4 LocalToWorld;

@@ -1,7 +1,7 @@
 #version 330 core
 layout (location = 0) in vec3 aPos; 	 
 layout (location = 1) in vec2 aTexCoord; 
-layout (location = 2) in vec3 aColour; 	 
+layout (location = 2) in vec4 aColour; 	 
 layout (location = 3) in vec3 aNormal;	 
 
 
@@ -48,7 +48,7 @@ vec2 SphericalUVsFromPosition(vec3 v)
 
 
 out vec2 TexCoord;
-out vec3 VertexColour;
+out vec4 VertexColour;
 out vec3 VertexNormal;
 
 out mat4 LocalToWorld;

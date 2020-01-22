@@ -313,15 +313,20 @@ int main(int argc, char* argv[])
 
 
 	StaticMesh boxMesh;
-	boxMesh.LoadMeshObj("../Content/Box_SM.obj");
+	//boxMesh.LoadMeshObj("../Content/Box_SM.obj");
 	//box.transform.rotation = glm::quat(glm::radians(glm::vec3(0.0f, 45.0f, 0.0f)));
 	//box.transform.position = glm::vec3(-5.0f, 0.0f, 0.0f);
-	boxMesh.material = &unlitMaterial;
+	//boxMesh.LoadMeshFromDisk(CONTENT_PATH + "Box_SM.obj");
+	boxMesh.LoadMeshFromDisk(CONTENT_PATH + "Sphere_SM.obj");
+	//boxMesh.LoadMeshFromDisk(CONTENT_PATH + "BD1.fbx");
+	//boxMesh.SetMaterial(0, &unlitMaterial);
+	boxMesh.SetMaterial(0, &sphereMaterial);
+		//boxMesh.material = &unlitMaterial;
 
 	StaticMesh sphereMesh;
 	//sphereMesh.LoadMeshObj("../Content/Sphere_SM.obj");
 	//sphereMesh.LoadMeshObj("../Content/MaterialTest_SM.obj");
-	sphereMesh.material = &sphereMaterial;
+		//sphereMesh.material = &sphereMaterial;
 	//sphere.transform.position = glm::vec3(-2.0f, -.3f, 1.0f);
 
 	/*
@@ -413,6 +418,7 @@ int main(int argc, char* argv[])
 	boxMeshObject.staticMeshComponent = StaticMeshComponent(&boxMesh);
 	boxMeshObject.Construct();
 	boxMeshObject.transform.rotation = glm::quat(glm::radians(glm::vec3(0.0f, 45.0f, 0.0f)));
+	boxMeshObject.SetDisplayName("Box mesh object");
 
 	StaticMeshObject sphereMeshObject;
 	sphereMeshObject.staticMeshComponent = StaticMeshComponent(&sphereMesh);
@@ -449,20 +455,13 @@ int main(int argc, char* argv[])
 		// Camera controls
 		defaultCamera->Update(deltaTime);
 		EditorInput(deltaTime);
-
-
-		// Level manager
-		SceneOutliner::Update();
+		SceneOutliner::Update(); // Update (tick) all objects in scene outliner
 
 
 		// Start Dear ImGUI frame
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
-
-		// Do ImGui stuff
-
-		// imgui demo win
 		EditorWidget::DrawAll(); // Draw all widgets (ImGui expected)
 
 
@@ -508,7 +507,6 @@ int main(int argc, char* argv[])
 	// ===================================== CLEAN-UP ============================================
 
 	Shader::Cleanup();
-	MeshSection::Cleanup();
 	SceneOutliner::Cleanup();
 	EditorCamera::CleanupDefaultCamera();
 	Python::Cleanup();

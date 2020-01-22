@@ -44,12 +44,11 @@ public:
 
 	// Properties
 	Shader* shader; // The shader this is bound to
-	std::vector<Parameter<GLfloat>> floatParameters;
-	std::vector<Parameter<GLint>> intParameters;
-	std::vector<Parameter<glm::vec3>> vectorParameters;
-	std::vector<Parameter<glm::vec4>> vector4Parameters;
-	std::vector<Parameter<Texture*>> textureParameters;
-	std::string name;
+	std::vector<Parameter<GLfloat>>		floatParameters;
+	std::vector<Parameter<GLint>>		intParameters;
+	std::vector<Parameter<glm::vec3>>	vectorParameters;
+	std::vector<Parameter<glm::vec4>>	vector4Parameters;
+	std::vector<Parameter<Texture*>>	textureParameters;
 
 
 	// Constructors & destructors

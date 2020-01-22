@@ -52,7 +52,7 @@ public:
 						SceneOutliner::ToggleSelection(object, !(glfwGetKey(Window::GetCurrent(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS));
 
 					ImGui::NextColumn();
-					ImGui::Text(object->GetDisplayName().c_str());
+					ImGui::Text(object->GetName().c_str());
 					ImGui::NextColumn();
 					ImGui::Text(object->GetClassNameA().c_str());
 					ImGui::NextColumn();

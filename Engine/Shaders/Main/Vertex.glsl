@@ -1,7 +1,7 @@
 #version 330 core
 layout (location = 0) in vec3 aPos; 	 // Input vertex position
 layout (location = 1) in vec2 aTexCoord; // Input texture coordinates
-layout (location = 2) in vec3 aColour; 	 // Input vertex colour
+layout (location = 2) in vec4 aColour; 	 // Input vertex colour
 layout (location = 3) in vec3 aNormal;	 // Input normal
 
 
@@ -14,7 +14,7 @@ uniform mat4 Projection;
 
 // Outputs
 out vec2 TexCoord;
-out vec3 VertexColour;
+out vec4 VertexColour;
 out vec3 VertexNormal;
 
 out mat4 LocalToWorld;

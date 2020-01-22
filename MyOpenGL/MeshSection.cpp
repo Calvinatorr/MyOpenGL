@@ -1,13 +1,19 @@
 #include "MeshSection.h"
 
-std::set<MeshSection*> MeshSection::all = std::set<MeshSection*>();
-
 
 std::vector<GLfloat> MeshSection::GetRawVertices() const
 {
 	std::vector<GLfloat> rawVertices;
 
 	// Lambdas
+	auto AddVec4 = [&](glm::vec4 v)
+	{
+		rawVertices.push_back(v.x);
+		rawVertices.push_back(v.y);
+		rawVertices.push_back(v.z);
+		rawVertices.push_back(v.w);
+	};
+
 	auto AddVec3 = [&] (glm::vec3 v)
 	{
 		rawVertices.push_back(v.x);
@@ -26,10 +32,15 @@ std::vector<GLfloat> MeshSection::GetRawVertices() const
 	for (int i = 0; i < vertices.size(); i++)
 	{
 		Vertex v = vertices[i];
-
+		
+		/*auto carray = glm::value_ptr(v.position);
+		for (uint i = 0; i < sizeof(carray) / sizeof(*carray); i++)
+		{
+			rawVertices.push_back(carray[i]);
+		}*/
 		AddVec3(v.position);
 		AddVec2(v.texCoord);
-		AddVec3(v.colour);
+		AddVec4(v.colour);
 		AddVec3(v.normal);
 	}
 
@@ -47,14 +58,14 @@ MeshSection::~MeshSection()
 	Destroy();
 }
 
-void MeshSection::Construct()
+void MeshSection::Construct(const DrawMode& DrawMode)
 {
 	Destroy(); // First destroy to make sure we don't cause a memory leak
 
 	// Convert vectors to array data
 	std::vector<GLfloat> rawVertices = GetRawVertices(); // Get raw vertex data as list of floats
 	GLfloat* rawVerticesPt = rawVertices.data();		 // Convert list of floats to array (pointer to memory). We don't know the size of this without the vector.
-	GLuint* indicesPt = indices.data();					 // Convert list of uints to array
+	uint* indicesPt = indices.data();					 // Convert list of uints to array
 
 
 	// Generate vertex attribute array object & buffers
@@ -63,7 +74,7 @@ void MeshSection::Construct()
 	glBindVertexArray(VAO);
 
 	// EBO (indices)
-	if (drawMode == DrawMode::DrawElements)
+	if (DrawMode == DrawMode::DrawElements)
 	{
 		glGenBuffers(1, &EBO); // Buffer for indices (element buffer)
 
@@ -80,7 +91,8 @@ void MeshSection::Construct()
 
 	// Attributes
 	GLuint attrib = 0;
-	GLuint memorySize = 11 * sizeof(GLfloat);
+	//GLuint memorySize = 11 * sizeof(GLfloat);
+	GLuint memorySize = 12 * sizeof(GLfloat);
 	GLuint stride = 0;
 
 	auto AddAttribute = [&](GLuint Size, GLenum Normalized = GL_FALSE)
@@ -93,17 +105,14 @@ void MeshSection::Construct()
 
 	AddAttribute(3); // Position
 	AddAttribute(2); // TexCoord
-	AddAttribute(3); // Colour
+	AddAttribute(4); // Colour
 	AddAttribute(4, GL_TRUE); // Normal
-
-	CalculateBounds();
-
-	all.insert(this); // Insert unique reference to this MeshSection, set so each element is unique
 }
 
-void MeshSection::Draw(const glm::mat4& Transform)
+void MeshSection::Draw(const DrawMode& DrawMode)
 {
-	// Draw mesh section
+	/*
+	// Bind material -> will bind the shader we need
 	if (material != nullptr) // If we have a material assigned
 		material->Bind();	 // Then bind that material, will bind the necessary shader
 
@@ -118,13 +127,13 @@ void MeshSection::Draw(const glm::mat4& Transform)
 		shaderProgram->SetVec3("MinBounds", minBounds);
 		shaderProgram->SetVec3("MaxBounds", maxBounds);
 	}
-
+	*/
 
 	// render container
 	glBindVertexArray(VAO);
 	
 	// Allow for drawing without EBO
-	switch (drawMode)
+	switch (DrawMode)
 	{
 	case MeshSection::DrawMode::DrawElements:
 		glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0); // Consolidate me for variable size
@@ -136,10 +145,6 @@ void MeshSection::Draw(const glm::mat4& Transform)
 	}
 }
 
-/*void MeshSection::Draw()
-{
-	Draw(transform.GetMatrix());
-}*/
 
 void MeshSection::Destroy()
 {
@@ -147,6 +152,7 @@ void MeshSection::Destroy()
 	glDeleteBuffers(1, &VBO);
 	glDeleteBuffers(1, &EBO);
 }
+
 
 void MeshSection::WeldAllVertices()
 {
@@ -191,55 +197,12 @@ void MeshSection::RemoveIsolatedVertices()
 	}
 }
 
-void MeshSection::CalculateBounds()
-{
-	glm::vec3 min = glm::vec3(0.0f), max = glm::vec3(0.0f);
-	GLboolean first = GL_TRUE;
-
-	for (int i = 0; i < vertices.size(); i++)
-	{
-		if (first)
-		{
-			min = vertices[i].position;
-			max = vertices[i].position;
-			first = GL_FALSE;
-		}
-		else
-		{
-			glm::vec3 p = vertices[i].position;
-
-			min.x = std::min(p.x, min.x);
-			min.y = std::min(p.y, min.y);
-			min.y = std::min(p.z, min.z);
-
-			max.x = std::max(p.x, max.x);
-			max.y = std::max(p.y, max.y);
-			max.y = std::max(p.z, max.z);
-		}
-	}
-
-	minBounds = min;
-	maxBounds = max;
-}
-
-void MeshSection::Cleanup()
-{
-	auto it = all.begin();
-	while (it != all.end())
-	{
-		if ((*it) != nullptr)
-			(*it)->Destroy();
-
-		it++; // Move to next element in set
-	}
-}
-
 void MeshSection::AddVertex(const Vertex & NewVertex)
 {
 	vertices.push_back(NewVertex);
 }
 
-void MeshSection::SetColour(const glm::vec3 & Colour)
+void MeshSection::SetColour(const glm::lowp_vec4 & Colour)
 {
 	for (int i = 0; i < vertices.size(); i++)
 		vertices[i].colour = Colour;
@@ -258,14 +221,4 @@ GLuint MeshSection::GetVAO() const
 GLuint MeshSection::GetEBO() const
 {
 	return EBO;
-}
-
-glm::vec3 MeshSection::GetMinBounds() const
-{
-	return minBounds;
-}
-
-glm::vec3 MeshSection::GetMaxBounds() const
-{
-	return maxBounds;
 }

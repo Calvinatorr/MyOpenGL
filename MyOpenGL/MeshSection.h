@@ -15,9 +15,10 @@ class Vertex
 public:
 	// Properties
 	glm::vec3 position = glm::vec3(0.0f);
-	glm::vec2 texCoord = glm::vec3(0.0f);
+	glm::vec2 texCoord = glm::vec2(0.0f);
 	glm::vec3 normal = glm::vec3(0.0f, 1.0f, 0.0f);
-	glm::vec3 colour = glm::vec3(1.0f, 1.0f, 1.0f);
+	glm::vec3 tangent = glm::vec3(1.0f, 0.0f, 0.0f);
+	glm::lowp_vec4 colour = glm::lowp_vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
 
 	Vertex() {};
@@ -37,27 +38,28 @@ public:
 
 
 /* Mesh section. Mesh is comprised of list of mesh sections. */
-class MeshSection : public Object
+class MeshSection// : public Object
 {
 private:
-	static std::set<MeshSection*> all;
 	GLuint VBO, VAO, EBO;
 
-protected:
-	std::vector<GLfloat> GetRawVertices() const;
-	glm::vec3 minBounds, maxBounds;
 
 public:
+
+	/* Return float stream of vertices */
+	std::vector<GLfloat> GetRawVertices() const;
+
 	// Properties
-	//Transform transform;
 	std::vector<Vertex> vertices;
-	std::vector<GLuint> indices;
+	std::vector<uint> indices;
 	Material* material; // We will change this to be stored in mesh sections
-	enum DrawMode : GLuint
+
+
+	enum DrawMode : uint
 	{
 		DrawElements = 0,
 		DrawArrays = 1
-	} drawMode = DrawMode::DrawElements;
+	};
 
 
 	// Constructors & destructors
@@ -66,27 +68,22 @@ public:
 
 
 	// Methods
-	void Construct();
-	void Draw(const glm::mat4& Transform);
-	//void Draw();
+	void Construct(const DrawMode& DrawMode);
+	void Draw(const DrawMode& DrawMode = DrawMode::DrawElements);
 	void Destroy();
 	void WeldAllVertices();
 	void WeldVertices(const std::vector<int>& Indices);
 	void RemoveIsolatedVertices();
-	void CalculateBounds(); // IMPLMENT ME
-	static void Cleanup();
 
 
 	// Setters
 	void AddVertex(const Vertex& NewVertex);
-	void SetColour(const glm::vec3& Colour);
+	void SetColour(const glm::lowp_vec4& Colour);
 
 
 	// Getters
 	GLuint GetVBO() const;
 	GLuint GetVAO() const;
 	GLuint GetEBO() const;
-	glm::vec3 GetMinBounds() const;
-	glm::vec3 GetMaxBounds() const;
 };
 
