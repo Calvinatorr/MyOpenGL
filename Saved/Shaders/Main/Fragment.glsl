@@ -225,6 +225,20 @@ vec3 CalculateSpotLight(SpotLight Light)
 
 
 
+
+vec3 TonemapSCurve_ACES(vec3 x)
+{
+  	float a = 2.51f;
+    float b = 0.03f;
+    float c = 2.43f;
+    float d = 0.59f;
+    float e = 0.14f;
+    return clamp((x*(a*x+b))/(x*(c*x+d)+e),0.0,1.0);
+}
+
+
+
+
 #define NUM_OF_LIGHTS 4
 PointLight lights[NUM_OF_LIGHTS];
 
@@ -237,12 +251,16 @@ void main()
 	vec4 t = texture(tex, TexCoord.xy);
 	vec4 t2 = texture(tex2, TexCoord.xy);
 	
-	outMaterial.Albedo *= vec3(t2);
-	outMaterial.Albedo = vec3(.8f);
 	
 	
 	
-	outMaterial.Roughness = .7;
+		
+	
+	
+	outMaterial.AmbientOcclusion = clamp(outMaterial.AmbientOcclusion, 0.0f, 1.0f);
+	outMaterial.Metalness = clamp(outMaterial.Metalness, 0.0f, 1.0f);
+	outMaterial.Roughness = clamp(outMaterial.Roughness, 0.0f, 1.0f);
+	outMaterial.Albedo = clamp(outMaterial.Albedo, 0.0f, 1.0f);
 	
 	
 	
@@ -311,4 +329,7 @@ void main()
 	
 	
 	
+	
+	
+	FragColour = vec4(TonemapSCurve_ACES(FragColour.xyz), 1.0f);
 } 

@@ -23,6 +23,9 @@ uniform sampler2D tex2;
 #include "Common/Lights.glsl"
 
 
+#include "Common/Tonemapping.glsl"
+
+
 // ========================================= LIGHTS =============================================
 
 #define NUM_OF_LIGHTS 4
@@ -37,12 +40,16 @@ void main()
 	vec4 t = texture(tex, TexCoord.xy);
 	vec4 t2 = texture(tex2, TexCoord.xy);
 	//outMaterial.Albedo *= vec3( mix( t, t2, t2.a ) );
-	outMaterial.Albedo *= vec3(t2);
-	outMaterial.Albedo = vec3(.8f);
 	
+	//outMaterial.Albedo *= vec3(t2);
+	//outMaterial.Albedo = vec3(.8f);
+		
 	//vec3 localUVW = GetLocalUVW(LocalPosition);
 	//outMaterial.Roughness = localUVW.r;
-	outMaterial.Roughness = .7;
+	outMaterial.AmbientOcclusion = clamp(outMaterial.AmbientOcclusion, 0.0f, 1.0f);
+	outMaterial.Metalness = clamp(outMaterial.Metalness, 0.0f, 1.0f);
+	outMaterial.Roughness = clamp(outMaterial.Roughness, 0.0f, 1.0f);
+	outMaterial.Albedo = clamp(outMaterial.Albedo, 0.0f, 1.0f);
 	
 	//outMaterial.Albedo = vec3(mix(t, t2, t2.a));
 	//outMaterial.Albedo = vec3(1.0f, 0.0f, 0.0f);
@@ -111,4 +118,7 @@ void main()
 	//FragColour = vec4(ViewDirection.xyz, 1.0f);
 	
 	//FragColour = vec4(ViewDirection.xyz, 1.0f);
+	
+	
+	FragColour = vec4(TonemapSCurve_ACES(FragColour.xyz), 1.0f);
 } 
