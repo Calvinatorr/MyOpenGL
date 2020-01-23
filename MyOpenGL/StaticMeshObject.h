@@ -3,6 +3,7 @@
 #include "SceneObject.h"
 #include "StaticMeshComponent.h"
 
+
 class StaticMeshObject : public SceneObject
 {
 public:
@@ -16,7 +17,8 @@ public:
 	StaticMeshComponent staticMeshComponent;
 
 
-	// Virtual methods
+	// Interface implementations
 	void Construct() override;
+	void DrawGUI() override;
 };
 

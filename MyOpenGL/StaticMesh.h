@@ -4,6 +4,8 @@
 #include "Object.h"
 #include "MeshSection.h"
 
+#include "GUI.h"
+
 #include <algorithm>
 #include <iterator>
 
@@ -14,7 +16,7 @@
 
 
 
-class StaticMesh : public Object
+class StaticMesh : public Object, public EditorDrawableGUI
 {
 private:
 
@@ -85,5 +87,10 @@ public:
 	glm::vec3 GetMinBounds() const;
 	/* Get maxbounds */
 	glm::vec3 GetMaxBounds() const;
+
+
+	// Interface implementations
+	/* Draw editor GUI */
+	virtual void DrawGUI() override;
 };
 

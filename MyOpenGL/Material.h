@@ -3,12 +3,14 @@
 #include "Shader.h"
 #include "Object.h"
 
+#include "GUI.h"
+
 
 #include <map>
 
 class Object;
 
-class Material : public Object
+class Material : public Object, public EditorDrawableGUI
 {
 public:
 	template <class T> class Parameter
@@ -16,12 +18,23 @@ public:
 	public:
 		std::string name;
 		T value;
+#if WITH_EDITOR
+		T min_Editor, max_Editor;
+#endif
 
 		//Parameter() { };
 		Parameter(const std::string& Name)
 			: name(Name) { };
 		Parameter(const std::string& Name, const T& Value)
 			: name(Name), value(Value) { };
+		Parameter(const std::string& Name, const T& Value, const T& Min, const T& Max)
+			: name(Name), value(Value)
+		{
+#if WITH_EDITOR
+			min_Editor = Min;
+			max_Editor = Max;
+#endif
+		};
 		~Parameter() { };
 
 		bool operator==(const Parameter<T>& rhs)
@@ -71,12 +84,15 @@ public:
 	glm::vec3	GetVectorParameter	(const GLchar* Name) const;
 	glm::vec4	GetVector4Parameter	(const GLchar* Name) const;
 
-
 	
 	// Methods
 	void Bind();
 	void Unbind();
 	static Material* GetCurrent();
+
+	
+	// Interfaces
+	void DrawGUI() override;
 };
 
 

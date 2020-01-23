@@ -52,6 +52,11 @@ void SceneObject::Destroy()
 	}
 }
 
+void SceneObject::DrawGUI()
+{
+	transform.DrawGUI();
+}
+
  json SceneObject::Serialize()
 {
 	json jsonData = Object::Serialize();

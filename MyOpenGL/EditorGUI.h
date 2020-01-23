@@ -140,13 +140,12 @@ public:
 				ImGui::EndChild();
 			}
 
-
+			
 			// Draw the root GUI if unselected
 			{
 				if (selected == nullptr)
 				{
-					object->transform.DrawGUI();
-					ImGui::Separator();
+					object->DrawGUI();
 				}
 				else if (selected != nullptr && object->GetAllSceneComponents().size() > 0)
 				{
