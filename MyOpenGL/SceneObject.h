@@ -5,7 +5,7 @@
 #include "SceneComponent.h"
 #include "Object.h"
 
-#include "GUI.h"
+#include "Editor.h"
 
 #include <iostream>
 #include <vector>
@@ -17,7 +17,7 @@ class SceneComponent; // Forward declaration to avoid compiler screaming at me
 
 
 // Contain scene components and top-level logic for handling of components
-class SceneObject : public Object, public EditorDrawableGUI
+class SceneObject : public Object, public _DrawableBase, public _EditorDrawableGUIBase
 {
 private:
 	std::set<SceneComponent*> sceneComponents;
@@ -40,11 +40,11 @@ public:
 
 	// Interface implementations
 	// Construct object before use
-	virtual void Construct();
+	virtual void Construct() override;
 	// Draw all renderable scene components
-	virtual void Draw();
+	virtual void Draw() override;
 	// Update all scene components
-	virtual void Update();
+	virtual void Update() override;
 	// Destroy all scene components & perform any cleanup necessary, invoked from scene manager
 	virtual void Destroy();
 	/* Draw editor GUI */
@@ -56,8 +56,10 @@ public:
 	void Deserialize(const json& Data) override;
 
 
-	// Getters
-	// Return all scene components belonging to this object
+	// Scene components
+	/* Return all scene components belonging to this object */
 	std::set<SceneComponent*>& GetAllSceneComponents();
+	/* Add a scene component and register it */
+	void AddSceneComponent(SceneComponent* NewSceneComponent);
 };
 

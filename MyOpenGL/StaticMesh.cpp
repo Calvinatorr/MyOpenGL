@@ -341,7 +341,7 @@ void StaticMesh::ProcessNode(aiNode* Node, const aiScene* Scene)
 
 bool StaticMesh::LoadMeshFromDisk(const std::string & Filename)
 {
-	Clear();
+	ClearMeshSections();
 	source = Filename;
 	Log::PrintInfo("Attempting to load mesh from disk '" + Filename + "'..");
 
@@ -364,8 +364,7 @@ bool StaticMesh::LoadMeshFromDisk(const std::string & Filename)
 	"\n		Mesh sections " + std::to_string(meshSections.size())
 	);
 
-	CalculateMetaData();
-
+	Construct();
 	return true;
 }
 
@@ -419,7 +418,7 @@ void StaticMesh::Draw(const glm::mat4& Transform)
 	}
 }
 
-void StaticMesh::Clear()
+void StaticMesh::ClearMeshSections()
 {
 	for (auto& m : meshSections)
 	{
@@ -433,7 +432,12 @@ void StaticMesh::Cleanup()
 	// Clean-up references
 	// ...
 
-	Clear();
+	ClearMeshSections();
+}
+
+void StaticMesh::Construct()
+{
+	CalculateMetaData();
 }
 
 std::vector<Material*> StaticMesh::GetMaterials() const
@@ -452,7 +456,7 @@ bool StaticMesh::SetMaterial(const uint & Index, Material* NewMaterial)
 {
 	if (Index < meshSections.size())
 	{
-		meshSections[Index].material = NewMaterial;
+		meshSections[Index].SetMaterial(NewMaterial);
 		return true; // Return success
 	}
 	else
@@ -462,6 +466,11 @@ bool StaticMesh::SetMaterial(const uint & Index, Material* NewMaterial)
 }
 
 const std::vector<MeshSection>& StaticMesh::GetMeshSections() const
+{
+	return meshSections;
+}
+
+std::vector<MeshSection>& StaticMesh::GetMeshSections_Modifiable()
 {
 	return meshSections;
 }
@@ -523,6 +532,8 @@ void StaticMesh::DrawGUI()
 
 		ImGui::NewLine();
 
+
+		// Materials
 		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DefaultOpen;
 		if (ImGui::TreeNodeEx(("Materials (" + std::to_string(GetMaterials().size()) + ")").c_str(), flags))
 		{
@@ -550,6 +561,7 @@ void StaticMesh::DrawGUI()
 			ImGui::TreePop();
 		}
 
+		// Mesh sections
 		if (ImGui::TreeNodeEx(("Mesh Sections (" + std::to_string(GetMeshSections().size()) + ")").c_str(), flags ^ ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			uint i = 0;

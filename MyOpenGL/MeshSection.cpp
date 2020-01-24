@@ -197,6 +197,11 @@ void MeshSection::RemoveIsolatedVertices()
 	}
 }
 
+void MeshSection::SetMaterial(Material* NewMaterial)
+{
+	material = NewMaterial;
+}
+
 void MeshSection::AddVertex(const Vertex & NewVertex)
 {
 	vertices.push_back(NewVertex);

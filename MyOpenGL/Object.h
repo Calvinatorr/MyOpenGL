@@ -13,7 +13,44 @@
 #include "Serialization.h"
 
 
-class Object // Base class for all resources
+class _SerializableBase;
+class _ObjectBase;
+class _DrawableBase;
+class _BindableBase;
+class Object;
+
+
+
+/* Abstract base for methods */
+class _ObjectBase
+{
+public:
+	// Methods
+	virtual void Construct();
+	virtual void Cleanup();
+	virtual void Update();
+};
+
+
+/* Abstract base for drawable objects */
+class _DrawableBase
+{
+public:
+	virtual void Draw();
+};
+
+
+/* Abstract base for bindable objects */
+class _BindableBase
+{
+public:
+	virtual void Bind();
+	virtual void Unbind();
+};
+
+
+/* Abstract base for generic object */
+class Object : public _ObjectBase //, public _SerializableBase
 {
 protected:
 	std::string name = "", displayName = "UNTITLED";
@@ -46,8 +83,8 @@ public:
 
 
 	// Methods
-	virtual void Construct();
-	virtual void Cleanup();
-	virtual void Update();
+	virtual void Construct() override;
+	virtual void Cleanup() override;
+	virtual void Update() override;
 };
 

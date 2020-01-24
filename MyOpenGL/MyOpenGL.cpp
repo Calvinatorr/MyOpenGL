@@ -14,7 +14,7 @@
 #include "examples/imgui_impl_glfw.cpp"
 #include "examples/imgui_impl_opengl3.cpp"
 // Includes glad and GLFW
-#include "GUI.h"
+#include "Editor.h"
 
 
 // ===================================== OUR INCLUDES ============================================
@@ -133,7 +133,7 @@ int main(int argc, char* argv[])
 		const GLubyte* version = glGetString(GL_VERSION);
 		std::stringstream s;
 		s << "Using OpenGL version `" << version << "`";
-		Log::Print(s.str(), false);
+		Log::PrintInfo(s.str());
 	}
 
 	glEnable(GL_DEPTH_TEST);
@@ -212,10 +212,12 @@ int main(int argc, char* argv[])
 	ImGui_ImplOpenGL3_Init(GLSL_VERSION.c_str());
 
 	
-	// ===================================== EDITOR GUI ============================================
+	// ===================================== EDITOR ============================================
 
-
+#if WITH_EDITOR
+	EditorGrid editorGrid = EditorGrid();
 	EditorGUI editorGUI;
+#endif
 
 
 	// ===================================== TEST LEVEL ============================================
@@ -458,38 +460,23 @@ int main(int argc, char* argv[])
 		SceneOutliner::Update(); // Update (tick) all objects in scene outliner
 
 
-		// Start Dear ImGUI frame
+		// Start Dear ImGUI frame & draw Log & Dear ImGui widgets
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
-		EditorWidget::DrawAll(); // Draw all widgets (ImGui expected)
-
-
-		// Render ImGui
+		Editor::DrawWidgets();
 		Log::DrawScreenLog();
 		ImGui::Render();
+
+
 		// Clear screen with colour
 		glClearColor(editorGUI.clearColour[0], editorGUI.clearColour[1], editorGUI.clearColour[2], editorGUI.clearColour[3]);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear screen & depth buffers with bitwise operation on flags
 
 
-		//Draw meshes
-		//boxMeshObject.Draw();
-		//sphereMeshObject.Draw();
+		// Draw meshes
 		SceneOutliner::Draw();
-
-		/*
-		box.Draw();
-		sphere.Draw();
-		plane.Draw();
-		prim.Draw();
-
-		for (int i = 0; i < positions.size(); i++)
-		{
-			glm::mat4 transform = glm::mat4(1.0f); // Identity
-			transform = glm::translate(transform, positions[i]);
-			prim.Draw(prim.transform.GetMatrix() * transform);
-		}*/
+		Editor::Draw();
 
 
 		// Draw ImGui data to screen - after we've rendered our scene
@@ -499,7 +486,7 @@ int main(int argc, char* argv[])
 		window.SwapBuffers();
 
 		// Safely unbind last shader
-		Shader::Unbind();
+		Shader::UnbindCurrent();
 	}
 
 
@@ -509,8 +496,9 @@ int main(int argc, char* argv[])
 	Shader::Cleanup();
 	SceneOutliner::Cleanup();
 	EditorCamera::CleanupDefaultCamera();
+	Editor::Cleanup();
 	Python::Cleanup();
-	Log::Print("Closing program", false);
+	Log::PrintInfo("Closing program");
 	Log::Dump(); // Dump rest of the log
 
 	// Clean-up ImGui

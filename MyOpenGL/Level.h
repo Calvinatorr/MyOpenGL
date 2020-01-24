@@ -17,7 +17,7 @@ class LevelManager;
 
 // ===================================== LEVEL ============================================
 
-class Level : public Object
+class Level : public Object, public _DrawableBase
 {
 private:
 	bool loaded = false;
@@ -58,7 +58,7 @@ public:
 
 		// Management
 		void Update() override;
-		void Draw();
+		void Draw() override;
 		void Cleanup() override;
 };
 

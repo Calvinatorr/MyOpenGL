@@ -14,9 +14,9 @@
 #include "glm/gtx/string_cast.hpp"
 
 
-#include "GUI.h"
+#include "Editor.h"
 #include "Utility.h"
-#include "Object.h"
+#include "Asset.h"
 #include "Texture.h"
 #include "Camera.h"
 
@@ -72,7 +72,7 @@ public:
 
 // ===================================== SHADER ============================================
 
-class Shader : public Object
+class Shader : public Asset, public _BindableBase
 {
 private:
 	static Shader* current;
@@ -104,7 +104,7 @@ public:
 	GLint Compile(const std::string& Folder);
 	GLint Recompile();
 	static void RecompileAll();
-	void Bind();
+	void Bind() override;
 	void Destroy();
 	static void Cleanup();
 
@@ -130,5 +130,5 @@ public:
 	// Getters
 	GLint GetUniformLocation(const GLchar* Name) const;
 	static Shader* GetCurrent();
-	static void Unbind(); // Call at the end of the render thread
+	static void UnbindCurrent(); // Call at the end of the render thread
 };

@@ -77,6 +77,11 @@ std::set<SceneComponent*>& SceneObject::GetAllSceneComponents()
 	return sceneComponents;
 }
 
+void SceneObject::AddSceneComponent(SceneComponent * NewSceneComponent)
+{
+	RegisterSceneComponent(NewSceneComponent);
+}
+
 void SceneObject::RegisterSceneComponent(SceneComponent* NewComponent)
 {
 	sceneComponents.insert(NewComponent);	// Insert into set

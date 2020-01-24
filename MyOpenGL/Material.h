@@ -1,16 +1,17 @@
 #pragma once
 
 #include "Shader.h"
-#include "Object.h"
+#include "Asset.h"
 
-#include "GUI.h"
+#include "Editor.h"
 
 
 #include <map>
 
 class Object;
 
-class Material : public Object, public EditorDrawableGUI
+
+class Material : public Asset, public _BindableBase, public _EditorDrawableGUIBase
 {
 public:
 	template <class T> class Parameter
@@ -86,8 +87,8 @@ public:
 
 	
 	// Methods
-	void Bind();
-	void Unbind();
+	virtual void Bind() override;
+	virtual void Unbind() override;
 	static Material* GetCurrent();
 
 	

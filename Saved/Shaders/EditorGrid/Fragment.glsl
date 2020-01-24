@@ -70,8 +70,6 @@ float StepAA(float In, float Gradient)
 }
 
 
-uniform sampler2D EquirectangularMap;
-
 
 
 struct Material
@@ -87,12 +85,49 @@ Material outMaterial;
 
 
 
+vec3 TonemapSCurve_ACES(vec3 x)
+{
+  	float a = 2.51f;
+    float b = 0.03f;
+    float c = 2.43f;
+    float d = 0.59f;
+    float e = 0.14f;
+    return clamp((x*(a*x+b))/(x*(c*x+d)+e),0.0,1.0);
+}
+
+
+float GenerateGrid(vec2 InTiling, float InBorderSize)
+{
+	vec2 uv = (TexCoord.xy * InTiling) - .5f;
+	uv = fract(uv);
+	uv = (uv - .5f) * 2.0f;
+	uv = abs(uv);
+	
+	float x = StepAA(uv.x, InBorderSize);
+	float y = StepAA(uv.y, InBorderSize);
+	float grid = max(x, y);
+	
+	return grid;
+}
+
+
+
+
 void main()
 {
-	outMaterial = inMaterial;
+	vec2 LargeGridTiling = vec2(10.0f, 10.0f);
+	float LargeGridBorderSize = .025f;
+	float largeGrid = GenerateGrid(LargeGridTiling, LargeGridBorderSize);
 	
-	vec2 uv = SphericalUVsFromPosition(normalize(LocalPosition));
+	vec2 SmallGridTiling = vec2(100.0f, 100.0f);
+	float SmallGridBorderSize = .05f;
+	float smallGrid = GenerateGrid(SmallGridTiling, SmallGridBorderSize);
 	
-	FragColour = texture(EquirectangularMap, uv.xy);
+	float grid = max(largeGrid, smallGrid * .15f);
 	
+	if (grid < .0001f)
+		discard;
+		
+	vec3 GridColour = vec3(0.3f);
+	FragColour = vec4(TonemapSCurve_ACES(GridColour), 1.0f);
 } 

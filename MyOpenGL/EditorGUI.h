@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "GUI.h"
+#include "Editor.h"
 
 #include "Game.h"
 #include "Window.h"
@@ -462,3 +462,21 @@ public:
 	};
 };
 
+
+
+
+
+class EditorGrid : public StaticMeshComponent
+{
+private:
+	Shader gridShader;
+	Material gridMaterial;
+
+	
+public:
+
+	friend class StaticMesh;
+
+
+	EditorGrid();
+};

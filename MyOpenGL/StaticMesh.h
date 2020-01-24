@@ -4,7 +4,7 @@
 #include "Object.h"
 #include "MeshSection.h"
 
-#include "GUI.h"
+#include "Editor.h"
 
 #include <algorithm>
 #include <iterator>
@@ -16,7 +16,7 @@
 
 
 
-class StaticMesh : public Object, public EditorDrawableGUI
+class StaticMesh : public Asset, public _EditorDrawableGUIBase
 {
 private:
 
@@ -39,11 +39,14 @@ private:
 
 	glm::vec3 minBounds, maxBounds;
 
-	std::vector<MeshSection> meshSections;
 
 protected:
 
 	MeshSection::DrawMode drawMode = MeshSection::DrawMode::DrawElements;
+
+	/* List of mesh sections */
+	std::vector<MeshSection> meshSections;
+
 
 	/* Calculate bounds of static mesh across all mesh sections */
 	void CalculateBounds();
@@ -69,24 +72,35 @@ public:
 	/* Reimports from disk */
 	bool Reimport();
 
+
 	/*Draws all mesh sections */
 	void Draw(const glm::mat4& Transform = glm::mat4());
-	/* Clears mesh sections */
-	void Clear();
 	/* Cleanup method */
 	void Cleanup() override;
+	/* Construct mesh - calls CalculateMetaData() */
+	void Construct() override;
+
+
 
 	/* Return list of materials */
 	std::vector<Material*> GetMaterials() const;
 	/* Set material at mesh section index */
 	bool SetMaterial(const uint& Index, Material* NewMaterial);
-	/* Return unmodified list of mesh sections */
+
+	/* Return unmodifiable list of mesh sections */
 	const std::vector<MeshSection>& GetMeshSections() const;
+	/* Return mesh sections which you can then modify. Not recommended and potentially unsafe. */
+	std::vector<MeshSection>& GetMeshSections_Modifiable();
+	/* Clear mesh sections */
+	void ClearMeshSections();
+
+
 
 	/* Get min bounds */
 	glm::vec3 GetMinBounds() const;
 	/* Get maxbounds */
 	glm::vec3 GetMaxBounds() const;
+
 
 
 	// Interface implementations

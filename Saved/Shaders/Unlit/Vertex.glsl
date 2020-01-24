@@ -46,6 +46,9 @@ vec2 SphericalUVsFromPosition(vec3 v)
 }
 
 
+#define saturate(x) clamp(x, 0.0f, 1.0f)
+
+
 
 out vec2 TexCoord;
 out vec4 VertexColour;

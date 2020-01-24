@@ -14,6 +14,7 @@ StaticMeshComponent::StaticMeshComponent(StaticMesh * StaticMesh)
 
 StaticMeshComponent::~StaticMeshComponent()
 {
+	//Cleanup(); // Don't do this - it destroys our static mesh when this goes out of scope?
 }
 
 void StaticMeshComponent::Draw()
@@ -27,6 +28,7 @@ void StaticMeshComponent::Cleanup()
 {
 	if (staticMesh != nullptr)
 		staticMesh->Cleanup();
+	//delete(staticMesh);
 }
 
 void StaticMeshComponent::DrawGUI()

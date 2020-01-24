@@ -58,6 +58,7 @@ void Object::Update()
 {
 }
 
+
 std::string Object::GetName() const
 {
 	return name;
@@ -79,4 +80,28 @@ std::string Object::GetClassName() const
 		name.erase(name.begin() + foundPos, name.begin() + foundPos + SUB_STRING.length());
 
 	return name;
+}
+
+void _ObjectBase::Construct()
+{
+}
+
+void _ObjectBase::Cleanup()
+{
+}
+
+void _ObjectBase::Update()
+{
+}
+
+void _DrawableBase::Draw()
+{
+}
+
+void _BindableBase::Bind()
+{
+}
+
+void _BindableBase::Unbind()
+{
 }

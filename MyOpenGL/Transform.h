@@ -11,10 +11,10 @@
 #include "glm/gtx/string_cast.hpp"
 
 #include "Serialization.h"
-#include "GUI.h"
+#include "Editor.h"
 
 
-class Transform : public EditorDrawableGUI
+class Transform : public _EditorDrawableGUIBase
 {
 public:
 

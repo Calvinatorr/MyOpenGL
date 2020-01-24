@@ -68,12 +68,17 @@ public:
 
 
 	// Methods
-	void Construct(const DrawMode& DrawMode);
+	void Construct(const DrawMode& DrawMode = DrawMode::DrawElements);
 	void Draw(const DrawMode& DrawMode = DrawMode::DrawElements);
 	void Destroy();
 	void WeldAllVertices();
 	void WeldVertices(const std::vector<int>& Indices);
 	void RemoveIsolatedVertices();
+
+
+	// Materials
+	/* Set material reference */
+	void SetMaterial(Material* NewMaterial);
 
 
 	// Setters

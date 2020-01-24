@@ -342,7 +342,8 @@ void Shader::Bind()
 
 void Shader::Destroy()
 {
-	Unbind();
+	//Unbind();
+
 	/*std::vector<Shader*>::iterator pos = std::find(Shader::all.begin(), Shader::all.end(), this);
 	if (pos != Shader::all.end())
 		Shader::all.erase(pos);*/
@@ -416,7 +417,7 @@ Shader * Shader::GetCurrent()
 	return current;
 }
 
-void Shader::Unbind()
+void Shader::UnbindCurrent()
 {
 	if (current != nullptr)
 		current = nullptr; // Clear pointer

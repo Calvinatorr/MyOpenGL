@@ -131,11 +131,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Asset.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="EditorCamera.h" />
     <ClInclude Include="EditorGUI.h" />
     <ClInclude Include="Game.h" />
-    <ClInclude Include="GUI.h" />
+    <ClInclude Include="Editor.h" />
     <ClInclude Include="Level.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="StaticMesh.h" />
@@ -160,12 +161,13 @@
     <ResourceCompile Include="MyOpenGL.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Asset.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="EditorCamera.cpp" />
     <ClCompile Include="EditorGUI.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="glad.c" />
-    <ClCompile Include="GUI.cpp" />
+    <ClCompile Include="Editor.cpp" />
     <ClCompile Include="Level.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="StaticMesh.cpp" />
