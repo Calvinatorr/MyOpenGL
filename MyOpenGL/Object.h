@@ -13,10 +13,47 @@
 #include "Serialization.h"
 
 
-class Object // Base class for all resources
+class _SerializableBase;
+class _ObjectBase;
+class _DrawableBase;
+class _BindableBase;
+class Object;
+
+
+
+/* Abstract base for methods */
+class _ObjectBase
+{
+public:
+	// Methods
+	virtual void Construct();
+	virtual void Cleanup();
+	virtual void Update();
+};
+
+
+/* Abstract base for drawable objects */
+class _DrawableBase
+{
+public:
+	virtual void Draw();
+};
+
+
+/* Abstract base for bindable objects */
+class _BindableBase
+{
+public:
+	virtual void Bind();
+	virtual void Unbind();
+};
+
+
+/* Abstract base for generic object */
+class Object : public _ObjectBase //, public _SerializableBase
 {
 protected:
-	std::string name = "", displayName = "";
+	std::string name = "", displayName = "UNTITLED";
 	GLint ID = -1;
 
 public:
@@ -24,7 +61,7 @@ public:
 	~Object();
 
 
-	// Methods
+	// Serialisation
 	virtual json Serialize();
 	virtual void Deserialize(const json& Data);
 
@@ -32,11 +69,22 @@ public:
 	// Getters
 	GLint GetID() const;
 	GLboolean IsValid() const;
-	// Get unique name
-	std::string GetName();
-	// Get display name
-	std::string GetDisplayName();
-	// Get name of class
-	std::string GetClassName();
+	/* Get unique name */
+	std::string GetName() const;
+	/* Get display name */
+	std::string GetDisplayName() const;
+	/* Get name of class */
+	std::string GetClassName() const;
+
+
+	// Setters
+	/* Set display name */
+	void SetDisplayName(const std::string& NewDisplayName);
+
+
+	// Methods
+	virtual void Construct() override;
+	virtual void Cleanup() override;
+	virtual void Update() override;
 };
 

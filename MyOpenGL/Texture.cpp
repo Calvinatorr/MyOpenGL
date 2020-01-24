@@ -10,7 +10,7 @@ void Texture::Generate() // Add to our texture pool
 
 	SetType(type);
 
-	Log::Print("Texture object generated, ID:'" + std::to_string(ID) + "'");
+	Log::PrintInfo("Texture object generated, ID:'" + std::to_string(ID) + "'");
 }
 
 void Texture::Init()
@@ -103,7 +103,7 @@ GLint Texture::LoadResource(const GLchar* File)
 			if (GenerateMipMaps)
 				glGenerateMipmap(type);
 
-			Log::Print("Texture successfully loaded '" + std::string(File) + "'");
+			Log::PrintInfo("Texture successfully loaded '" + std::string(File) + "'");
 			success = 1;
 		}
 		else

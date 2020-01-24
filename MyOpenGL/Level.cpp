@@ -69,11 +69,11 @@ void Level::SaveToDisk(const std::string & Filename)
 		// Write JSON data to file at indentation level 4
 		file << jsonData.dump(4) << std::endl;
 		file.close();
-		Log::Print("Saved level '" + Filename + "'");
+		Log::PrintInfo("Saved level '" + Filename + "'");
 	}
 	else
 	{
-		Log::PrintError("Failed to save level '" + Filename + "'");
+		Log::PrintError("Failed to save level '" + Filename + "'", false);
 	}
 }
 
@@ -91,11 +91,11 @@ void Level::LoadFromDisk(const std::string & Filename)
 		Clear();
 		Deserialize(jsonData);
 
-		Log::Print("Loaded level '" + Filename + "'");
+		Log::PrintInfo("Loaded level '" + Filename + "'");
 	}
 	else
 	{
-		Log::PrintError("Failed to load level '" + Filename + "'");
+		Log::PrintError("Failed to load level '" + Filename + "'", false);
 	}
 }
 
@@ -127,7 +127,7 @@ void Level::Load()
 	{
 		loaded = true;
 
-		LevelManager::LoadLevel(this);
+		SceneOutliner::LoadLevel(this);
 	}
 }
 
@@ -137,7 +137,7 @@ void Level::Unload()
 	{
 		loaded = false;
 
-		LevelManager::UnloadLevel(this);
+		SceneOutliner::UnloadLevel(this);
 	}
 }
 
@@ -210,16 +210,19 @@ void Level::Cleanup()
 			x->Destroy();
 		}
 	}
+
+	sceneObjects.clear();
 }
 
 
 // ===================================== LEVEL MANAGER ============================================
 
 
-std::set<Level*> LevelManager::loadedLevels = std::set<Level*>();
+std::set<Level*> SceneOutliner::loadedLevels = std::set<Level*>();
+std::set<SceneObject*> SceneOutliner::selection = std::set<SceneObject*>();
 
 
-bool LevelManager::LoadLevel(Level * NewLevel)
+bool SceneOutliner::LoadLevel(Level * NewLevel)
 {
 	try
 	{
@@ -233,7 +236,8 @@ bool LevelManager::LoadLevel(Level * NewLevel)
 	return true;
 }
 
-bool LevelManager::UnloadLevel(Level * LevelToUnload)
+
+bool SceneOutliner::UnloadLevel(Level * LevelToUnload)
 {
 	try
 	{
@@ -255,7 +259,8 @@ bool LevelManager::UnloadLevel(Level * LevelToUnload)
 	return true;
 }
 
-void LevelManager::Update()
+
+void SceneOutliner::Update()
 {
 	for (auto it = loadedLevels.begin(); it != loadedLevels.end(); ++it)
 	{
@@ -266,7 +271,8 @@ void LevelManager::Update()
 	}
 }
 
-void LevelManager::Draw()
+
+void SceneOutliner::Draw()
 {
 	for (auto it = loadedLevels.begin(); it != loadedLevels.end(); ++it)
 	{
@@ -277,7 +283,8 @@ void LevelManager::Draw()
 	}
 }
 
-void LevelManager::Cleanup()
+
+void SceneOutliner::Cleanup()
 {
 	for (auto it = loadedLevels.begin(); it != loadedLevels.end(); ++it)
 	{
@@ -288,7 +295,62 @@ void LevelManager::Cleanup()
 	}
 }
 
-std::set<Level*>& LevelManager::GetLoadedLevels()
+
+std::set<Level*>& SceneOutliner::GetLoadedLevels()
 {
 	return loadedLevels;
+}
+
+
+void SceneOutliner::Select(SceneObject* NewSelection, const bool & bClearSelection)
+{
+	if (bClearSelection)
+		SceneOutliner::ClearSelection();
+
+	SceneOutliner::selection.insert(NewSelection);
+}
+
+
+void SceneOutliner::Select(std::set<SceneObject*> NewSelection, const bool & bClearSelection)
+{
+	if (bClearSelection)
+		SceneOutliner::ClearSelection();
+
+	SceneOutliner::selection.insert(NewSelection.begin(), NewSelection.end());
+}
+
+
+void SceneOutliner::Deselect(SceneObject * NewDeslection, const bool& bClearSelection)
+{
+	if (bClearSelection)
+		SceneOutliner::ClearSelection();
+
+	SceneOutliner::selection.erase(NewDeslection);
+}
+
+
+void SceneOutliner::ToggleSelection(SceneObject * NewSelection, const bool& bClearSelection)
+{
+	if (SceneOutliner::IsSelected(NewSelection))
+		SceneOutliner::Deselect(NewSelection, bClearSelection);
+	else
+		SceneOutliner::Select(NewSelection, bClearSelection);
+}
+
+
+bool SceneOutliner::IsSelected(SceneObject * SelectionToFind)
+{
+	return SceneOutliner::selection.find(SelectionToFind) != SceneOutliner::selection.end();
+}
+
+
+void SceneOutliner::ClearSelection()
+{
+	SceneOutliner::selection.clear();
+}
+
+
+const std::set<SceneObject*>& SceneOutliner::GetSelection()
+{
+	return selection;
 }

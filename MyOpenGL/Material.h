@@ -1,12 +1,17 @@
 #pragma once
 
 #include "Shader.h"
+#include "Asset.h"
+
+#include "Editor.h"
+
 
 #include <map>
 
+class Object;
 
 
-class Material
+class Material : public Asset, public _BindableBase, public _EditorDrawableGUIBase
 {
 public:
 	template <class T> class Parameter
@@ -14,12 +19,23 @@ public:
 	public:
 		std::string name;
 		T value;
+#if WITH_EDITOR
+		T min_Editor, max_Editor;
+#endif
 
 		//Parameter() { };
 		Parameter(const std::string& Name)
 			: name(Name) { };
 		Parameter(const std::string& Name, const T& Value)
 			: name(Name), value(Value) { };
+		Parameter(const std::string& Name, const T& Value, const T& Min, const T& Max)
+			: name(Name), value(Value)
+		{
+#if WITH_EDITOR
+			min_Editor = Min;
+			max_Editor = Max;
+#endif
+		};
 		~Parameter() { };
 
 		bool operator==(const Parameter<T>& rhs)
@@ -42,12 +58,11 @@ public:
 
 	// Properties
 	Shader* shader; // The shader this is bound to
-	std::vector<Parameter<GLfloat>> floatParameters;
-	std::vector<Parameter<GLint>> intParameters;
-	std::vector<Parameter<glm::vec3>> vectorParameters;
-	std::vector<Parameter<glm::vec4>> vector4Parameters;
-	std::vector<Parameter<Texture*>> textureParameters;
-	std::string name;
+	std::vector<Parameter<GLfloat>>		floatParameters;
+	std::vector<Parameter<GLint>>		intParameters;
+	std::vector<Parameter<glm::vec3>>	vectorParameters;
+	std::vector<Parameter<glm::vec4>>	vector4Parameters;
+	std::vector<Parameter<Texture*>>	textureParameters;
 
 
 	// Constructors & destructors
@@ -70,12 +85,15 @@ public:
 	glm::vec3	GetVectorParameter	(const GLchar* Name) const;
 	glm::vec4	GetVector4Parameter	(const GLchar* Name) const;
 
-
 	
 	// Methods
-	void Bind();
-	void Unbind();
+	virtual void Bind() override;
+	virtual void Unbind() override;
 	static Material* GetCurrent();
+
+	
+	// Interfaces
+	void DrawGUI() override;
 };
 
 

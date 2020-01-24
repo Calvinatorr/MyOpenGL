@@ -3,7 +3,7 @@ out vec4 FragColour;
 
 
 in vec2 TexCoord;
-in vec3 VertexColour;
+in vec4 VertexColour;
 in vec3 VertexNormal;
 
 in mat4 LocalToWorld;
@@ -49,8 +49,25 @@ vec2 SphericalUVsFromPosition(vec3 v)
 }
 
 
+#define saturate(x) clamp(x, 0.0f, 1.0f)
+
+
 vec3 PixelNormal = normalize(VertexNormal); 
 vec3 ViewDirection = normalize(CameraPosition - WorldPosition);
+
+
+/* Smooth step using inverse lerp. Only runs in pixel shader due to using fwidth() (ddx() & ddy()) */ 
+float StepAA(float In, float Gradient)
+{
+	float halfChange = fwidth(Gradient) / 2;
+	
+	float lowerEdge = In - halfChange;
+	float upperEdge = In + halfChange;
+	
+	float stepped = (Gradient - lowerEdge) / (upperEdge - lowerEdge);
+	stepped = saturate(stepped);
+	return stepped;
+}
 
 
 uniform sampler2D EquirectangularMap;

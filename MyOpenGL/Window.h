@@ -12,20 +12,31 @@
 
 class Window
 {
+public:
+	// Enums defs
+	enum WindowMode { WINDOW, BORDERLESS, FULLSCREEN };
+
 private:
 	static void Resized(GLFWwindow* Window, int Width, int Height);
 	static Window* current;
 
+	WindowMode windowMode = WindowMode::WINDOW;
+
+
 public:
+	
+
 	// Properties
 	GLFWwindow* window;
 
 	Window();
-	Window(const GLuint& Width, const GLuint& Height, const GLchar* WindowName = "NewWindow");
 	~Window();
 
 	// Methods
-	GLint Create(const GLuint& Width, const GLuint& Height, const GLchar* WindowName = "NewWindow");
+	GLint Create(GLuint Width, GLuint Height, const GLchar* WindowName = "NewWindow", const bool& bMaximized = false, const WindowMode& NewWindowMode = WindowMode::WINDOW);
+	void Maximize();
+	void Restore();
+	void Hide();
 	void SwapBuffers();
 	void Bind();
 

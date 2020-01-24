@@ -44,10 +44,17 @@ void SceneObject::Destroy()
 	while (it != components.end())
 	{
 		if (*it != nullptr)
-			(*it)->Destroy();
+		{
+			(*it)->Cleanup();
+		}
 
 		it++; // Move to next element in set
 	}
+}
+
+void SceneObject::DrawGUI()
+{
+	transform.DrawGUI();
 }
 
  json SceneObject::Serialize()
@@ -68,6 +75,11 @@ void SceneObject::Destroy()
 std::set<SceneComponent*>& SceneObject::GetAllSceneComponents()
 {
 	return sceneComponents;
+}
+
+void SceneObject::AddSceneComponent(SceneComponent * NewSceneComponent)
+{
+	RegisterSceneComponent(NewSceneComponent);
 }
 
 void SceneObject::RegisterSceneComponent(SceneComponent* NewComponent)

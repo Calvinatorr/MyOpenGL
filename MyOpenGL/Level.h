@@ -17,7 +17,7 @@ class LevelManager;
 
 // ===================================== LEVEL ============================================
 
-class Level : public Object
+class Level : public Object, public _DrawableBase
 {
 private:
 	bool loaded = false;
@@ -57,20 +57,20 @@ public:
 
 
 		// Management
-		void Update();
-		void Draw();
-		void Cleanup();
+		void Update() override;
+		void Draw() override;
+		void Cleanup() override;
 };
 
 
-// ===================================== LEVEL ============================================
+// ===================================== SCENE OUTLINER ============================================
 
 
-class LevelManager
+class SceneOutliner
 {
 private:
 	static std::set<Level*> loadedLevels;
-
+	static std::set<SceneObject*> selection;
 
 public:
 
@@ -90,9 +90,22 @@ public:
 
 
 
-	// Getters
-
 	/* Return all levels contained by the manager */
 	static std::set<Level*>& GetLoadedLevels();
 
+
+	/* Select object*/
+	static void Select(SceneObject*				NewSelection,	const bool& bClearSelection = false);
+	/* Select multiple objects*/
+	static void Select(std::set<SceneObject*>	NewSelection,	const bool& bClearSelection = false);
+	/* Deselect object */
+	static void Deselect(SceneObject*			NewDeslection,	const bool& bClearSelection = false);
+	/* Toggle whether object is selected */
+	static void ToggleSelection(SceneObject*	NewSelection,	const bool& bClearSelection = false);
+	/* Return whether object exists in current selection */
+	static bool IsSelected(SceneObject*			SelectionToFind);
+	/* Clear selecred assets */
+	static void ClearSelection();
+	/* Returns set of all objects selected by manager */
+	static const std::set<SceneObject*>& GetSelection();
 };

@@ -5,7 +5,6 @@
 
 // JSON serialization
 #include <nlohmann/json.hpp>
-using json = nlohmann::json;
 
 
 // GLM Mathematics library
@@ -86,16 +85,30 @@ struct field_data<i, Self> \
 
 // ===================================== SERIALIZATION ============================================
 
+using json = nlohmann::json;
+
+
 // Serialize type to JSON data
 template<typename T>
-json SerializeValue(const T& Value);
+nlohmann::json SerializeValue(const T& Value);
 
 
 // Serialize generic type to JSON data
 template<typename T>
-inline json SerializeValue(const T & Value)
+inline nlohmann::json SerializeValue(const T & Value)
 {
-	json jsonData;
+	nlohmann::json jsonData;
 	jsonData << Value;
 	return jsonData;
 }
+
+
+/*
+class _SerializableBase
+{
+public:
+	// Serialisation
+	virtual nlohmann::json Serialize();
+	virtual void Deserialize(const nlohmann::json& Data);
+}
+*/

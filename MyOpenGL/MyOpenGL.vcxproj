@@ -80,12 +80,12 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>E:\Documents\PostUniversity\OpenGL\json\single_include;E:\Documents\PostUniversity\OpenGL\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Calvinatorr\AppData\Local\Programs\Python\Python37-32\include;E:\Documents\PostUniversity\OpenGL\json\single_include;E:\Documents\PostUniversity\OpenGL\assimp\assimp-4.1.0\include;E:\Documents\PostUniversity\OpenGL\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>opengl32.lib;glfw3.lib;assimp-vc140-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>E:\Documents\PostUniversity\OpenGL\Libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;assimp-vc140-mt.lib;python37.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\Calvinatorr\AppData\Local\Programs\Python\Python37-32\libs;E:\Documents\PostUniversity\OpenGL\Libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -105,14 +105,14 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>E:\Documents\PostUniversity\OpenGL\json\single_include;E:\Documents\PostUniversity\OpenGL\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Calvinatorr\AppData\Local\Programs\Python\Python37-32\include;E:\Documents\PostUniversity\OpenGL\json\single_include;E:\Documents\PostUniversity\OpenGL\assimp\assimp-4.1.0\include;E:\Documents\PostUniversity\OpenGL\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>opengl32.lib;glfw3.lib;assimp-vc140-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>E:\Documents\PostUniversity\OpenGL\Libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;assimp-vc140-mt.lib;python37.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\Calvinatorr\AppData\Local\Programs\Python\Python37-32\libs;E:\Documents\PostUniversity\OpenGL\Libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -131,14 +131,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Asset.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="EditorCamera.h" />
-    <ClInclude Include="GUI.h" />
+    <ClInclude Include="EditorGUI.h" />
+    <ClInclude Include="Game.h" />
+    <ClInclude Include="Editor.h" />
     <ClInclude Include="Level.h" />
     <ClInclude Include="Material.h" />
-    <ClInclude Include="Mesh.h" />
+    <ClInclude Include="StaticMesh.h" />
     <ClInclude Include="Object.h" />
-    <ClInclude Include="Primitive.h" />
+    <ClInclude Include="MeshSection.h" />
+    <ClInclude Include="PythonEnvironment.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SceneComponent.h" />
     <ClInclude Include="SceneObject.h" />
@@ -157,16 +161,20 @@
     <ResourceCompile Include="MyOpenGL.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Asset.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="EditorCamera.cpp" />
+    <ClCompile Include="EditorGUI.cpp" />
+    <ClCompile Include="Game.cpp" />
     <ClCompile Include="glad.c" />
-    <ClCompile Include="GUI.cpp" />
+    <ClCompile Include="Editor.cpp" />
     <ClCompile Include="Level.cpp" />
     <ClCompile Include="Material.cpp" />
-    <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="StaticMesh.cpp" />
     <ClCompile Include="MyOpenGL.cpp" />
     <ClCompile Include="Object.cpp" />
-    <ClCompile Include="Primitive.cpp" />
+    <ClCompile Include="MeshSection.cpp" />
+    <ClCompile Include="PythonEnvironment.cpp" />
     <ClCompile Include="SceneComponent.cpp" />
     <ClCompile Include="SceneObject.cpp" />
     <ClCompile Include="Serialization.cpp" />

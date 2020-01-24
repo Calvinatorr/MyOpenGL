@@ -7,11 +7,14 @@
 
 class EditorCamera : public Camera
 {
+private:
+	static EditorCamera* defaultCamera;
+
 public:
 
 	// Properties
 	glm::vec2 cursorPosition;
-	glm::vec2 sensitivity = glm::vec2(90.0f, 90.0f);
+	glm::vec2 sensitivity = glm::vec2(50.0f, 50.0f);
 	float speed = 5.0f, shiftMultiplier = 2.5f;
 
 
@@ -21,8 +24,12 @@ public:
 
 
 	// Methods
-	void Update(const float& DeltaTime);
-	void UpdateMouse(const float& DeltaTime, const glm::vec2& CursorPosition);
-	void UpdateFOV(const float& DeltaTime, const glm::vec2& ScrollOffset);
-};
+	void Update		(const double& DeltaTime);
+	void UpdateMouse(const double& DeltaTime, const glm::vec2& CursorPosition);
+	void UpdateFOV	(const double& DeltaTime, const glm::vec2& ScrollOffset);
 
+
+	// Static methods (singleton)
+	static void CleanupDefaultCamera();
+	static EditorCamera* GetDefaultCamera();
+};

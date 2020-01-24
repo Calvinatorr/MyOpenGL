@@ -45,9 +45,28 @@ std::string Log::FormatMessage(const std::string & Message)
 	return "(" + Utility::GetCurrentDateTime() + "): " + Message;
 }
 
-void Log::PrintToScreen(const std::string & Message)
+void Log::PrintToScreen(const std::string & Message, const float& Duration, const ImVec4& Colour)
 {
-	// IMPLEMENT SCREEN PRINTING HERE
+	// We iterate through each line in the message and insert it into the screen log in reverse order
+	// so that the message as a whole floats to the top, but keeps the message top to bottom
+
+#if WITH_EDITOR
+	if (Duration > 0)
+	{
+		std::stringstream ss(Message);
+		std::string line;
+		std::vector<std::string> reverse;
+		while (std::getline(ss, line))
+		{
+			reverse.push_back(line);
+		}
+		for (auto t = reverse.rbegin(); t != reverse.rend(); ++t)
+		{
+			Log::ScreenLogMessage newMessage(*t, Duration, Colour);
+			screenLog.push_back(newMessage);
+		}
+	}
+#endif
 }
 
 void Log::PrintToConsole(const std::string & Message)
@@ -60,27 +79,32 @@ void Log::PrintToLog(const std::string & Message)
 	Log::log += Log::FormatMessage(Message) + "\n";
 }
 
-void Log::Print(const std::string & Message, bool bPrintToScreen, bool bPrintToConsole, bool bPrintToLog)
+void Log::Print(const std::string & Message, const float& PrintToScreenDuration, const bool& bPrintToConsole, const bool& bPrintToLog)
 {
-	if (bPrintToScreen)
-		Log::PrintToScreen(Message);
+	Log::PrintToScreen(Message, PrintToScreenDuration);
+	Log::PrintInfo(Message, bPrintToConsole, bPrintToLog);
+}
+
+void Log::PrintInfo(const std::string & Message, const bool & bPrintToConsole, const bool & bPrintToLog)
+{
 	if (bPrintToConsole)
 		Log::PrintToConsole(Message);
 	if (bPrintToLog)
 		Log::PrintToLog(Message);
 }
 
-void Log::PrintError(std::string Message, bool bPrintToScreen, bool bPrintToConsole, bool bPrintToLog)
+void Log::PrintError(std::string Message, const float& PrintToScreenDuration, const bool& bPrintToConsole, const bool& bPrintToLog)
 {
 	Message = "Error!: " + Message;
-	Print(Message, bPrintToScreen, bPrintToConsole, bPrintToLog);
+	Log::Print(Message, -1, bPrintToConsole, bPrintToLog); // Don't print to screen so we can override colour by calling method directly
+	Log::PrintToScreen(Message, PrintToScreenDuration, ImVec4(191.0f / 255.0f, 48.0f / 255.0f, 38.0f / 255.0f, 1.0f));
 }
 
 void Log::InitializeLog()
 {
 	if (Dump())
 	{
-		Log::Print("Initialized log file '" + Log::logFilename + "'");
+		Log::PrintInfo("Initialized log file '" + Log::logFilename + "'");
 	}
 }
 
@@ -102,4 +126,40 @@ bool Log::Dump(bool bClearLog)
 	}
 
 	return false;
+}
+
+std::string Log::GetLog()
+{
+	return log;
+}
+
+void Log::DrawScreenLog()
+{
+	glm::vec2 size = Window::GetCurrentObject()->GetSize();
+
+	ImGui::SetNextWindowPos(ImVec2(10.0f, 20.0f));
+	ImGui::SetNextWindowBgAlpha(0.0f);
+	ImGui::SetNextWindowSize(ImVec2(size.x, size.y));
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+	bool show = true;
+	ImGui::Begin("Screen Log", &show, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoMouseInputs);
+
+	// Reverse iterate along screen log and print each message. Remove if passed duration.
+	{
+		auto t = screenLog.rbegin();
+		while (t != screenLog.rend())
+		{
+			auto message = *t;
+			message.Draw();
+
+			// Remove if we passed the duration for this message
+			if (message.PassedDuration())
+				t = decltype(t)(screenLog.erase(std::next(t).base()));
+			else
+				++t;
+		}
+	}
+
+	ImGui::End();
+	ImGui::PopStyleVar();
 }

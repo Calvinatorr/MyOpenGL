@@ -159,7 +159,7 @@ GLint SubShader::CompileSource(const std::string& Source)
 
 	if (success)
 	{
-		Log::Print("'" + GetShaderType() + "' Sub-shader successfully compiled");
+		Log::PrintInfo("'" + GetShaderType() + "' Sub-shader successfully compiled");
 	}
 	else
 	{
@@ -173,6 +173,7 @@ GLint SubShader::CompileSource(const std::string& Source)
 GLint SubShader::CompileFile(const std::string& File)
 {
 	std::string source = SubShader::GetSource(File);
+	SetDisplayName(File.substr(File.rfind("/") + 1, File.length() - 1));
 	return CompileSource(source);
 }
 
@@ -274,11 +275,11 @@ GLint Shader::LinkShaders()
 	{
 		glGetProgramInfoLog(ID, 512, NULL, infoLog);
 
-		Log::PrintError("Failed to link sub-shaders '" + source + "'\n" + infoLog);
+		Log::PrintError("Failed to link sub-shaders '" + source + "'\n" + infoLog, 5.0f);
 	}
 	else
 	{
-		Log::Print("Successfully linked sub-shaders '" + source + "'");
+		Log::PrintInfo("Successfully linked sub-shaders '" + source + "'");
 	}
 
 	glDeleteShader(vertexShader.GetID());
@@ -292,6 +293,9 @@ GLint Shader::Compile(const std::string & Folder)
 	GLint success = 1;
 	success = success && CompileShadersFromFolder(Folder);
 	LinkShaders();
+
+	if (success)
+		SetDisplayName(Folder.substr(Folder.rfind("/") + 1, Folder.length() - 1));
 
 	return success;
 }
@@ -315,7 +319,7 @@ void Shader::RecompileAll()
 		if (*it != nullptr)
 		{
 			(*it)->Recompile();
-			Log::Print("Recompiling '" + (*it)->source + "'");
+			Log::PrintInfo("Recompiling '" + (*it)->source + "'");
 		}
 
 		it++; // Move to next element in set
@@ -338,7 +342,8 @@ void Shader::Bind()
 
 void Shader::Destroy()
 {
-	Unbind();
+	//Unbind();
+
 	/*std::vector<Shader*>::iterator pos = std::find(Shader::all.begin(), Shader::all.end(), this);
 	if (pos != Shader::all.end())
 		Shader::all.erase(pos);*/
@@ -412,7 +417,7 @@ Shader * Shader::GetCurrent()
 	return current;
 }
 
-void Shader::Unbind()
+void Shader::UnbindCurrent()
 {
 	if (current != nullptr)
 		current = nullptr; // Clear pointer

@@ -14,16 +14,20 @@
 #include "examples/imgui_impl_glfw.cpp"
 #include "examples/imgui_impl_opengl3.cpp"
 // Includes glad and GLFW
-#include "GUI.h"
+#include "Editor.h"
 
 
 // ===================================== OUR INCLUDES ============================================
 
+// Python environment
+#include "PythonEnvironment.h"
+
 // Our classes
+#include "Game.h"
+#include "EditorGUI.h"
 #include "Window.h"
 #include "Shader.h"
 #include "Texture2D.h"
-#include "Mesh.h"
 #include "EditorCamera.h"
 #include "StaticMeshObject.h"
 #include "Level.h"
@@ -36,29 +40,30 @@
 const GLuint SRC_WIDTH = 1280;
 const GLuint SRC_HEIGHT = 720;
 Window window;
-EditorCamera camera;
+//EditorCamera camera;
 Shader shaderProgram, unlitShader, cubemapShader;
-
-double elapsedTime = 0.0f, deltaTime = 0.0f;
-
 
 
 // ===================================== EVENTS ============================================
 
 void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 {
-	camera.UpdateFOV(deltaTime, glm::vec2(xoffset, yoffset));
+	/*EditorCamera* defaultCamera = EditorCamera::GetDefaultCamera();
+	if (defaultCamera != nullptr)
+		defaultCamera->UpdateFOV(Game::GetDeltaTime(), glm::vec2(xoffset, yoffset));*/
 }
 
 void MouseCallback(GLFWwindow* window, double xpos, double ypos)
 {
-	camera.UpdateMouse(deltaTime, glm::vec2(xpos, ypos));
+	EditorCamera* defaultCamera = EditorCamera::GetDefaultCamera();
+	if (defaultCamera != nullptr)
+		defaultCamera->UpdateMouse(Game::GetDeltaTime(), glm::vec2(xpos, ypos));
 }
 
 void EditorInput(const float& DeltaTime)
 {
 	// Input
-	if (glfwGetKey(Window::GetCurrent(), GLFW_KEY_ESCAPE) == GLFW_PRESS) // Close window on escape press
+	/*if (glfwGetKey(Window::GetCurrent(), GLFW_KEY_ESCAPE) == GLFW_PRESS) // Close window on escape press
 		glfwSetWindowShouldClose(Window::GetCurrent(), true);
 
 	else if (glfwGetKey(Window::GetCurrent(), GLFW_KEY_1) == GLFW_PRESS)
@@ -68,13 +73,13 @@ void EditorInput(const float& DeltaTime)
 	}
 	else if (glfwGetKey(Window::GetCurrent(), GLFW_KEY_2) == GLFW_PRESS)
 	{
-		glLineWidth(5.0f);
+		glLineWidth(2.0f);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		std::cout << "MODE: WIREFRAME" << std::endl;
 	}
 	else if (glfwGetKey(Window::GetCurrent(), GLFW_KEY_3) == GLFW_PRESS)
 	{
-		glPointSize(5.0f);
+		glPointSize(2.0f);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
 		std::cout << "MODE: POINTS" << std::endl;
 	}
@@ -82,7 +87,7 @@ void EditorInput(const float& DeltaTime)
 	{
 		std::cout << "SHADERS HOT RECOMPILE" << std::endl;
 		Shader::RecompileAll();
-	}
+	}*/
 }
 
 
@@ -93,6 +98,7 @@ int main(int argc, char* argv[])
 	// Initialize utilities
 	Utility::InitializeStartDateTime();
 	Log::InitializeLog();
+	Python::Initialize();
 
 
 	// GLFW initialize
@@ -106,7 +112,7 @@ int main(int argc, char* argv[])
 
 
 	// GLFW create window
-	window = Window(SRC_WIDTH, SRC_HEIGHT, "MyOpenGL");
+	window.Create(SRC_WIDTH, SRC_HEIGHT, "MyOpenGL", true);
 	if (window.window == nullptr)
 		return 1;
 	glfwSetScrollCallback(window.window, ScrollCallback);
@@ -127,7 +133,7 @@ int main(int argc, char* argv[])
 		const GLubyte* version = glGetString(GL_VERSION);
 		std::stringstream s;
 		s << "Using OpenGL version `" << version << "`";
-		Log::Print(s.str(), false);
+		Log::PrintInfo(s.str());
 	}
 
 	glEnable(GL_DEPTH_TEST);
@@ -141,12 +147,77 @@ int main(int argc, char* argv[])
 	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 
 	// Setup Dear ImGui style
-	//ImGui::StyleColorsDark();
-	ImGui::StyleColorsClassic();
+	ImGui::StyleColorsDark();
+	//ImGui::StyleColorsClassic();
+	//ImGui::StyleColorsLight();
+	ImGuiStyle* style = &ImGui::GetStyle();
+	io.Fonts->AddFontFromFileTTF((ENGINE_PATH + std::string("Editor/Fonts/Ruda-Bold.ttf")).c_str(), 15.0f);
+	ImGui::GetStyle().FrameRounding = 4.0f;
+	ImGui::GetStyle().GrabRounding = 4.0f;
+
+	ImVec4* colors = ImGui::GetStyle().Colors;
+	colors[ImGuiCol_Text] = ImVec4(0.95f, 0.96f, 0.98f, 1.00f);
+	colors[ImGuiCol_TextDisabled] = ImVec4(0.36f, 0.42f, 0.47f, 1.00f);
+	colors[ImGuiCol_WindowBg] = ImVec4(0.11f, 0.15f, 0.17f, 1.00f);
+	colors[ImGuiCol_ChildBg] = ImVec4(0.15f, 0.18f, 0.22f, 1.00f);
+	colors[ImGuiCol_PopupBg] = ImVec4(0.08f, 0.08f, 0.08f, 0.94f);
+	colors[ImGuiCol_Border] = ImVec4(0.08f, 0.10f, 0.12f, 1.00f);
+	colors[ImGuiCol_BorderShadow] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+	colors[ImGuiCol_FrameBg] = ImVec4(0.20f, 0.25f, 0.29f, 1.00f);
+	colors[ImGuiCol_FrameBgHovered] = ImVec4(0.12f, 0.20f, 0.28f, 1.00f);
+	colors[ImGuiCol_FrameBgActive] = ImVec4(0.09f, 0.12f, 0.14f, 1.00f);
+	colors[ImGuiCol_TitleBg] = ImVec4(0.09f, 0.12f, 0.14f, 0.65f);
+	colors[ImGuiCol_TitleBgActive] = ImVec4(0.08f, 0.10f, 0.12f, 1.00f);
+	colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.00f, 0.00f, 0.00f, 0.51f);
+	colors[ImGuiCol_MenuBarBg] = ImVec4(0.15f, 0.18f, 0.22f, 1.00f);
+	colors[ImGuiCol_ScrollbarBg] = ImVec4(0.02f, 0.02f, 0.02f, 0.39f);
+	colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.20f, 0.25f, 0.29f, 1.00f);
+	colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.18f, 0.22f, 0.25f, 1.00f);
+	colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.09f, 0.21f, 0.31f, 1.00f);
+	colors[ImGuiCol_CheckMark] = ImVec4(0.28f, 0.56f, 1.00f, 1.00f);
+	colors[ImGuiCol_SliderGrab] = ImVec4(0.28f, 0.56f, 1.00f, 1.00f);
+	colors[ImGuiCol_SliderGrabActive] = ImVec4(0.37f, 0.61f, 1.00f, 1.00f);
+	colors[ImGuiCol_Button] = ImVec4(0.20f, 0.25f, 0.29f, 1.00f);
+	colors[ImGuiCol_ButtonHovered] = ImVec4(0.28f, 0.56f, 1.00f, 1.00f);
+	colors[ImGuiCol_ButtonActive] = ImVec4(0.06f, 0.53f, 0.98f, 1.00f);
+	colors[ImGuiCol_Header] = ImVec4(0.20f, 0.25f, 0.29f, 0.55f);
+	colors[ImGuiCol_HeaderHovered] = ImVec4(0.26f, 0.59f, 0.98f, 0.80f);
+	colors[ImGuiCol_HeaderActive] = ImVec4(0.26f, 0.59f, 0.98f, 1.00f);
+	colors[ImGuiCol_Separator] = ImVec4(0.20f, 0.25f, 0.29f, 1.00f);
+	colors[ImGuiCol_SeparatorHovered] = ImVec4(0.10f, 0.40f, 0.75f, 0.78f);
+	colors[ImGuiCol_SeparatorActive] = ImVec4(0.10f, 0.40f, 0.75f, 1.00f);
+	colors[ImGuiCol_ResizeGrip] = ImVec4(0.26f, 0.59f, 0.98f, 0.25f);
+	colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.26f, 0.59f, 0.98f, 0.67f);
+	colors[ImGuiCol_ResizeGripActive] = ImVec4(0.26f, 0.59f, 0.98f, 0.95f);
+	colors[ImGuiCol_Tab] = ImVec4(0.11f, 0.15f, 0.17f, 1.00f);
+	colors[ImGuiCol_TabHovered] = ImVec4(0.26f, 0.59f, 0.98f, 0.80f);
+	colors[ImGuiCol_TabActive] = ImVec4(0.20f, 0.25f, 0.29f, 1.00f);
+	colors[ImGuiCol_TabUnfocused] = ImVec4(0.11f, 0.15f, 0.17f, 1.00f);
+	colors[ImGuiCol_TabUnfocusedActive] = ImVec4(0.11f, 0.15f, 0.17f, 1.00f);
+	colors[ImGuiCol_PlotLines] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
+	colors[ImGuiCol_PlotLinesHovered] = ImVec4(1.00f, 0.43f, 0.35f, 1.00f);
+	colors[ImGuiCol_PlotHistogram] = ImVec4(0.90f, 0.70f, 0.00f, 1.00f);
+	colors[ImGuiCol_PlotHistogramHovered] = ImVec4(1.00f, 0.60f, 0.00f, 1.00f);
+	colors[ImGuiCol_TextSelectedBg] = ImVec4(0.26f, 0.59f, 0.98f, 0.35f);
+	colors[ImGuiCol_DragDropTarget] = ImVec4(1.00f, 1.00f, 0.00f, 0.90f);
+	colors[ImGuiCol_NavHighlight] = ImVec4(0.26f, 0.59f, 0.98f, 1.00f);
+	colors[ImGuiCol_NavWindowingHighlight] = ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
+	colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
+	colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
+
+
 
 	// Setup Platform/Renderer bindings
 	ImGui_ImplGlfw_InitForOpenGL(window.window, true);
 	ImGui_ImplOpenGL3_Init(GLSL_VERSION.c_str());
+
+	
+	// ===================================== EDITOR ============================================
+
+#if WITH_EDITOR
+	EditorGrid editorGrid = EditorGrid();
+	EditorGUI editorGUI;
+#endif
 
 
 	// ===================================== TEST LEVEL ============================================
@@ -170,11 +241,15 @@ int main(int argc, char* argv[])
 
 	// ===================================== CAMERA ============================================
 
-	camera.fieldOfView = 65.0f;
-	camera.transform.position = glm::vec3(0.0f, 0.0f, 3.0f);
-	camera.cursorPosition = glm::vec2((GLfloat)window.GetSize().x / 2.0f, (GLfloat)window.GetSize().y / 2.0f);
-	//camera.transform.rotation = glm::quat(glm::vec3(0.0f, glm::radians(180.0f), 0.0));
 
+	EditorCamera* defaultCamera = EditorCamera::GetDefaultCamera();
+	if (defaultCamera != nullptr)
+	{
+		defaultCamera->fieldOfView = 65.0f;
+		defaultCamera->transform.position = glm::vec3(0.0f, 0.0f, 3.0f);
+		defaultCamera->cursorPosition = glm::vec2((GLfloat)window.GetSize().x / 2.0f, (GLfloat)window.GetSize().y / 2.0f);
+		//camera.transform.rotation = glm::quat(glm::vec3(0.0f, glm::radians(180.0f), 0.0));
+	}
 
 	// ===================================== FRAME BUFFER ============================================
 
@@ -210,14 +285,14 @@ int main(int argc, char* argv[])
 
 
 	Material unlitMaterial(&unlitShader);
-	unlitMaterial.name = "Unlit_MI";
+	unlitMaterial.SetDisplayName("Unlit_MI");
 
 	Material cubemapMaterial(&cubemapShader);
-	cubemapMaterial.name = "Cubemap_MI";
+	cubemapMaterial.SetDisplayName("Cubemap_MI");
 	cubemapMaterial.SetTextureParameter("EquirectangularMap", &environmentMap);
 
 	Material checkerMaterial(&shaderProgram);
-	checkerMaterial.name = "Checker_MI";
+	checkerMaterial.SetDisplayName("Checker_MI");
 	checkerMaterial.SetTextureParameter("tex", &tex);
 	checkerMaterial.SetTextureParameter("tex2", &environmentMap);
 	checkerMaterial.SetVectorParameter("inMaterial.Albedo", glm::vec3(1.0f));
@@ -226,7 +301,7 @@ int main(int argc, char* argv[])
 	checkerMaterial.SetFloatParameter("inMaterial.AmbientOcclusion", 1.0f);
 
 	Material sphereMaterial(&shaderProgram);
-	sphereMaterial.name = "Sphere_MI";
+	sphereMaterial.SetDisplayName("Sphere_MI");
 	sphereMaterial.SetTextureParameter("tex", &tex);
 	sphereMaterial.SetTextureParameter("tex2", &tex2);
 	sphereMaterial.SetVectorParameter("inMaterial.Albedo", glm::vec3(1.0f, 0.1f, 0.7f));
@@ -239,25 +314,30 @@ int main(int argc, char* argv[])
 	
 
 
-	Mesh boxMesh;
-	boxMesh.LoadMeshObj("../Content/Box_SM.obj");
+	StaticMesh boxMesh;
+	//boxMesh.LoadMeshObj("../Content/Box_SM.obj");
 	//box.transform.rotation = glm::quat(glm::radians(glm::vec3(0.0f, 45.0f, 0.0f)));
 	//box.transform.position = glm::vec3(-5.0f, 0.0f, 0.0f);
-	boxMesh.material = &unlitMaterial;
+	//boxMesh.LoadMeshFromDisk(CONTENT_PATH + "Box_SM.obj");
+	boxMesh.LoadMeshFromDisk(CONTENT_PATH + "Sphere_SM.obj");
+	//boxMesh.LoadMeshFromDisk(CONTENT_PATH + "BD1.fbx");
+	//boxMesh.SetMaterial(0, &unlitMaterial);
+	boxMesh.SetMaterial(0, &sphereMaterial);
+		//boxMesh.material = &unlitMaterial;
 
-	Mesh sphereMesh;
+	StaticMesh sphereMesh;
 	//sphereMesh.LoadMeshObj("../Content/Sphere_SM.obj");
 	//sphereMesh.LoadMeshObj("../Content/MaterialTest_SM.obj");
-	sphereMesh.material = &sphereMaterial;
+		//sphereMesh.material = &sphereMaterial;
 	//sphere.transform.position = glm::vec3(-2.0f, -.3f, 1.0f);
 
 	/*
-	Primitive planeMesh;
+	MeshSection planeMesh;
 
-	planeMesh.AddVertex(Primitive::Vertex({  0.5f,  0.0f, -0.5f }, { 1.0f, 1.0f })); // Front - Top right
-	planeMesh.AddVertex(Primitive::Vertex({  0.5f, -0.0f,  0.5f }, { 1.0f, 0.0f })); // Front - Bottom right
-	planeMesh.AddVertex(Primitive::Vertex({ -0.5f, -0.0f,  0.5f }, { 0.0f, 0.0f })); // Front - Bottom left
-	planeMesh.AddVertex(Primitive::Vertex({ -0.5f,  0.0f, -0.5f }, { 0.0f, 1.0f })); // Front - Top left
+	planeMesh.AddVertex(MeshSection::Vertex({  0.5f,  0.0f, -0.5f }, { 1.0f, 1.0f })); // Front - Top right
+	planeMesh.AddVertex(MeshSection::Vertex({  0.5f, -0.0f,  0.5f }, { 1.0f, 0.0f })); // Front - Bottom right
+	planeMesh.AddVertex(MeshSection::Vertex({ -0.5f, -0.0f,  0.5f }, { 0.0f, 0.0f })); // Front - Bottom left
+	planeMesh.AddVertex(MeshSection::Vertex({ -0.5f,  0.0f, -0.5f }, { 0.0f, 1.0f })); // Front - Top left
 	planeMesh.indices = {
 		0, 1, 3,
 		1, 2, 3
@@ -268,45 +348,45 @@ int main(int argc, char* argv[])
 	planeMesh.material = &unlitMaterial;
 
 
-	Primitive primMesh;
+	MeshSection primMesh;
 	primMesh.material = &cubemapMaterial;
 
 	// Geometry
 	// Front face
-	primMesh.AddVertex(Primitive::Vertex({  0.5f,  0.5f,  0.5f }, { 1.0f, 1.0f }, { 0.0f, 0.0f, 1.0f })); // Front - Top right
-	primMesh.AddVertex(Primitive::Vertex({  0.5f, -0.5f,  0.5f }, { 1.0f, 0.0f }, { 0.0f, 0.0f, 1.0f })); // Front - Bottom right
-	primMesh.AddVertex(Primitive::Vertex({ -0.5f, -0.5f,  0.5f }, { 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f })); // Front - Bottom left
-	primMesh.AddVertex(Primitive::Vertex({ -0.5f,  0.5f,  0.5f }, { 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f })); // Front - Top left
+	primMesh.AddVertex(MeshSection::Vertex({  0.5f,  0.5f,  0.5f }, { 1.0f, 1.0f }, { 0.0f, 0.0f, 1.0f })); // Front - Top right
+	primMesh.AddVertex(MeshSection::Vertex({  0.5f, -0.5f,  0.5f }, { 1.0f, 0.0f }, { 0.0f, 0.0f, 1.0f })); // Front - Bottom right
+	primMesh.AddVertex(MeshSection::Vertex({ -0.5f, -0.5f,  0.5f }, { 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f })); // Front - Bottom left
+	primMesh.AddVertex(MeshSection::Vertex({ -0.5f,  0.5f,  0.5f }, { 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f })); // Front - Top left
 
 	// Back face
-	primMesh.AddVertex(Primitive::Vertex({  0.5f,  0.5f, -0.5f }, { 1.0f, 1.0f }, { 0.0f, 0.0f, -1.0f })); // Back  - Top right
-	primMesh.AddVertex(Primitive::Vertex({  0.5f, -0.5f, -0.5f }, { 1.0f, 0.0f }, { 0.0f, 0.0f, -1.0f })); // Back  - Bottom right
-	primMesh.AddVertex(Primitive::Vertex({ -0.5f, -0.5f, -0.5f }, { 0.0f, 0.0f }, { 0.0f, 0.0f, -1.0f })); // Back  - Bottom left
-	primMesh.AddVertex(Primitive::Vertex({ -0.5f,  0.5f, -0.5f }, { 0.0f, 1.0f }, { 0.0f, 0.0f, -1.0f })); // Back -  Top left
+	primMesh.AddVertex(MeshSection::Vertex({  0.5f,  0.5f, -0.5f }, { 1.0f, 1.0f }, { 0.0f, 0.0f, -1.0f })); // Back  - Top right
+	primMesh.AddVertex(MeshSection::Vertex({  0.5f, -0.5f, -0.5f }, { 1.0f, 0.0f }, { 0.0f, 0.0f, -1.0f })); // Back  - Bottom right
+	primMesh.AddVertex(MeshSection::Vertex({ -0.5f, -0.5f, -0.5f }, { 0.0f, 0.0f }, { 0.0f, 0.0f, -1.0f })); // Back  - Bottom left
+	primMesh.AddVertex(MeshSection::Vertex({ -0.5f,  0.5f, -0.5f }, { 0.0f, 1.0f }, { 0.0f, 0.0f, -1.0f })); // Back -  Top left
 
 	// Top face
-	primMesh.AddVertex(Primitive::Vertex({  0.5f,  0.5f,  0.5f }, { 1.0f, 1.0f }, { 0.0f, 1.0f, 0.0f })); // Front - Top right
-	primMesh.AddVertex(Primitive::Vertex({  0.5f,  0.5f, -0.5f }, { 1.0f, 0.0f }, { 0.0f, 1.0f, 0.0f })); // Back  - Top right
-	primMesh.AddVertex(Primitive::Vertex({ -0.5f,  0.5f, -0.5f }, { 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f })); // Back  - Top left
-	primMesh.AddVertex(Primitive::Vertex({ -0.5f,  0.5f,  0.5f }, { 0.0f, 1.0f }, { 0.0f, 1.0f, 0.0f })); // Front - Top left
+	primMesh.AddVertex(MeshSection::Vertex({  0.5f,  0.5f,  0.5f }, { 1.0f, 1.0f }, { 0.0f, 1.0f, 0.0f })); // Front - Top right
+	primMesh.AddVertex(MeshSection::Vertex({  0.5f,  0.5f, -0.5f }, { 1.0f, 0.0f }, { 0.0f, 1.0f, 0.0f })); // Back  - Top right
+	primMesh.AddVertex(MeshSection::Vertex({ -0.5f,  0.5f, -0.5f }, { 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f })); // Back  - Top left
+	primMesh.AddVertex(MeshSection::Vertex({ -0.5f,  0.5f,  0.5f }, { 0.0f, 1.0f }, { 0.0f, 1.0f, 0.0f })); // Front - Top left
 
 	// Bottom face
-	primMesh.AddVertex(Primitive::Vertex({ 0.5f,   -0.5f,  0.5f }, { 1.0f, 1.0f }, { 0.0f, -1.0f, 0.0f })); // Front - Top right
-	primMesh.AddVertex(Primitive::Vertex({ 0.5f,   -0.5f, -0.5f }, { 1.0f, 0.0f }, { 0.0f, -1.0f, 0.0f })); // Back  - Top right
-	primMesh.AddVertex(Primitive::Vertex({ -0.5f,  -0.5f, -0.5f }, { 0.0f, 0.0f }, { 0.0f, -1.0f, 0.0f })); // Back  - Top left
-	primMesh.AddVertex(Primitive::Vertex({ -0.5f,  -0.5f,  0.5f }, { 0.0f, 1.0f }, { 0.0f, -1.0f, 0.0f })); // Front - Top left
+	primMesh.AddVertex(MeshSection::Vertex({ 0.5f,   -0.5f,  0.5f }, { 1.0f, 1.0f }, { 0.0f, -1.0f, 0.0f })); // Front - Top right
+	primMesh.AddVertex(MeshSection::Vertex({ 0.5f,   -0.5f, -0.5f }, { 1.0f, 0.0f }, { 0.0f, -1.0f, 0.0f })); // Back  - Top right
+	primMesh.AddVertex(MeshSection::Vertex({ -0.5f,  -0.5f, -0.5f }, { 0.0f, 0.0f }, { 0.0f, -1.0f, 0.0f })); // Back  - Top left
+	primMesh.AddVertex(MeshSection::Vertex({ -0.5f,  -0.5f,  0.5f }, { 0.0f, 1.0f }, { 0.0f, -1.0f, 0.0f })); // Front - Top left
 
 	// Left face
-	primMesh.AddVertex(Primitive::Vertex({ -0.5f,  0.5f,  0.5f }, { 1.0f, 1.0f }, { -1.0f, 0.0f, 0.0f })); // Front - Top left
-	primMesh.AddVertex(Primitive::Vertex({ -0.5f, -0.5f,  0.5f }, { 1.0f, 0.0f }, { -1.0f, 0.0f, 0.0f })); // Front - Bottom left
-	primMesh.AddVertex(Primitive::Vertex({ -0.5f, -0.5f, -0.5f }, { 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f })); // Back  - Bottom left
-	primMesh.AddVertex(Primitive::Vertex({ -0.5f,  0.5f, -0.5f }, { 0.0f, 1.0f }, { -1.0f, 0.0f, 0.0f })); // Back -  Top left
+	primMesh.AddVertex(MeshSection::Vertex({ -0.5f,  0.5f,  0.5f }, { 1.0f, 1.0f }, { -1.0f, 0.0f, 0.0f })); // Front - Top left
+	primMesh.AddVertex(MeshSection::Vertex({ -0.5f, -0.5f,  0.5f }, { 1.0f, 0.0f }, { -1.0f, 0.0f, 0.0f })); // Front - Bottom left
+	primMesh.AddVertex(MeshSection::Vertex({ -0.5f, -0.5f, -0.5f }, { 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f })); // Back  - Bottom left
+	primMesh.AddVertex(MeshSection::Vertex({ -0.5f,  0.5f, -0.5f }, { 0.0f, 1.0f }, { -1.0f, 0.0f, 0.0f })); // Back -  Top left
 
 	// Right face
-	primMesh.AddVertex(Primitive::Vertex({ 0.5f,  0.5f,  0.5f }, { 1.0f, 1.0f }, { 1.0f, 0.0f, 0.0f })); // Front - Top left
-	primMesh.AddVertex(Primitive::Vertex({ 0.5f, -0.5f,  0.5f }, { 1.0f, 0.0f }, { 1.0f, 0.0f, 0.0f })); // Front - Bottom left
-	primMesh.AddVertex(Primitive::Vertex({ 0.5f, -0.5f, -0.5f }, { 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f })); // Back  - Bottom left
-	primMesh.AddVertex(Primitive::Vertex({ 0.5f,  0.5f, -0.5f }, { 0.0f, 1.0f }, { 1.0f, 0.0f, 0.0f })); // Back -  Top left
+	primMesh.AddVertex(MeshSection::Vertex({ 0.5f,  0.5f,  0.5f }, { 1.0f, 1.0f }, { 1.0f, 0.0f, 0.0f })); // Front - Top left
+	primMesh.AddVertex(MeshSection::Vertex({ 0.5f, -0.5f,  0.5f }, { 1.0f, 0.0f }, { 1.0f, 0.0f, 0.0f })); // Front - Bottom left
+	primMesh.AddVertex(MeshSection::Vertex({ 0.5f, -0.5f, -0.5f }, { 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f })); // Back  - Bottom left
+	primMesh.AddVertex(MeshSection::Vertex({ 0.5f,  0.5f, -0.5f }, { 0.0f, 1.0f }, { 1.0f, 0.0f, 0.0f })); // Back -  Top left
 
 	primMesh.SetColour(glm::vec3(0.0f, 1.0f, 0.0f));
 	primMesh.indices = {
@@ -340,6 +420,7 @@ int main(int argc, char* argv[])
 	boxMeshObject.staticMeshComponent = StaticMeshComponent(&boxMesh);
 	boxMeshObject.Construct();
 	boxMeshObject.transform.rotation = glm::quat(glm::radians(glm::vec3(0.0f, 45.0f, 0.0f)));
+	boxMeshObject.SetDisplayName("Box mesh object");
 
 	StaticMeshObject sphereMeshObject;
 	sphereMeshObject.staticMeshComponent = StaticMeshComponent(&sphereMesh);
@@ -351,75 +432,51 @@ int main(int argc, char* argv[])
 	level.AddSceneObject(&sphereMeshObject);
 	level.Load();
 
+	SceneOutliner::Select(&boxMeshObject);
+
 
 	// ===================================== MAIN THREAD ============================================
 
-	window.Bind();
-	camera.Bind();
+	Game::Initialize();
 
-	// ImGui test crap
-	bool bShowDemoWindow = true;
+	window.Bind();
+	defaultCamera->Bind();
+
 
 	while( !glfwWindowShouldClose(Window::GetCurrent()) ) // While window is open
 	{
-		// Delta & elapsed time
-		double time = glfwGetTime();
-		deltaTime = time - elapsedTime;
-		elapsedTime = time;
+		// Update game specifics - i.e. deltaTime
+		Game::Update();
+		auto deltaTime = Game::GetDeltaTime();
+		auto elapsedTime = Game::GetElapsedTime();
+
 
 		glfwPollEvents(); // Check if any events (i.e. inputs) have been triggered
 
+
 		// Camera controls
-		camera.Update(deltaTime);
+		defaultCamera->Update(deltaTime);
 		EditorInput(deltaTime);
-
-		// Level manager
-		LevelManager::Update();
+		SceneOutliner::Update(); // Update (tick) all objects in scene outliner
 
 
-		// Start Dear ImGUI frame
+		// Start Dear ImGUI frame & draw Log & Dear ImGui widgets
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
-
-		// Do ImGui stuff
-
-		// imgui demo win
-		if (bShowDemoWindow)
-		{
-			ImGui::ShowDemoWindow(&bShowDemoWindow);
-		}
-		if (ImGui::Button("Yeah do some stuff"))
-		{
-			Shader::RecompileAll();
-		}
-
-
-		// Render ImGui
+		Editor::DrawWidgets();
+		Log::DrawScreenLog();
 		ImGui::Render();
+
+
 		// Clear screen with colour
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0);
+		glClearColor(editorGUI.clearColour[0], editorGUI.clearColour[1], editorGUI.clearColour[2], editorGUI.clearColour[3]);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear screen & depth buffers with bitwise operation on flags
-		
 
 
-		//Draw meshes
-		//boxMeshObject.Draw();
-		//sphereMeshObject.Draw();
-		LevelManager::Draw();
-
-		/*
-		box.Draw();
-		sphere.Draw();
-		plane.Draw();
-		prim.Draw();
-
-		for (int i = 0; i < positions.size(); i++)
-		{
-			glm::mat4 transform = glm::mat4(1.0f); // Identity
-			transform = glm::translate(transform, positions[i]);
-			prim.Draw(prim.transform.GetMatrix() * transform);
-		}*/
+		// Draw meshes
+		SceneOutliner::Draw();
+		Editor::Draw();
 
 
 		// Draw ImGui data to screen - after we've rendered our scene
@@ -429,7 +486,7 @@ int main(int argc, char* argv[])
 		window.SwapBuffers();
 
 		// Safely unbind last shader
-		Shader::Unbind();
+		Shader::UnbindCurrent();
 	}
 
 
@@ -437,9 +494,11 @@ int main(int argc, char* argv[])
 	// ===================================== CLEAN-UP ============================================
 
 	Shader::Cleanup();
-	Primitive::Cleanup();
-	LevelManager::Cleanup();
-	Log::Print("Closing program", false);
+	SceneOutliner::Cleanup();
+	EditorCamera::CleanupDefaultCamera();
+	Editor::Cleanup();
+	Python::Cleanup();
+	Log::PrintInfo("Closing program");
 	Log::Dump(); // Dump rest of the log
 
 	// Clean-up ImGui

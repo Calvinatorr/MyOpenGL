@@ -122,3 +122,49 @@ Material * Material::GetCurrent()
 {
 	return current;
 }
+
+void Material::DrawGUI()
+{
+#if WITH_EDITOR
+
+	// Recompile button
+	if (ImGui::Button("Recompile"))
+	{
+		if (shader != nullptr)
+			shader->Recompile();
+	}
+
+
+	// Float parameters
+	for (auto& parm : floatParameters)
+	{
+		ImGui::PushItemWidth(100);
+		ImGui::DragFloat(parm.name.c_str(), &parm.value, .005f, parm.min_Editor, parm.max_Editor, "%.3f", .05f);
+		ImGui::PopItemWidth();
+	}
+	
+	// Int parameters
+	for (auto& parm : intParameters)
+	{
+		ImGui::PushItemWidth(100);
+		ImGui::DragInt(parm.name.c_str(), &parm.value, .005f, parm.min_Editor, parm.max_Editor, "%.3f");
+		ImGui::PopItemWidth();
+	}
+
+	// Vector parameters
+	for (auto& parm : vectorParameters)
+	{
+		ImGui::PushItemWidth(200);
+		ImGui::ColorEdit3(parm.name.c_str(), glm::value_ptr(parm.value));
+		ImGui::PopItemWidth();
+	}
+
+	// Vector4 parameters
+	for (auto& parm : vector4Parameters)
+	{
+		ImGui::PushItemWidth(200);
+		ImGui::ColorEdit4(parm.name.c_str(), glm::value_ptr(parm.value));
+		ImGui::PopItemWidth();
+	}
+#endif
+}
