@@ -6,6 +6,7 @@ EditorCamera* EditorCamera::defaultCamera = new EditorCamera();
 
 EditorCamera::EditorCamera()
 {
+
 }
 
 
@@ -51,10 +52,7 @@ void EditorCamera::Update(const double& DeltaTime)
 
 	if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS) // Reset camera
 	{
-		pitch = 0.0f;
-		yaw = 0.0f;
-		roll = 0.0f;
-		transform.position = glm::vec3(0.0f, 0.0f, 3.0f);
+		Reset();
 	}
 }
 
@@ -91,6 +89,15 @@ void EditorCamera::UpdateMouse(const double& DeltaTime, const glm::vec2& CursorP
 void EditorCamera::UpdateFOV(const double& DeltaTime, const glm::vec2& ScrollOffset)
 {
 	fieldOfView = std::clamp((fieldOfView - ScrollOffset.y * 2.5f), 1.0f, 90.0f);
+}
+
+
+void EditorCamera::Reset()
+{
+	pitch = -45.0f;
+	yaw = -45.0f;
+	roll = 0.0f;
+	transform.position = glm::vec3(-2.5f, 3.5f, 2.5f);
 }
 
 

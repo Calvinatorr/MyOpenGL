@@ -246,9 +246,8 @@ int main(int argc, char* argv[])
 	if (defaultCamera != nullptr)
 	{
 		defaultCamera->fieldOfView = 65.0f;
-		defaultCamera->transform.position = glm::vec3(0.0f, 0.0f, 3.0f);
 		defaultCamera->cursorPosition = glm::vec2((GLfloat)window.GetSize().x / 2.0f, (GLfloat)window.GetSize().y / 2.0f);
-		//camera.transform.rotation = glm::quat(glm::vec3(0.0f, glm::radians(180.0f), 0.0));
+		defaultCamera->Reset();
 	}
 
 	// ===================================== FRAME BUFFER ============================================

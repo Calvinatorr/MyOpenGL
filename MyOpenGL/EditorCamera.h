@@ -27,6 +27,7 @@ public:
 	void Update		(const double& DeltaTime);
 	void UpdateMouse(const double& DeltaTime, const glm::vec2& CursorPosition);
 	void UpdateFOV	(const double& DeltaTime, const glm::vec2& ScrollOffset);
+	void Reset();
 
 
 	// Static methods (singleton)
