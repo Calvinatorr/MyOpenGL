@@ -19,6 +19,6 @@ public:
 
 	// Interface implementations
 	void Construct() override;
-	void DrawGUI() override;
+	void DrawDetails() override;
 };
 

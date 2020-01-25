@@ -123,7 +123,7 @@ Material * Material::GetCurrent()
 	return current;
 }
 
-void Material::DrawGUI()
+void Material::DrawDetails()
 {
 #if WITH_EDITOR
 
@@ -167,4 +167,19 @@ void Material::DrawGUI()
 		ImGui::PopItemWidth();
 	}
 #endif
+}
+
+
+
+
+void Material::DrawWindow()
+{
+	ImGui::Begin((GetDisplayName() + "(Material Instance)").c_str(), &bIsWindowActive, ImGuiWindowFlags_NoCollapse);
+
+	if (ImGui::Button("Some shit"))
+	{
+
+	}
+
+	ImGui::End();
 }

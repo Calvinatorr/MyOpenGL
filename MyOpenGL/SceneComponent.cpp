@@ -14,9 +14,9 @@ void SceneComponent::Cleanup()
 {
 }
 
-void SceneComponent::DrawGUI()
+void SceneComponent::DrawDetails()
 {
-	localTransform.DrawGUI();
+	localTransform.DrawDetails();
 }
 
 SceneComponent::SceneComponent()

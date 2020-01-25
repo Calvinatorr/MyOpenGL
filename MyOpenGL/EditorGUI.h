@@ -16,14 +16,14 @@
 #include "PythonEnvironment.h"
 
 
-class SceneOutlinerGUI : public EditorWidget
+class SceneOutlinerGUI : public EditorWindow
 {
 private:
 
 
 public:
 
-	void DrawGUI() override
+	void DrawWindow() override
 	{
 		ImGui::Begin("Scene Outliner", &bIsActive, ImGuiWindowFlags_NoCollapse);
 
@@ -67,14 +67,14 @@ public:
 };
 
 
-class ObjectDetailsGUI : public EditorWidget
+class ObjectDetailsGUI : public EditorWindow
 {
 private:
 	void* selected = nullptr;
 
 public:
 
-	void DrawGUI() override
+	void DrawWindow() override
 	{
 		ImGui::Begin("Object Details", &bIsActive, ImGuiWindowFlags_NoCollapse);
 
@@ -145,14 +145,14 @@ public:
 			{
 				if (selected == nullptr)
 				{
-					object->DrawGUI();
+					object->DrawDetails();
 				}
 				else if (selected != nullptr && object->GetAllSceneComponents().size() > 0)
 				{
 					auto comp = static_cast<SceneComponent*>(selected);
 					if (comp != nullptr && object->GetAllSceneComponents().find(comp) != object->GetAllSceneComponents().end())
 					{
-						comp->DrawGUI();
+						comp->DrawDetails();
 					}
 				}
 			}
@@ -163,7 +163,7 @@ public:
 };
 
 
-class ContentBrowserGUI : public EditorWidget
+class ContentBrowserGUI : public EditorWindow
 {
 private:
 
@@ -202,7 +202,7 @@ private:
 
 public:
 
-	void DrawGUI() override
+	void DrawWindow() override
 	{
 		ImGui::Begin("Content Browser", &bIsActive, ImGuiWindowFlags_NoCollapse);
 
@@ -217,7 +217,7 @@ public:
 };
 
 
-class ConsoleLogGUI : public EditorWidget
+class ConsoleLogGUI : public EditorWindow
 {
 private:
 	static const uint SIZE_OF_PYTHON_COMMAND = 255;
@@ -225,7 +225,7 @@ private:
 
 public:
 
-	void DrawGUI() override
+	void DrawWindow() override
 	{
 		ImGui::Begin("Console Log", &bIsActive, ImGuiWindowFlags_NoCollapse);
 		/*ImGuiContext& context = *ImGui::GetCurrentContext();
@@ -242,7 +242,7 @@ public:
 		}
 		ImGui::EndChild();
 
-		ImGui::Columns(2);
+		ImGui::Columns(3);
 		ImGui::SetColumnWidth(0, 60);
 
 		// Execute python command
@@ -254,6 +254,12 @@ public:
 		ImGui::NextColumn();
 		ImGui::InputText("Command", pythonCommand, IM_ARRAYSIZE(pythonCommand));
 
+		ImGui::NextColumn();
+		if (ImGui::Button("Clear Log"))
+		{
+			Log::Dump(true);
+		}
+
 		//context.Font->FontSize = cachedFontSize;
 		ImGui::End();
 	}
@@ -262,7 +268,7 @@ public:
 
 
 
-class EditorGUI : public EditorWidget
+class EditorGUI : public EditorWindow
 {
 private:
 
@@ -286,7 +292,7 @@ public:
 	SceneOutlinerGUI sceneOutliner = SceneOutlinerGUI();
 
 
-	void DrawGUI() override
+	void DrawWindow() override
 	{
 		// Window properties
 		Window* window = Window::GetCurrentObject();

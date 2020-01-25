@@ -43,6 +43,6 @@ public:
 	// Events
 	void Draw() override;
 	void Cleanup() override;
-	void DrawGUI() override;
+	void DrawDetails() override;
 };
 

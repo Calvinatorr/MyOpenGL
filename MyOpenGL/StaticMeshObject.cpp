@@ -18,10 +18,10 @@ void StaticMeshObject::Construct()
 	SceneObject::Construct();
 }
 
-void StaticMeshObject::DrawGUI()
+void StaticMeshObject::DrawDetails()
 {
-	SceneObject::DrawGUI();
+	SceneObject::DrawDetails();
 
 	if (staticMeshComponent.staticMesh != nullptr)
-		staticMeshComponent.staticMesh->DrawGUI();
+		staticMeshComponent.staticMesh->DrawDetails();
 }

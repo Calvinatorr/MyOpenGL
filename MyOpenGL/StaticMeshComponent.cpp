@@ -31,8 +31,8 @@ void StaticMeshComponent::Cleanup()
 	//delete(staticMesh);
 }
 
-void StaticMeshComponent::DrawGUI()
+void StaticMeshComponent::DrawDetails()
 {
-	SceneComponent::DrawGUI();
-	staticMesh->DrawGUI();
+	SceneComponent::DrawDetails();
+	staticMesh->DrawDetails();
 }

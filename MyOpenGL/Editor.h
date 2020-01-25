@@ -15,6 +15,7 @@
 
 
 #include <vector>
+#include <set>
 #include <algorithm>
 
 
@@ -22,18 +23,41 @@
 void GLFW_ErrorCallback(int Error, const char* Description);
 
 
-class _EditorDrawableGUIBase
+/* Derrive all editor functionality from here */
+class _EditorBase
 {
 protected:
 	static const ImGuiTreeNodeFlags panelFlags = ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanFullWidth;
+};
 
+
+/* Draw widget */
+class _EditorWidgetBase : public _EditorBase
+{
 public:
 	virtual void DrawGUI() {};
 };
 
 
+/* Draw details panel from here (Assets, Components, Objects) */
+class _EditorDetailsBase : public _EditorBase
+{
+public:
+	virtual void DrawDetails() {};
+};
+
+
+/* Draw windows from here (Assets) */
+class _EditorWindowBase : public _EditorBase
+{
+public:
+	virtual void DrawWindow() {};
+};
+
+
+
 /* Editor widget automaticlaly registers with the Editor from its constructor */
-class EditorWidget : public _EditorDrawableGUIBase, public _ObjectBase
+class EditorWindow : public _EditorWindowBase, public _ObjectBase
 {
 private:
 	bool bIsVisible = true;
@@ -44,8 +68,8 @@ protected:
 
 public:
 
-	EditorWidget();
-	~EditorWidget();
+	EditorWindow();
+	~EditorWindow();
 
 
 	// Getters
@@ -65,13 +89,15 @@ class Object;
 class Editor
 {
 public:
-	static std::vector<_EditorDrawableGUIBase*> editorGUIDrawables;
-	static std::vector<_DrawableBase*> drawables;
+	static std::set<_EditorWindowBase*> editorWindows;
+	static std::set<_DrawableBase*> drawables;
 
 
 	static void Draw();
 	static void DrawWidgets();
 	static void Cleanup();
-	static void RegisterEditorGUIDrawable(_EditorDrawableGUIBase* EditorObject);
+	static void RegisterWindow(_EditorWindowBase* EditorObject);
 	static void RegisterDrawable(_DrawableBase* EditorObject);
+	static void UnregisterWindow(_EditorWindowBase* EditorObject);
+	static void UnregisterDrawable(_DrawableBase* EditorObject);
 };

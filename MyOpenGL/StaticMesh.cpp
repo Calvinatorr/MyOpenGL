@@ -485,7 +485,7 @@ glm::vec3 StaticMesh::GetMaxBounds() const
 	return maxBounds;
 }
 
-void StaticMesh::DrawGUI()
+void StaticMesh::DrawDetails()
 {
 	if (ImGui::TreeNodeEx("Static Mesh", panelFlags))
 	{
@@ -554,7 +554,7 @@ void StaticMesh::DrawGUI()
 
 				if (ImGui::TreeNodeEx((materialName + " (" + shaderName + ")").c_str(), flags ^ ImGuiTreeNodeFlags_DefaultOpen))
 				{
-					m->DrawGUI();
+					m->DrawDetails();
 					ImGui::TreePop();
 				}
 			}

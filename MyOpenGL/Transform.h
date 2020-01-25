@@ -14,7 +14,7 @@
 #include "Editor.h"
 
 
-class Transform : public _EditorDrawableGUIBase
+class Transform : public _EditorDetailsBase
 {
 public:
 
@@ -56,6 +56,6 @@ public:
 
 
 	// Overrides
-	void DrawGUI() override;
+	void DrawDetails() override;
 };
 

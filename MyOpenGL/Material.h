@@ -11,7 +11,7 @@
 class Object;
 
 
-class Material : public Asset, public _BindableBase, public _EditorDrawableGUIBase
+class Material : public Asset, public _BindableBase, public _EditorDetailsBase
 {
 public:
 	template <class T> class Parameter
@@ -93,7 +93,8 @@ public:
 
 	
 	// Interfaces
-	void DrawGUI() override;
+	void DrawDetails() override;
+	void DrawWindow() override;
 };
 
 

@@ -10,7 +10,3 @@ Asset::Asset()
 Asset::~Asset()
 {
 }
-
-void Asset::DrawEditorWindow()
-{
-}

@@ -16,7 +16,7 @@
 
 
 
-class StaticMesh : public Asset, public _EditorDrawableGUIBase
+class StaticMesh : public Asset, public _EditorDetailsBase
 {
 private:
 
@@ -105,6 +105,6 @@ public:
 
 	// Interface implementations
 	/* Draw editor GUI */
-	virtual void DrawGUI() override;
+	virtual void DrawDetails() override;
 };
 

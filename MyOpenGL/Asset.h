@@ -7,15 +7,20 @@
 
 
 
-class Asset : public Object
+class Asset : public Object, public _EditorWindowBase
 {
+protected:
+	bool bIsWindowActive = false;
+
 public:
 
 
 	Asset();
 	~Asset();
-
-
-	virtual void DrawEditorWindow();
 };
 
+
+class AssetManager
+{
+
+};

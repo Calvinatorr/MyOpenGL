@@ -8,14 +8,14 @@ void GLFW_ErrorCallback(int Error, const char * Description)
 
 
 
-EditorWidget::EditorWidget()
+EditorWindow::EditorWindow()
 {
 #if WITH_EDITOR
-	Editor::RegisterEditorGUIDrawable(this);
+	Editor::RegisterWindow(this);
 #endif
 }
 
-EditorWidget::~EditorWidget()
+EditorWindow::~EditorWindow()
 {
 #if WITH_EDITOR
 	
@@ -23,26 +23,26 @@ EditorWidget::~EditorWidget()
 }
 
 
-bool EditorWidget::IsVisible()
+bool EditorWindow::IsVisible()
 {
 	return bIsVisible;
 }
 
 
-void EditorWidget::SetVisible(bool NewVisibility)
+void EditorWindow::SetVisible(bool NewVisibility)
 {
 	bIsVisible = NewVisibility;
 }
 
 
-void EditorWidget::ToggleActive()
+void EditorWindow::ToggleActive()
 {
 	bIsActive = !bIsActive;
 }
 
 
-std::vector<_EditorDrawableGUIBase*> Editor::editorGUIDrawables = std::vector<_EditorDrawableGUIBase*>();
-std::vector<_DrawableBase*> Editor::drawables = std::vector<_DrawableBase*>();
+std::set<_EditorWindowBase*> Editor::editorWindows = std::set<_EditorWindowBase*>();
+std::set<_DrawableBase*> Editor::drawables = std::set<_DrawableBase*>();
 
 
 void Editor::Draw()
@@ -61,11 +61,11 @@ void Editor::Draw()
 void Editor::DrawWidgets()
 {
 #if WITH_EDITOR
-	for (auto& x : editorGUIDrawables)
+	for (auto& x : editorWindows)
 	{
 		if (x != nullptr)
 		{
-			x->DrawGUI();
+			x->DrawWindow();
 		}
 	}
 #endif
@@ -75,7 +75,7 @@ void Editor::DrawWidgets()
 void Editor::Cleanup()
 {
 #if WITH_EDITOR
-	for (auto& x : editorGUIDrawables)
+	for (auto& x : editorWindows)
 	{
 		if (x != nullptr)
 		{
@@ -101,11 +101,11 @@ void Editor::Cleanup()
 #endif
 }
 
-void Editor::RegisterEditorGUIDrawable(_EditorDrawableGUIBase * EditorObject)
+void Editor::RegisterWindow(_EditorWindowBase * EditorObject)
 {
 #if WITH_EDITOR
 	std::stringstream ss;
-	editorGUIDrawables.push_back(EditorObject);
+	editorWindows.insert(EditorObject);
 	ss << "Registered editor GUI drawable with editor '" << EditorObject << "'";
 	Log::PrintInfo(ss.str());
 #endif
@@ -115,8 +115,22 @@ void Editor::RegisterDrawable(_DrawableBase * EditorObject)
 {
 #if WITH_EDITOR
 	std::stringstream ss;
-	drawables.push_back(EditorObject);
+	drawables.insert(EditorObject);
 	ss << "Registered drawable with editor '" << EditorObject << "'";
 	Log::PrintInfo(ss.str());
+#endif
+}
+
+void Editor::UnregisterWindow(_EditorWindowBase * EditorObject)
+{
+#if WITH_EDITOR
+	editorWindows.erase(EditorObject);
+#endif
+}
+
+void Editor::UnregisterDrawable(_DrawableBase * EditorObject)
+{
+#if WITH_EDITOR
+	drawables.erase(EditorObject);
 #endif
 }

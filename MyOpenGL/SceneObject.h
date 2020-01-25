@@ -17,7 +17,7 @@ class SceneComponent; // Forward declaration to avoid compiler screaming at me
 
 
 // Contain scene components and top-level logic for handling of components
-class SceneObject : public Object, public _DrawableBase, public _EditorDrawableGUIBase
+class SceneObject : public Object, public _DrawableBase, public _EditorDetailsBase
 {
 private:
 	std::set<SceneComponent*> sceneComponents;
@@ -48,7 +48,7 @@ public:
 	// Destroy all scene components & perform any cleanup necessary, invoked from scene manager
 	virtual void Destroy();
 	/* Draw editor GUI */
-	virtual void DrawGUI() override;
+	virtual void DrawDetails() override;
 
 
 	// Serialize object for loading to & from disk

@@ -106,7 +106,7 @@ glm::mat4 Transform::GetMatrixWithoutScale() const
 	return transform;
 }
 
-void Transform::DrawGUI()
+void Transform::DrawDetails()
 {
 #if WITH_EDITOR
 	if (ImGui::TreeNodeEx("Transform", panelFlags))
