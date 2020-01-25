@@ -128,6 +128,15 @@ void main()
 	if (grid < .0001f)
 		discard;
 		
-	vec3 GridColour = vec3(0.3f);
+		
+	
+		
+	vec3 worldPos = saturate(abs(WorldPosition));
+	worldPos = vec3(1.0f)-worldPos;
+	worldPos.xz = worldPos.zx;
+	worldPos.y = 0.0f;
+	worldPos = max(worldPos, .15f);
+	
+	vec3 GridColour = worldPos * vec3(0.3f);
 	FragColour = vec4(TonemapSCurve_ACES(GridColour), 1.0f);
 } 
