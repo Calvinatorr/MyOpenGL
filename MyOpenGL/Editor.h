@@ -47,29 +47,32 @@ public:
 };
 
 
-/* Draw windows from here (Assets) */
+/* Draw windows from here (Assets)
 class _EditorWindowBase : public _EditorBase
 {
 public:
-	virtual void DrawWindow() {};
-};
-
+	
+};*/
 
 
 /* Editor widget automaticlaly registers with the Editor from its constructor */
-class EditorWindow : public _EditorWindowBase, public _ObjectBase
+class EditorWindow : public _ObjectBase  //, public _EditorWindowBase
 {
-private:
-	bool bIsVisible = true;
-
 protected:
-	bool bIsActive = true;
-	static const ImGuiTreeNodeFlags panelFlags = ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanFullWidth;
+	bool bIsVisible = true;
 
 public:
 
-	EditorWindow();
+	EditorWindow(const bool& bOpen = true);
 	~EditorWindow();
+
+	// Methods
+	/* Registers with Editor */
+	void OpenWindow();
+	/* Unregisters window with Editor (closes) */
+	void CloseWindow();
+	/* Toggle window */
+	void ToggleWindow();
 
 
 	// Getters
@@ -78,7 +81,11 @@ public:
 
 	// Setters
 	void SetVisible(bool NewVisibility);
-	void ToggleActive();
+	void ToggleVisibility();
+
+
+	// Implementable methods
+	virtual void DrawWindow() {};
 };
 
 
@@ -89,15 +96,15 @@ class Object;
 class Editor
 {
 public:
-	static std::set<_EditorWindowBase*> editorWindows;
+	static std::set<EditorWindow*> editorWindows;
 	static std::set<_DrawableBase*> drawables;
 
 
 	static void Draw();
 	static void DrawWidgets();
 	static void Cleanup();
-	static void RegisterWindow(_EditorWindowBase* EditorObject);
+	static void RegisterWindow(EditorWindow* EditorObject);
 	static void RegisterDrawable(_DrawableBase* EditorObject);
-	static void UnregisterWindow(_EditorWindowBase* EditorObject);
+	static void UnregisterWindow(EditorWindow* EditorObject);
 	static void UnregisterDrawable(_DrawableBase* EditorObject);
 };

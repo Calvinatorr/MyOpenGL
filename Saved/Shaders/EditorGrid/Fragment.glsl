@@ -133,7 +133,7 @@ void main()
 		
 	vec3 worldPos = saturate(abs(WorldPosition));
 	worldPos = vec3(1.0f)-worldPos;
-	worldPos.xz = worldPos.zx;
+	worldPos.xz = worldPos.zx; 
 	worldPos.y = 0.0f;
 	worldPos = max(worldPos, .15f);
 	

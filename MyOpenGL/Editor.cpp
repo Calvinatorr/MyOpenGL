@@ -8,10 +8,13 @@ void GLFW_ErrorCallback(int Error, const char * Description)
 
 
 
-EditorWindow::EditorWindow()
+EditorWindow::EditorWindow(const bool& bOpen)
 {
 #if WITH_EDITOR
-	Editor::RegisterWindow(this);
+	if (bOpen)
+	{
+		Editor::RegisterWindow(this);
+	}
 #endif
 }
 
@@ -19,6 +22,34 @@ EditorWindow::~EditorWindow()
 {
 #if WITH_EDITOR
 	
+#endif
+}
+
+void EditorWindow::OpenWindow()
+{
+#if WITH_EDITOR
+	Editor::RegisterWindow(this);
+#endif
+}
+
+void EditorWindow::CloseWindow()
+{
+#if WITH_EDITOR
+	Editor::UnregisterWindow(this);
+#endif
+}
+
+void EditorWindow::ToggleWindow()
+{
+#if WITH_EDITOR
+	if (Editor::editorWindows.find(this) != Editor::editorWindows.end())
+	{
+		Editor::UnregisterWindow(this);
+	}
+	else
+	{
+		Editor::RegisterWindow(this);
+	}
 #endif
 }
 
@@ -35,13 +66,13 @@ void EditorWindow::SetVisible(bool NewVisibility)
 }
 
 
-void EditorWindow::ToggleActive()
+void EditorWindow::ToggleVisibility()
 {
-	bIsActive = !bIsActive;
+	bIsVisible = !bIsVisible;
 }
 
 
-std::set<_EditorWindowBase*> Editor::editorWindows = std::set<_EditorWindowBase*>();
+std::set<EditorWindow*> Editor::editorWindows = std::set<EditorWindow*>();
 std::set<_DrawableBase*> Editor::drawables = std::set<_DrawableBase*>();
 
 
@@ -65,7 +96,10 @@ void Editor::DrawWidgets()
 	{
 		if (x != nullptr)
 		{
-			x->DrawWindow();
+			if (x->IsVisible())
+			{
+				x->DrawWindow();
+			}
 		}
 	}
 #endif
@@ -101,7 +135,7 @@ void Editor::Cleanup()
 #endif
 }
 
-void Editor::RegisterWindow(_EditorWindowBase * EditorObject)
+void Editor::RegisterWindow(EditorWindow * EditorObject)
 {
 #if WITH_EDITOR
 	std::stringstream ss;
@@ -121,7 +155,7 @@ void Editor::RegisterDrawable(_DrawableBase * EditorObject)
 #endif
 }
 
-void Editor::UnregisterWindow(_EditorWindowBase * EditorObject)
+void Editor::UnregisterWindow(EditorWindow * EditorObject)
 {
 #if WITH_EDITOR
 	editorWindows.erase(EditorObject);

@@ -18,14 +18,11 @@
 
 class SceneOutlinerGUI : public EditorWindow
 {
-private:
-
-
 public:
 
 	void DrawWindow() override
 	{
-		ImGui::Begin("Scene Outliner", &bIsActive, ImGuiWindowFlags_NoCollapse);
+		ImGui::Begin("Scene Outliner", &bIsVisible, ImGuiWindowFlags_NoCollapse);
 
 		// For each level
 		for (auto level : SceneOutliner::GetLoadedLevels())
@@ -76,7 +73,7 @@ public:
 
 	void DrawWindow() override
 	{
-		ImGui::Begin("Object Details", &bIsActive, ImGuiWindowFlags_NoCollapse);
+		ImGui::Begin("Object Details", &bIsVisible, ImGuiWindowFlags_NoCollapse);
 
 		auto selection = SceneOutliner::GetSelection();
 		//if (ImGui::TreeNodeEx((object->GetDisplayName()).c_str(), flags))
@@ -204,7 +201,7 @@ public:
 
 	void DrawWindow() override
 	{
-		ImGui::Begin("Content Browser", &bIsActive, ImGuiWindowFlags_NoCollapse);
+		ImGui::Begin("Content Browser", &bIsVisible, ImGuiWindowFlags_NoCollapse);
 
 		filter.Draw();
 		ImGui::Columns(2);
@@ -227,7 +224,7 @@ public:
 
 	void DrawWindow() override
 	{
-		ImGui::Begin("Console Log", &bIsActive, ImGuiWindowFlags_NoCollapse);
+		ImGui::Begin("Console Log", &bIsVisible, ImGuiWindowFlags_NoCollapse);
 		/*ImGuiContext& context = *ImGui::GetCurrentContext();
 		float cachedFontSize = context.Font->FontSize;
 		context.Font->FontSize = 10*/
@@ -326,16 +323,16 @@ public:
 			if (ImGui::BeginMenu("Windows"))
 			{
 				if (ImGui::MenuItem("Content Browser", ""))
-					contentBrowser.ToggleActive();
+					contentBrowser.ToggleVisibility();
 
 				if (ImGui::MenuItem("Scene Outliner", ""))
-					sceneOutliner.ToggleActive();
+					sceneOutliner.ToggleVisibility();
 
 				if (ImGui::MenuItem("Object Details", ""))
-					objectDetails.ToggleActive();
+					objectDetails.ToggleVisibility();
 
 				if (ImGui::MenuItem("Console Log", ""))
-					consoleLog.ToggleActive();
+					consoleLog.ToggleVisibility();
 
 				ImGui::Separator();
 

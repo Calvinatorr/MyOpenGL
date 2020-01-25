@@ -126,45 +126,18 @@ Material * Material::GetCurrent()
 void Material::DrawDetails()
 {
 #if WITH_EDITOR
+	const ImGuiTreeNodeFlags FLAGS = ImGuiTreeNodeFlags_SpanAvailWidth;
 
-	// Recompile button
-	if (ImGui::Button("Recompile"))
+	std::string shaderName = shader != nullptr ? shader->GetDisplayName() : "NULL_SHADER";
+	if (ImGui::TreeNodeEx((GetDisplayName() + " (" + shaderName + ")").c_str(), FLAGS | ImGuiTreeNodeFlags_Leaf | ImGuiSelectableFlags_AllowDoubleClick))
 	{
-		if (shader != nullptr)
-			shader->Recompile();
+		ImGui::TreePop();
 	}
 
 
-	// Float parameters
-	for (auto& parm : floatParameters)
+	if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left) && ImGui::IsItemHovered(ImGuiHoveredFlags_None))
 	{
-		ImGui::PushItemWidth(100);
-		ImGui::DragFloat(parm.name.c_str(), &parm.value, .005f, parm.min_Editor, parm.max_Editor, "%.3f", .05f);
-		ImGui::PopItemWidth();
-	}
-	
-	// Int parameters
-	for (auto& parm : intParameters)
-	{
-		ImGui::PushItemWidth(100);
-		ImGui::DragInt(parm.name.c_str(), &parm.value, .005f, parm.min_Editor, parm.max_Editor, "%.3f");
-		ImGui::PopItemWidth();
-	}
-
-	// Vector parameters
-	for (auto& parm : vectorParameters)
-	{
-		ImGui::PushItemWidth(200);
-		ImGui::ColorEdit3(parm.name.c_str(), glm::value_ptr(parm.value));
-		ImGui::PopItemWidth();
-	}
-
-	// Vector4 parameters
-	for (auto& parm : vector4Parameters)
-	{
-		ImGui::PushItemWidth(200);
-		ImGui::ColorEdit4(parm.name.c_str(), glm::value_ptr(parm.value));
-		ImGui::PopItemWidth();
+		OpenWindow();
 	}
 #endif
 }
@@ -174,12 +147,107 @@ void Material::DrawDetails()
 
 void Material::DrawWindow()
 {
-	ImGui::Begin((GetDisplayName() + "(Material Instance)").c_str(), &bIsWindowActive, ImGuiWindowFlags_NoCollapse);
+#if WITH_EDITOR
+	std::string shaderName = shader != nullptr ? shader->GetDisplayName() : "NULL_SHADER";
+	ImGui::Begin((GetDisplayName() + " (Material: " + shaderName + ")").c_str(), &bIsVisible, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_MenuBar);
 
-	if (ImGui::Button("Some shit"))
+	// Menu bar
+	if (ImGui::BeginMenuBar())
 	{
+		if (ImGui::BeginMenu("File"))
+		{
+			ImGui::Separator();
 
+			// Close editor
+			if (ImGui::MenuItem("Exit"))
+			{
+				SetVisible(false);
+			}
+
+			ImGui::EndMenu();
+		}
+
+		if (ImGui::BeginMenu("Edit"))
+		{
+			ImGui::EndMenu();
+		}
+
+		if (ImGui::Button("Recompile Shader"))
+		{
+			if (shader != nullptr)
+				shader->Recompile();
+		}
+
+		ImGui::EndMenuBar();
+	}
+
+
+	const float ITEM_WIDTH = 200.0f;
+
+
+	// Float parameters
+	if (floatParameters.size() > 0 && ImGui::TreeNodeEx(("Float Parameters (" + std::to_string(floatParameters.size()) + ")").c_str(), panelFlags))
+	{
+		for (auto& parm : floatParameters)
+		{
+			ImGui::PushItemWidth(ITEM_WIDTH);
+			ImGui::DragFloat(parm.name.c_str(), &parm.value, .005f, parm.min_Editor, parm.max_Editor, "%.3f", .05f);
+			ImGui::PopItemWidth();
+		}
+		ImGui::TreePop();
+		ImGui::NewLine();
+		ImGui::Separator();
+		ImGui::NewLine();
+	}
+
+
+	// Int parameters
+	if (intParameters.size() > 0 && ImGui::TreeNodeEx(("Integer Parameters (" + std::to_string(intParameters.size()) + ")").c_str(), panelFlags))
+	{
+		for (auto& parm : intParameters)
+		{
+			ImGui::PushItemWidth(ITEM_WIDTH);
+			ImGui::DragInt(parm.name.c_str(), &parm.value, .005f, parm.min_Editor, parm.max_Editor, "%.3f");
+			ImGui::PopItemWidth();
+		}
+		ImGui::TreePop();
+		ImGui::NewLine();
+		ImGui::Separator();
+		ImGui::NewLine();
+	}
+
+
+	// Vector parameters
+	if (vectorParameters.size() > 0 && ImGui::TreeNodeEx(("Vector Parameters (" + std::to_string(vectorParameters.size()) + ")").c_str(), panelFlags))
+	{
+		for (auto& parm : vectorParameters)
+		{
+			ImGui::PushItemWidth(ITEM_WIDTH);
+			ImGui::ColorEdit3(parm.name.c_str(), glm::value_ptr(parm.value));
+			ImGui::PopItemWidth();
+		}
+		ImGui::TreePop();
+		ImGui::NewLine();
+		ImGui::Separator();
+		ImGui::NewLine();
+	}
+
+
+	// Vector4 parameters
+	if (vector4Parameters.size() > 0 && ImGui::TreeNodeEx(("Vector4 Parameters (" + std::to_string(vector4Parameters.size()) + ")").c_str(), panelFlags))
+	{
+		for (auto& parm : vector4Parameters)
+		{
+			ImGui::PushItemWidth(ITEM_WIDTH);
+			ImGui::ColorEdit4(parm.name.c_str(), glm::value_ptr(parm.value));
+			ImGui::PopItemWidth();
+		}
+		ImGui::TreePop();
+		ImGui::NewLine();
+		ImGui::Separator();
+		ImGui::NewLine();
 	}
 
 	ImGui::End();
+#endif
 }

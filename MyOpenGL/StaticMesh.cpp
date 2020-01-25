@@ -547,15 +547,17 @@ void StaticMesh::DrawDetails()
 				std::string shaderName = "NULL_SHADER";
 				if (m != nullptr)
 				{
+					m->DrawDetails();
 					materialName = m->GetDisplayName();
 					if (m->shader != nullptr)
 						shaderName = m->shader->GetDisplayName();
 				}
-
-				if (ImGui::TreeNodeEx((materialName + " (" + shaderName + ")").c_str(), flags ^ ImGuiTreeNodeFlags_DefaultOpen))
+				else
 				{
-					m->DrawDetails();
-					ImGui::TreePop();
+					if (ImGui::TreeNodeEx("NULL", flags ^ ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Leaf))
+					{
+						ImGui::TreePop();
+					}
 				}
 			}
 			ImGui::TreePop();

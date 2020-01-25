@@ -4,6 +4,7 @@
 
 StaticMeshComponent::StaticMeshComponent()
 {
+	SetDisplayName("StaticMeshComponent");
 }
 
 StaticMeshComponent::StaticMeshComponent(StaticMesh * StaticMesh)

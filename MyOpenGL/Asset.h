@@ -2,25 +2,15 @@
 
 
 #include "Object.h"
-
 #include "Editor.h"
 
 
 
-class Asset : public Object, public _EditorWindowBase
+class Asset : public Object, public EditorWindow
 {
-protected:
-	bool bIsWindowActive = false;
-
 public:
 
 
 	Asset();
 	~Asset();
-};
-
-
-class AssetManager
-{
-
 };

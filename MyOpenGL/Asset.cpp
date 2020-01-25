@@ -3,6 +3,7 @@
 
 
 Asset::Asset()
+	: EditorWindow(false)
 {
 }
 
