@@ -224,10 +224,30 @@ public:
 
 	void DrawWindow() override
 	{
-		ImGui::Begin("Console Log", &bIsVisible, ImGuiWindowFlags_NoCollapse);
+		ImGui::Begin("Console Log", &bIsVisible, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_MenuBar);
 		/*ImGuiContext& context = *ImGui::GetCurrentContext();
 		float cachedFontSize = context.Font->FontSize;
 		context.Font->FontSize = 10*/
+
+		if (ImGui::BeginMenuBar())
+		{
+			if (ImGui::Button("Clear Log"))
+			{
+				Log::Dump(true);
+			}
+
+			// Execute python command
+			if (ImGui::Button("Python"))
+			{
+				Python::ExecuteCommand(pythonCommand);
+				memset(pythonCommand, 0, sizeof(pythonCommand)); // Clear python command
+			}
+			ImGui::NextColumn();
+			ImGui::InputText("Command", pythonCommand, IM_ARRAYSIZE(pythonCommand));
+
+			ImGui::EndMenuBar();
+		}
+
 
 		//ImGui::SetNextWindowContentSize(ImVec2(1500.0f, 0.0f));
 		ImGui::BeginChild("##ScrollingRegion", ImVec2(0, ImGui::GetFontSize() * 20), false, ImGuiWindowFlags_HorizontalScrollbar);
@@ -238,24 +258,6 @@ public:
 			ImGui::Text(line.c_str());
 		}
 		ImGui::EndChild();
-
-		ImGui::Columns(3);
-		ImGui::SetColumnWidth(0, 60);
-
-		// Execute python command
-		if (ImGui::Button("Python"))
-		{
-			Python::ExecuteCommand(pythonCommand);
-			memset(pythonCommand, 0, sizeof(pythonCommand)); // Clear python command
-		}
-		ImGui::NextColumn();
-		ImGui::InputText("Command", pythonCommand, IM_ARRAYSIZE(pythonCommand));
-
-		ImGui::NextColumn();
-		if (ImGui::Button("Clear Log"))
-		{
-			Log::Dump(true);
-		}
 
 		//context.Font->FontSize = cachedFontSize;
 		ImGui::End();

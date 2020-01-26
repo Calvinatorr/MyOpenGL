@@ -6,6 +6,7 @@ out vec4 FragColour;
 in vec2 TexCoord;
 in vec4 VertexColour;
 in vec3 VertexNormal;
+in vec3 VertexTangent;
 
 in mat4 LocalToWorld;
 in vec3 LocalPosition;
@@ -49,9 +50,16 @@ vec2 SphericalUVsFromPosition(vec3 v)
 
 
 #define saturate(x) clamp(x, 0.0f, 1.0f)
+#define sqr(x)
+
 
 
 vec3 PixelNormal = normalize(VertexNormal); 
+/*#ifdef VertexTangent
+vec3 PixelTangent = normalize(VertexTangent);
+vec3 PixelBitangent = normalize(cross(PixelNormal, PixelTangent));
+#endif*/
+
 vec3 ViewDirection = normalize(CameraPosition - WorldPosition);
 
 
@@ -79,11 +87,23 @@ struct Material
 	vec3 Albedo;
 	float Metalness;
 	float Roughness;
+	float Anisotropic;
+	float AnisotropicDirection;
 	float AmbientOcclusion;
 };
 
 uniform Material inMaterial;
 Material outMaterial;
+
+void ClampMaterialProperties(in out Material InMat)
+{
+	InMat.Albedo = clamp(InMat.Albedo, 0.0f, 1.0f);
+	InMat.Metalness = clamp(InMat.Metalness, 0.0f, 1.0f);
+	InMat.Roughness = clamp(InMat.Roughness, 0.0f, 1.0f);
+	InMat.Anisotropic = clamp(InMat.Anisotropic, 0.0f, 1.0f);
+	InMat.AnisotropicDirection = clamp(InMat.AnisotropicDirection, 0.0f, 1.0f);
+	InMat.AmbientOcclusion = clamp(InMat.AmbientOcclusion, 0.0f, 1.0f);
+}
 
 
 
@@ -103,6 +123,17 @@ float DistributionGGX(float NoH, float Roughness)
 	return num / denom;
 }
 
+
+float DistributionTrowbridgeReitzGGX(float NoH, float HoX, float HoY, float Roughness, float Anisotropic)
+{
+	float a = Roughness*Roughness;
+	float a2 = a*a;
+	float aspect = sqrt(1.0f - Anisotropic * 0.9f);
+	float X = max(0.001f, a2 / aspect) * 5.0f;
+	float Y = max(0.001f, a2 * aspect) * 5.0f;
+
+	return 1.0f / (PI * X*Y * pow(pow(HoX/X, 2) + pow(HoY/Y, 2) + NoH*NoH, 2));
+}
 
 
 float GeometrySchlickGGX(float NoV, float Roughness)
@@ -159,7 +190,7 @@ vec3 BlinnPhong(vec3 Direction, vec3 Radiance)
 	return diffuse + specular;
 }
 
-vec3 CalculateRadiance(vec3 N, vec3 V, vec3 L, vec3 Radiance, Material Mat)
+vec3 DefaultShading(vec3 N, vec3 InTangent, vec3 V, vec3 L, vec3 Radiance, Material Mat)
 {
 	
 	L = -normalize(L);
@@ -169,12 +200,22 @@ vec3 CalculateRadiance(vec3 N, vec3 V, vec3 L, vec3 Radiance, Material Mat)
 	float NoH = max(dot(N, H), 0.0f);
 	float HoV = max(dot(H, V), 0.0f);
 	
+	
+	InTangent = normalize(InTangent);
+	vec3 Bitangent = cross(InTangent, N);
+
+	vec3 T = normalize(mix(InTangent, Bitangent, Mat.AnisotropicDirection));
+	vec3 B = normalize(mix(Bitangent, InTangent, Mat.AnisotropicDirection));
+	float HoX = dot(H, T);
+	float HoY = dot(H, B);
+	
 	vec3 F0 = vec3(0.04f); 
 	F0 = mix(F0, Mat.Albedo, Mat.Metalness); 
 	
 	
 	
-	float NDF = DistributionGGX(NoH, Mat.Roughness);
+	
+	float NDF = DistributionTrowbridgeReitzGGX(NoH, HoX, HoY, Mat.Roughness, Mat.Anisotropic);
 	float G = 	GeometrySmith(NoV, NoL, Mat.Roughness);
 	vec3  F =	FresnelSchlick(HoV, F0, Mat.Roughness);
 	
@@ -195,7 +236,7 @@ vec3 CalculateRadiance(vec3 N, vec3 V, vec3 L, vec3 Radiance, Material Mat)
 vec3 CalculateDirectionalLight(DirectionalLight Light)
 {
 	
-	return CalculateRadiance(PixelNormal, ViewDirection, Light.Direction, Light.Radiance, outMaterial);
+	return DefaultShading(PixelNormal, VertexTangent, ViewDirection, Light.Direction, Light.Radiance, outMaterial);
 }
 
 struct PointLight
@@ -211,7 +252,7 @@ vec3 CalculatePointLight(PointLight Light)
 	float attenuation = 1.0f / (distance*distance); 
 	
 	
-	return CalculateRadiance(PixelNormal, ViewDirection, dir, Light.Radiance * attenuation, outMaterial);
+	return DefaultShading(PixelNormal, VertexTangent, ViewDirection, dir, Light.Radiance * attenuation, outMaterial);
 }
 
 struct SpotLight
@@ -233,7 +274,7 @@ vec3 CalculateSpotLight(SpotLight Light)
 		float distance = length(dir);
 		float attenuation = 1.0f / (distance*distance); 
 		
-		return CalculateRadiance(PixelNormal, ViewDirection, dir, Light.Radiance * attenuation, outMaterial);
+		return DefaultShading(PixelNormal, VertexTangent, ViewDirection, dir, Light.Radiance * attenuation, outMaterial);
 	}
 	else
 		return vec3(0.0f);
@@ -274,10 +315,7 @@ void main()
 		
 	
 	
-	outMaterial.AmbientOcclusion = clamp(outMaterial.AmbientOcclusion, 0.0f, 1.0f);
-	outMaterial.Metalness = clamp(outMaterial.Metalness, 0.0f, 1.0f);
-	outMaterial.Roughness = clamp(outMaterial.Roughness, 0.0f, 1.0f);
-	outMaterial.Albedo = clamp(outMaterial.Albedo, 0.0f, 1.0f);
+	ClampMaterialProperties(outMaterial);
 	
 	
 	
@@ -305,11 +343,6 @@ void main()
 	dirLight.Direction = vec3(rot * vec4(dirLight.Direction, 1.0f));
 	
 	
-	PointLight pointLight;
-	pointLight.Radiance = vec3(3.142f * 2.0f);
-	pointLight.Position = vec3(0.0f, sin(ElapsedTime * 2.0f) * 1.5f, 0.0f);
-	
-	
 	for (int i = 0; i < NUM_OF_LIGHTS; i++)
 	{
 		float a = float(i) / float(NUM_OF_LIGHTS);
@@ -320,33 +353,22 @@ void main()
 		Lo += CalculatePointLight(lights[i]);
 	}
 	
-	SpotLight spotLight;
+	/*SpotLight spotLight;
 	spotLight.Radiance = vec3(32.0f);
 	spotLight.Position = vec3(0.0f, 2.5f, 10.0f);
 	spotLight.Direction = vec3(0.0f, .3333f, 1.0f);
 	spotLight.CosAngle = cos(12.5 * DEG_TO_RAD);
-	
+	Lo += CalculateSpotLight(spotLight);*/
 	
 
-	vec3 ambient = vec3(0.005f) * outMaterial.Albedo * outMaterial.AmbientOcclusion; 
-	vec3 colour = ambient + Lo;
+	vec3 ambient = vec3(0.005f) * outMaterial.Albedo; 
+	vec3 colour = ambient + Lo * outMaterial.AmbientOcclusion;
 	
 	
-	colour = colour / (colour + vec3(1.0f));
-	colour = pow(colour, vec3(1.0f / 2.2f));
 	
+	
+	
+	
+	colour = TonemapSCurve_ACES(colour);
 	FragColour = vec4(colour, 1.0f);
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	FragColour = vec4(TonemapSCurve_ACES(FragColour.xyz), 1.0f);
 } 

@@ -214,6 +214,8 @@ int main(int argc, char* argv[])
 	
 	// ===================================== EDITOR ============================================
 
+	Shader::Initialize();
+
 #if WITH_EDITOR
 	EditorGrid editorGrid = EditorGrid();
 	EditorGUI editorGUI;
@@ -306,6 +308,8 @@ int main(int argc, char* argv[])
 	sphereMaterial.SetVectorParameter("inMaterial.Albedo", glm::vec3(1.0f, 0.1f, 0.7f));
 	sphereMaterial.SetFloatParameter("inMaterial.Metalness", 1.0f);
 	sphereMaterial.SetFloatParameter("inMaterial.Roughness", 0.25f);
+	sphereMaterial.SetFloatParameter("inMaterial.Anisotropic", 0.0f);
+	sphereMaterial.SetFloatParameter("inMaterial.AnisotropicDirection", 0.0f);
 	sphereMaterial.SetFloatParameter("inMaterial.AmbientOcclusion", 1.0f);
 
 

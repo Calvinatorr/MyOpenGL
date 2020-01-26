@@ -103,6 +103,12 @@ std::string SubShader::GetSource(const std::string& File, const bool& OutputCons
 			else
 			{
 				source.append(line + "\n");
+
+				if (line.find("uniform") != std::string::npos)
+				{
+					std::string tokens = line.substr(line.find("uniform") + 1, line.size());
+					Log::PrintInfo("uniform found in subshader: " + line);
+				}
 			}
 		}
 
@@ -159,11 +165,11 @@ GLint SubShader::CompileSource(const std::string& Source)
 
 	if (success)
 	{
-		Log::PrintInfo("'" + GetShaderType() + "' Sub-shader successfully compiled");
+		Log::PrintInfo("Sub-shader successfully compiled '" + GetShaderType() + "'");
 	}
 	else
 	{
-		Log::PrintError("'" + GetShaderType() + "' Sub-shader failed to compile\n" + std::string(infoLog));
+		Log::PrintError("Sub-shader failed to compile '" + GetShaderType() + "'\n" + std::string(infoLog));
 	}
 
 	return success;
@@ -276,6 +282,9 @@ GLint Shader::LinkShaders()
 		glGetProgramInfoLog(ID, 512, NULL, infoLog);
 
 		Log::PrintError("Failed to link sub-shaders '" + source + "'\n" + infoLog, 5.0f);
+
+		bCompiledSuccessfully = false;
+		ID = Shader::DefaultShader.GetID(); // Assign to this shader ID so we at least get something drawn to the screen, and can debug from there.
 	}
 	else
 	{
@@ -292,11 +301,9 @@ GLint Shader::Compile(const std::string & Folder)
 {
 	GLint success = 1;
 	success = success && CompileShadersFromFolder(Folder);
+	SetDisplayName(Folder.substr(Folder.rfind("/") + 1, Folder.length() - 1));
 	LinkShaders();
-
-	if (success)
-		SetDisplayName(Folder.substr(Folder.rfind("/") + 1, Folder.length() - 1));
-
+		
 	return success;
 }
 
@@ -423,4 +430,13 @@ void Shader::UnbindCurrent()
 		current = nullptr; // Clear pointer
 
 	glUseProgram(-1); // Unbind from OpenGL
+}
+
+
+
+Shader Shader::DefaultShader;
+
+void Shader::Initialize()
+{
+	DefaultShader.Compile(SHADER_PATH + "Default");
 }

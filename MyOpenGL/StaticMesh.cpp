@@ -346,7 +346,7 @@ bool StaticMesh::LoadMeshFromDisk(const std::string & Filename)
 	Log::PrintInfo("Attempting to load mesh from disk '" + Filename + "'..");
 
 	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile(Filename, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenNormals);
+	const aiScene* scene = importer.ReadFile(Filename, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenNormals | aiProcess_CalcTangentSpace);
 
 	// Check scene root is not null, data is not incomplete
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)

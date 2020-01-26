@@ -3,6 +3,7 @@ layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec2 aTexCoord; 
 layout (location = 2) in vec4 aColour; 	 
 layout (location = 3) in vec3 aNormal;	 
+layout (location = 4) in vec3 aTangent;	 
 
 
 
@@ -47,12 +48,14 @@ vec2 SphericalUVsFromPosition(vec3 v)
 
 
 #define saturate(x) clamp(x, 0.0f, 1.0f)
+#define sqr(x)
 
 
 
 out vec2 TexCoord;
 out vec4 VertexColour;
 out vec3 VertexNormal;
+out vec3 VertexTangent;
 
 out mat4 LocalToWorld;
 out vec3 LocalPosition;
@@ -88,6 +91,7 @@ void main()
 	TexCoord = aTexCoord;	
 	VertexColour = aColour; 
 	VertexNormal = normalize(vec3(LocalToWorld * vec4(aNormal, 1.0f))); 
+	VertexTangent = normalize(vec3(LocalToWorld * vec4(aTangent, 1.0f))); 
 
 	gl_Position = Transform * vec4(aPos, 1.0f);
 	gl_Position.y += abs(sin(ElapsedTime)) * 0.5f;

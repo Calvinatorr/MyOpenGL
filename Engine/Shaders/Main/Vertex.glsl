@@ -3,6 +3,7 @@ layout (location = 0) in vec3 aPos; 	 // Input vertex position
 layout (location = 1) in vec2 aTexCoord; // Input texture coordinates
 layout (location = 2) in vec4 aColour; 	 // Input vertex colour
 layout (location = 3) in vec3 aNormal;	 // Input normal
+layout (location = 4) in vec3 aTangent;	 // Input tangent
 
 
 // Uniforms
@@ -16,6 +17,7 @@ uniform mat4 Projection;
 out vec2 TexCoord;
 out vec4 VertexColour;
 out vec3 VertexNormal;
+out vec3 VertexTangent;
 
 out mat4 LocalToWorld;
 out vec3 LocalPosition;
@@ -51,6 +53,7 @@ void main()
 	TexCoord = aTexCoord;	// Pass through TexCoords
 	VertexColour = aColour; // Pass through vertex colour
 	VertexNormal = normalize(vec3(LocalToWorld * vec4(aNormal, 1.0f))); // Vertex normal to world space
+	VertexTangent = normalize(vec3(LocalToWorld * vec4(aTangent, 1.0f))); // Vertex normal to world space
 
 	gl_Position = Transform * vec4(aPos, 1.0f);
 	gl_Position.y += abs(sin(ElapsedTime)) * 0.5f;

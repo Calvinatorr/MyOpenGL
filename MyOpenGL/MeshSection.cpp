@@ -42,6 +42,7 @@ std::vector<GLfloat> MeshSection::GetRawVertices() const
 		AddVec2(v.texCoord);
 		AddVec4(v.colour);
 		AddVec3(v.normal);
+		AddVec3(v.tangent);
 	}
 
 	return rawVertices;
@@ -92,7 +93,8 @@ void MeshSection::Construct(const DrawMode& DrawMode)
 	// Attributes
 	GLuint attrib = 0;
 	//GLuint memorySize = 11 * sizeof(GLfloat);
-	GLuint memorySize = 12 * sizeof(GLfloat);
+	//GLuint memorySize = 12 * sizeof(GLfloat);
+	GLuint memorySize = 15 * sizeof(GLfloat);
 	GLuint stride = 0;
 
 	auto AddAttribute = [&](GLuint Size, GLenum Normalized = GL_FALSE)
@@ -106,7 +108,8 @@ void MeshSection::Construct(const DrawMode& DrawMode)
 	AddAttribute(3); // Position
 	AddAttribute(2); // TexCoord
 	AddAttribute(4); // Colour
-	AddAttribute(4, GL_TRUE); // Normal
+	AddAttribute(3, GL_TRUE); // Normal
+	AddAttribute(3, GL_TRUE); // Tangent
 }
 
 void MeshSection::Draw(const DrawMode& DrawMode)

@@ -18,6 +18,17 @@ float DistributionGGX(float NoH, float Roughness)
 }
 
 
+float DistributionTrowbridgeReitzGGX(float NoH, float HoX, float HoY, float Roughness, float Anisotropic)
+{
+	float a = Roughness*Roughness;
+	float a2 = a*a;
+	float aspect = sqrt(1.0f - Anisotropic * 0.9f);
+	float X = max(0.001f, a2 / aspect) * 5.0f;
+	float Y = max(0.001f, a2 * aspect) * 5.0f;
+
+	return 1.0f / (PI * X*Y * pow(pow(HoX/X, 2) + pow(HoY/Y, 2) + NoH*NoH, 2));
+}
+
 
 float GeometrySchlickGGX(float NoV, float Roughness)
 {

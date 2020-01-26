@@ -29,7 +29,7 @@ vec3 BlinnPhong(vec3 Direction, vec3 Radiance)
 	return diffuse + specular;
 }
 
-vec3 CalculateRadiance(vec3 N, vec3 V, vec3 L, vec3 Radiance, Material Mat)
+vec3 DefaultShading(vec3 N, vec3 InTangent, vec3 V, vec3 L, vec3 Radiance, Material Mat)
 {
 	// Vectors
 	L = -normalize(L);
@@ -38,13 +38,23 @@ vec3 CalculateRadiance(vec3 N, vec3 V, vec3 L, vec3 Radiance, Material Mat)
 	float NoL = max(dot(N, L), 0.0f);
 	float NoH = max(dot(N, H), 0.0f);
 	float HoV = max(dot(H, V), 0.0f);
+	// Anisotropic
+	//InTangent = mul(LocalToWorld, vec4(1.0f, 0.0f, 0.0f, 1.0f)).xyz;
+	InTangent = normalize(InTangent);
+	vec3 Bitangent = cross(InTangent, N);
+
+	vec3 T = normalize(mix(InTangent, Bitangent, Mat.AnisotropicDirection));
+	vec3 B = normalize(mix(Bitangent, InTangent, Mat.AnisotropicDirection));
+	float HoX = dot(H, T);
+	float HoY = dot(H, B);
 	
 	vec3 F0 = vec3(0.04f); // Default 4% reflectivity
 	F0 = mix(F0, Mat.Albedo, Mat.Metalness); //F0 packed into Albedo, blended by Metalness
 	
 	
 	// Cook-torrance BRDF
-	float NDF = DistributionGGX(NoH, Mat.Roughness);
+	//float NDF = DistributionGGX(NoH, Mat.Roughness);
+	float NDF = DistributionTrowbridgeReitzGGX(NoH, HoX, HoY, Mat.Roughness, Mat.Anisotropic);
 	float G = 	GeometrySmith(NoV, NoL, Mat.Roughness);
 	vec3  F =	FresnelSchlick(HoV, F0, Mat.Roughness);
 	
@@ -65,7 +75,7 @@ vec3 CalculateRadiance(vec3 N, vec3 V, vec3 L, vec3 Radiance, Material Mat)
 vec3 CalculateDirectionalLight(DirectionalLight Light)
 {
 	//return BlinnPhong(Light.Direction, Light.Radiance);
-	return CalculateRadiance(PixelNormal, ViewDirection, Light.Direction, Light.Radiance, outMaterial);
+	return DefaultShading(PixelNormal, VertexTangent, ViewDirection, Light.Direction, Light.Radiance, outMaterial);
 }
 
 struct PointLight
@@ -81,7 +91,7 @@ vec3 CalculatePointLight(PointLight Light)
 	float attenuation = 1.0f / (distance*distance); // Inverse squared attenuations
 	
 	//return BlinnPhong(dir, Light.Radiance * attenuation);
-	return CalculateRadiance(PixelNormal, ViewDirection, dir, Light.Radiance * attenuation, outMaterial);
+	return DefaultShading(PixelNormal, VertexTangent, ViewDirection, dir, Light.Radiance * attenuation, outMaterial);
 }
 
 struct SpotLight
@@ -103,7 +113,7 @@ vec3 CalculateSpotLight(SpotLight Light)
 		float distance = length(dir);
 		float attenuation = 1.0f / (distance*distance); // Inverse squared attenuations
 		//return BlinnPhong(normalize(dir), Light.Radiance * attenuation);
-		return CalculateRadiance(PixelNormal, ViewDirection, dir, Light.Radiance * attenuation, outMaterial);
+		return DefaultShading(PixelNormal, VertexTangent, ViewDirection, dir, Light.Radiance * attenuation, outMaterial);
 	}
 	else
 		return vec3(0.0f);

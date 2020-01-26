@@ -6,6 +6,7 @@ out vec4 FragColour; // Output
 in vec2 TexCoord;
 in vec4 VertexColour;
 in vec3 VertexNormal;
+in vec3 VertexTangent;
 
 in mat4 LocalToWorld;
 in vec3 LocalPosition;
@@ -46,10 +47,7 @@ void main()
 		
 	//vec3 localUVW = GetLocalUVW(LocalPosition);
 	//outMaterial.Roughness = localUVW.r;
-	outMaterial.AmbientOcclusion = clamp(outMaterial.AmbientOcclusion, 0.0f, 1.0f);
-	outMaterial.Metalness = clamp(outMaterial.Metalness, 0.0f, 1.0f);
-	outMaterial.Roughness = clamp(outMaterial.Roughness, 0.0f, 1.0f);
-	outMaterial.Albedo = clamp(outMaterial.Albedo, 0.0f, 1.0f);
+	ClampMaterialProperties(outMaterial);
 	
 	//outMaterial.Albedo = vec3(mix(t, t2, t2.a));
 	//outMaterial.Albedo = vec3(1.0f, 0.0f, 0.0f);
@@ -77,11 +75,6 @@ void main()
 	dirLight.Direction = vec3(rot * vec4(dirLight.Direction, 1.0f));
 	//Lo += CalculateDirectionalLight(dirLight);
 	
-	PointLight pointLight;
-	pointLight.Radiance = vec3(3.142f * 2.0f);
-	pointLight.Position = vec3(0.0f, sin(ElapsedTime * 2.0f) * 1.5f, 0.0f);
-	//Lo += CalculatePointLight(pointLight);
-	
 	for (int i = 0; i < NUM_OF_LIGHTS; i++)
 	{
 		float a = float(i) / float(NUM_OF_LIGHTS);
@@ -92,33 +85,22 @@ void main()
 		Lo += CalculatePointLight(lights[i]);
 	}
 	
-	SpotLight spotLight;
+	/*SpotLight spotLight;
 	spotLight.Radiance = vec3(32.0f);
 	spotLight.Position = vec3(0.0f, 2.5f, 10.0f);
 	spotLight.Direction = vec3(0.0f, .3333f, 1.0f);
 	spotLight.CosAngle = cos(12.5 * DEG_TO_RAD);
-	//Lo += CalculateSpotLight(spotLight);
+	Lo += CalculateSpotLight(spotLight);*/
 	
 
-	vec3 ambient = vec3(0.005f) * outMaterial.Albedo * outMaterial.AmbientOcclusion; // Apply ambient lighting
-	vec3 colour = ambient + Lo;
+	vec3 ambient = vec3(0.005f) * outMaterial.Albedo; // Apply ambient lighting
+	vec3 colour = ambient + Lo * outMaterial.AmbientOcclusion;
 	
 	// Gamma tonemapping
-	colour = colour / (colour + vec3(1.0f));
-	colour = pow(colour, vec3(1.0f / 2.2f));
+	// Use this or not??
+	//colour = colour / (colour + vec3(1.0f));
+	//colour = pow(colour, vec3(1.0f / 2.2f));
 	
+	colour = TonemapSCurve_ACES(colour);
 	FragColour = vec4(colour, 1.0f);
-	
-	//FragColour = vec4(outMaterial.Albedo, 1.0f);
-	//FragColour = vec4(outMaterial.Metalness);
-	
-	//FragColour = vec4(ViewDirection, 1.0f);
-	//FragColour = vec4(max(dot(ViewDirection, PixelNormal), 0.0f));
-	
-	//FragColour = vec4(ViewDirection.xyz, 1.0f);
-	
-	//FragColour = vec4(ViewDirection.xyz, 1.0f);
-	
-	
-	FragColour = vec4(TonemapSCurve_ACES(FragColour.xyz), 1.0f);
 } 

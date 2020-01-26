@@ -1,6 +1,12 @@
 #version 330 core
 
-vec3 PixelNormal = normalize(VertexNormal); // Not always correctly normalized from vertex->fragment interpolation
+// Not always correctly normalized from vertex->fragment interpolation
+vec3 PixelNormal = normalize(VertexNormal); 
+/*#ifdef VertexTangent
+vec3 PixelTangent = normalize(VertexTangent);
+vec3 PixelBitangent = normalize(cross(PixelNormal, PixelTangent));
+#endif*/
+
 vec3 ViewDirection = normalize(CameraPosition - WorldPosition);
 
 

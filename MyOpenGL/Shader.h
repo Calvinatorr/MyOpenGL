@@ -79,6 +79,9 @@ private:
 	static std::set<Shader*> all;
 	void Create();
 
+	bool bCompiledSuccessfully = true;
+
+
 public:
 
 	// Compiler constants
@@ -131,4 +134,9 @@ public:
 	GLint GetUniformLocation(const GLchar* Name) const;
 	static Shader* GetCurrent();
 	static void UnbindCurrent(); // Call at the end of the render thread
+
+
+	// Static properties
+	static Shader DefaultShader;
+	static void Initialize();
 };
