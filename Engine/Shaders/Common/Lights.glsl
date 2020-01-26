@@ -53,8 +53,15 @@ vec3 DefaultShading(vec3 N, vec3 InTangent, vec3 V, vec3 L, vec3 Radiance, Mater
 	
 	
 	// Cook-torrance BRDF
-	//float NDF = DistributionGGX(NoH, Mat.Roughness);
-	float NDF = DistributionTrowbridgeReitzGGX(NoH, HoX, HoY, Mat.Roughness, Mat.Anisotropic);
+	float NDF;
+	if (Mat.Anisotropic > 0)
+	{
+		NDF = DistributionTrowbridgeReitzGGX(NoH, HoX, HoY, Mat.Roughness, Mat.Anisotropic);
+	}
+	else
+	{
+		NDF = DistributionGGX(NoH, Mat.Roughness);
+	}
 	float G = 	GeometrySmith(NoV, NoL, Mat.Roughness);
 	vec3  F =	FresnelSchlick(HoV, F0, Mat.Roughness);
 	
