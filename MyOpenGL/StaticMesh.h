@@ -40,6 +40,19 @@ private:
 	glm::vec3 minBounds, maxBounds;
 
 
+	class ImportSetting
+	{
+	public:
+		std::string label;
+		bool value = true;
+
+		ImportSetting(const std::string& Label, const bool& Value = true)
+			: label(Label), value(Value)
+		{};
+	};
+
+
+
 protected:
 
 	MeshSection::DrawMode drawMode = MeshSection::DrawMode::DrawElements;
@@ -51,6 +64,16 @@ protected:
 	/* Calculate bounds of static mesh across all mesh sections */
 	void CalculateBounds();
 	void CalculateMetaData();
+
+	std::map<aiPostProcessSteps, ImportSetting> importSettings = {
+		{aiProcess_Triangulate,				{"Triangulate",					true}},
+		{aiProcess_FlipUVs,					{"Flip UVs",					true}},
+		{aiProcess_CalcTangentSpace,		{"Calculate Tangent Space",		true}},
+		{aiProcess_OptimizeMeshes,			{"Optimize Meshes",				true}},
+		{aiProcess_SplitLargeMeshes,		{"Split Large Meshes",			false}},
+		{aiProcess_PreTransformVertices,	{"Pre-Transform Vertices",		true}},
+		{aiProcess_Debone,					{"Debone",						false}}
+	};
 
 
 public:
@@ -106,5 +129,6 @@ public:
 	// Interface implementations
 	/* Draw editor GUI */
 	virtual void DrawDetails() override;
+	virtual void DrawWindow() override;
 };
 

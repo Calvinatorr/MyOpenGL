@@ -11,6 +11,7 @@ void GLFW_ErrorCallback(int Error, const char * Description)
 EditorWindow::EditorWindow(const bool& bOpen)
 {
 #if WITH_EDITOR
+	SetVisible(bOpen);
 	if (bOpen)
 	{
 		Editor::RegisterWindow(this);
@@ -29,6 +30,7 @@ void EditorWindow::OpenWindow()
 {
 #if WITH_EDITOR
 	Editor::RegisterWindow(this);
+	SetVisible(true);
 #endif
 }
 
@@ -36,6 +38,7 @@ void EditorWindow::CloseWindow()
 {
 #if WITH_EDITOR
 	Editor::UnregisterWindow(this);
+	SetVisible(false);
 #endif
 }
 
@@ -158,13 +161,19 @@ void Editor::RegisterDrawable(_DrawableBase * EditorObject)
 void Editor::UnregisterWindow(EditorWindow * EditorObject)
 {
 #if WITH_EDITOR
+	std::stringstream ss;
 	editorWindows.erase(EditorObject);
+	ss << "Unregistered editor GUI drawable with editor '" << EditorObject << "'";
+	Log::PrintInfo(ss.str());
 #endif
 }
 
 void Editor::UnregisterDrawable(_DrawableBase * EditorObject)
 {
 #if WITH_EDITOR
+	std::stringstream ss;
 	drawables.erase(EditorObject);
+	ss << "Unregistered drawable with editor '" << EditorObject << "'";
+	Log::PrintInfo(ss.str());
 #endif
 }

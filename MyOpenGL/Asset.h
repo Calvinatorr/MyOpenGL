@@ -6,7 +6,7 @@
 
 #include <map>
 #include <set>
-
+#include <filesystem>
 
 class Asset : public Object, public EditorWindow
 {

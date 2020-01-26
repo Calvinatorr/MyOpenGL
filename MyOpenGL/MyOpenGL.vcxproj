@@ -80,11 +80,11 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>C:\Users\Calvinatorr\AppData\Local\Programs\Python\Python37-32\include;E:\Documents\PostUniversity\OpenGL\json\single_include;E:\Documents\PostUniversity\OpenGL\assimp\assimp-4.1.0\include;E:\Documents\PostUniversity\OpenGL\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Calvinatorr\AppData\Local\Programs\Python\Python37-32\include;E:\Documents\PostUniversity\OpenGL\json\single_include;E:\Documents\PostUniversity\OpenGL\assimp\include;E:\Documents\PostUniversity\OpenGL\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>opengl32.lib;glfw3.lib;assimp-vc140-mt.lib;python37.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;assimp-vc141-mt.lib;python37.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:\Users\Calvinatorr\AppData\Local\Programs\Python\Python37-32\libs;E:\Documents\PostUniversity\OpenGL\Libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -105,13 +105,13 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\Calvinatorr\AppData\Local\Programs\Python\Python37-32\include;E:\Documents\PostUniversity\OpenGL\json\single_include;E:\Documents\PostUniversity\OpenGL\assimp\assimp-4.1.0\include;E:\Documents\PostUniversity\OpenGL\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Calvinatorr\AppData\Local\Programs\Python\Python37-32\include;E:\Documents\PostUniversity\OpenGL\json\single_include;E:\Documents\PostUniversity\OpenGL\assimp\include;E:\Documents\PostUniversity\OpenGL\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>opengl32.lib;glfw3.lib;assimp-vc140-mt.lib;python37.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;assimp-vc141-mt.lib;python37.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:\Users\Calvinatorr\AppData\Local\Programs\Python\Python37-32\libs;E:\Documents\PostUniversity\OpenGL\Libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>

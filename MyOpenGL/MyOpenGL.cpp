@@ -112,7 +112,7 @@ int main(int argc, char* argv[])
 
 
 	// GLFW create window
-	window.Create(SRC_WIDTH, SRC_HEIGHT, "MyOpenGL", true);
+	window.Create(SRC_WIDTH, SRC_HEIGHT, "Iridium Engine", true);
 	if (window.window == nullptr)
 		return 1;
 	glfwSetScrollCallback(window.window, ScrollCallback);
@@ -322,10 +322,13 @@ int main(int argc, char* argv[])
 	//box.transform.rotation = glm::quat(glm::radians(glm::vec3(0.0f, 45.0f, 0.0f)));
 	//box.transform.position = glm::vec3(-5.0f, 0.0f, 0.0f);
 	//boxMesh.LoadMeshFromDisk(CONTENT_PATH + "Box_SM.obj");
-	boxMesh.LoadMeshFromDisk(CONTENT_PATH + "Sphere_SM.obj");
-	//boxMesh.LoadMeshFromDisk(CONTENT_PATH + "BD1.fbx");
+	//boxMesh.LoadMeshFromDisk(CONTENT_PATH + "Sphere_SM.obj");
+	boxMesh.LoadMeshFromDisk(CONTENT_PATH + "BD1_SM.FBX");
 	//boxMesh.SetMaterial(0, &unlitMaterial);
-	boxMesh.SetMaterial(0, &sphereMaterial);
+	for (uint i = 0; i < boxMesh.GetMeshSections().size(); i++)
+	{
+		boxMesh.SetMaterial(i, &sphereMaterial);
+	}
 		//boxMesh.material = &unlitMaterial;
 
 	StaticMesh sphereMesh;

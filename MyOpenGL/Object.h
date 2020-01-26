@@ -48,12 +48,15 @@ public:
 	virtual void Unbind();
 };
 
+#ifndef DEFAULT_DISPLAY_NAME
+#define DEFAULT_DISPLAY_NAME std::string("UNTITLED")
+#endif
 
 /* Abstract base for generic object */
 class Object : public _ObjectBase //, public _SerializableBase
 {
 protected:
-	std::string name = "", displayName = "UNTITLED";
+	std::string name = "", displayName = DEFAULT_DISPLAY_NAME;
 	GLint ID = -1;
 
 public:

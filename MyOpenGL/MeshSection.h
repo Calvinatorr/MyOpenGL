@@ -52,7 +52,7 @@ public:
 	// Properties
 	std::vector<Vertex> vertices;
 	std::vector<uint> indices;
-	Material* material; // We will change this to be stored in mesh sections
+	Material* material = nullptr; // We will change this to be stored in mesh sections
 
 
 	enum DrawMode : uint
