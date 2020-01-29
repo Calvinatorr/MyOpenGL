@@ -126,13 +126,34 @@ Material * Material::GetCurrent()
 void Material::DrawDetails()
 {
 #if WITH_EDITOR
-	const ImGuiTreeNodeFlags FLAGS = ImGuiTreeNodeFlags_SpanAvailWidth;
-
 	std::string shaderName = shader != nullptr ? shader->GetDisplayName() : "NULL_SHADER";
-	if (ImGui::TreeNodeEx((GetDisplayName() + " (" + shaderName + ")").c_str(), FLAGS | ImGuiTreeNodeFlags_Leaf | ImGuiSelectableFlags_AllowDoubleClick))
+	if (ImGui::TreeNodeEx((GetDisplayName() + " (" + shaderName + ")").c_str(), ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_Leaf | ImGuiSelectableFlags_AllowDoubleClick))
 	{
 		ImGui::TreePop();
 	}
+
+
+	//AssetManager::DrawAssetBrowserContextMenu<Material>();
+
+	/*if (ImGui::BeginPopupContextItem("Asset Browser##"))
+	{
+		std::set<Material*> assets = AssetManager::GetAssetsByType<Material>();
+
+		for (auto& a : assets)
+		{
+			if (a != nullptr)
+			{
+				if (ImGui::Selectable((a->GetDisplayName() + "##").c_str()))
+				{
+					ImGui::CloseCurrentPopup();
+				}
+
+				ImGui::SetNextItemWidth(-1);
+			}
+		}
+
+		ImGui::EndPopup();
+	}*/
 
 
 	if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left) && ImGui::IsItemHovered(ImGuiHoveredFlags_None))
@@ -240,6 +261,24 @@ void Material::DrawWindow()
 		{
 			ImGui::PushItemWidth(ITEM_WIDTH);
 			ImGui::ColorEdit4(parm.name.c_str(), glm::value_ptr(parm.value));
+			ImGui::PopItemWidth();
+		}
+		ImGui::TreePop();
+		ImGui::NewLine();
+		ImGui::Separator();
+		ImGui::NewLine();
+	}
+
+	// Texture parameters
+	if (textureParameters.size() > 0 && ImGui::TreeNodeEx(("Texture Parameters (" + std::to_string(textureParameters.size()) + ")").c_str(), panelFlags))
+	{
+		for (auto& parm : textureParameters)
+		{
+			ImGui::PushItemWidth(ITEM_WIDTH);
+			std::string texName = parm.value == nullptr ? "NULL" : parm.value->GetClassNameA();
+			ImGui::ImageButton(ImTextureID(parm.value->GetID()), ImVec2(96, 96));
+			ImGui::SameLine();
+			ImGui::Text(parm.name.c_str());
 			ImGui::PopItemWidth();
 		}
 		ImGui::TreePop();
