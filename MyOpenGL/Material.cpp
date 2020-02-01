@@ -256,6 +256,8 @@ void Material::DrawWindow()
 			ImGui::SameLine();
 			ImGui::Text(parm.name.c_str());
 			ImGui::PopItemWidth();
+
+			AssetManager::DrawAssetBrowserContextMenu(&(parm.value));
 		}
 		ImGui::TreePop();
 		ImGui::NewLine();

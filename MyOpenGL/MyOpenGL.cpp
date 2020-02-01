@@ -269,11 +269,13 @@ int main(int argc, char* argv[])
 	Texture tex2;
 	tex2.SetFormat(Texture::Format::RGBA);
 	tex2.LoadResource("../Content/houdini-763d999dfe.png");
+	AssetManager::Register(&tex);
 
 	Texture environmentMap;
 	environmentMap.SetFormatHDR();
 	environmentMap.SetWrapMode(Texture::WrapMode::ClampToEdge);
 	environmentMap.LoadResource("../Content/small_hangar_01_1k.hdr");
+	AssetManager::Register(&tex2);
 
 
 

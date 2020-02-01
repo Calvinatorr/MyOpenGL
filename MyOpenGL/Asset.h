@@ -93,11 +93,13 @@ inline T* AssetManager::DrawAssetBrowserContextMenu(T** AssetToEdit)
 		{
 			ImGui::Text(asset->GetDisplayName().c_str());
 			ImGui::Separator();
+
+			uint index = 0;
 			for (auto& a : assets)
 			{
-				if (a != nullptr)
+				if (a != nullptr && a != *AssetToEdit)
 				{
-					if (ImGui::Selectable((a->GetDisplayName() + "##").c_str()))
+					if (ImGui::Selectable((a->GetDisplayName() + "##" + std::to_string(++index)).c_str()))
 					{
 						ImGui::CloseCurrentPopup();
 						selected = a;

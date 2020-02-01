@@ -1,11 +1,11 @@
 #pragma once
 
 #include "Utility.h"
-#include "Object.h"
+#include "Asset.h"
 
 #include "stb_image.h"
 
-class Texture : public Object
+class Texture : public Asset
 {
 
 public:
@@ -96,5 +96,4 @@ public:
 	GLint GetWidth() const;
 	GLint GetHeight() const;
 	GLint GetNumberOfChannels() const;
-
 };

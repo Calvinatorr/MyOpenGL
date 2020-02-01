@@ -112,6 +112,15 @@ GLint Texture::LoadResource(const GLchar* File)
 		}
 
 		stbi_image_free(data); // Free up memory
+
+
+		if (displayName.length() <= 0 || displayName == DEFAULT_DISPLAY_NAME)
+		{
+			std::string name = File;
+			name = name.substr(name.rfind("/") + 1, name.length() - 1);
+			name = name.substr(0, name.find("."));
+			SetDisplayName(name);
+		}
 	}
 	else
 	{
