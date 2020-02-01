@@ -266,16 +266,17 @@ int main(int argc, char* argv[])
 
 
 	Texture tex = Texture("../Content/1024x1024 Texel Density Texture 1.png");
+	AssetManager::Register(&tex);
 	Texture tex2;
 	tex2.SetFormat(Texture::Format::RGBA);
-	tex2.LoadResource("../Content/houdini-763d999dfe.png");
-	AssetManager::Register(&tex);
+	tex2.Import("../Content/houdini-763d999dfe.png");
+	AssetManager::Register(&tex2);
 
 	Texture environmentMap;
 	environmentMap.SetFormatHDR();
 	environmentMap.SetWrapMode(Texture::WrapMode::ClampToEdge);
-	environmentMap.LoadResource("../Content/small_hangar_01_1k.hdr");
-	AssetManager::Register(&tex2);
+	environmentMap.Import("../Content/small_hangar_01_1k.hdr");
+	AssetManager::Register(&environmentMap);
 
 
 
@@ -330,13 +331,14 @@ int main(int argc, char* argv[])
 	//boxMesh.LoadMeshFromDisk(CONTENT_PATH + "Box_SM.obj");
 	//boxMesh.LoadMeshFromDisk(CONTENT_PATH + "Sphere_SM.obj");
 	boxMesh.LoadMeshFromDisk(CONTENT_PATH + "BD1_SM.FBX");
-	//boxMesh.SetMaterial(0, &unlitMaterial);
 	for (uint i = 0; i < boxMesh.GetMeshSections().size(); i++)
 	{
 		boxMesh.SetMaterial(i, &sphereMaterial);
 	}
+	AssetManager::Register(&boxMesh);
 
 	StaticMesh sphereMesh;
+	AssetManager::Register(&sphereMesh);
 	//sphereMesh.LoadMeshObj("../Content/Sphere_SM.obj");
 	//sphereMesh.LoadMeshObj("../Content/MaterialTest_SM.obj");
 		//sphereMesh.material = &sphereMaterial;

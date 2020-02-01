@@ -53,3 +53,15 @@ Asset::Asset()
 Asset::~Asset()
 {
 }
+
+bool Asset::Reimport()
+{
+	bool bSuccess = false;
+
+	if (!source.empty())
+	{
+		bSuccess = Import(source);
+	}
+
+	return bSuccess;
+}

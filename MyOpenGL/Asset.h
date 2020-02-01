@@ -13,6 +13,8 @@ class AssetManager;
 class Asset;
 
 
+// ===================================== ASSET MANAGER ============================================
+
 /* Query assets from content browser */
 class AssetManager
 {
@@ -125,12 +127,24 @@ inline T* AssetManager::DrawAssetBrowserContextMenu(T** AssetToEdit)
 }
 
 
+// ===================================== ASSET ============================================
 
 class Asset : public Object, public EditorWindow
 {
+protected:
+	std::string source;
+
 public:
 
 
 	Asset();
 	~Asset();
+
+
+	// Interface methods
+	/* Import from source */
+	virtual bool Import(const std::string& Filename) { return true; };
+	/* Reimport from source (if one exists) */
+	bool Reimport();
+
 };

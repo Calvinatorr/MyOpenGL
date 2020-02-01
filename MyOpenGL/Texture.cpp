@@ -28,10 +28,10 @@ Texture::Texture()
 	Init();
 }
 
-Texture::Texture(const GLchar * File)
+Texture::Texture(const std::string& Filename)
 {
 	Init();
-	LoadResource(File);
+	Import(Filename);
 }
 
 
@@ -86,15 +86,15 @@ void Texture::SetFilter(const Texture::Filter & TextureFilter)
 }
 
 
-GLint Texture::LoadResource(const GLchar* File)
+bool Texture::Import(const std::string& Filename)
 {
-	GLint success = -1; // Default to fail
-	source = File;
+	bool bSuccess = false; // Default to fail
+	source = Filename;
 
 	if (IsValid()) // If we have valid texture memory allocated first
 	{
 		stbi_set_flip_vertically_on_load(FlipVertical); // Fix flipping
-		unsigned char* data = stbi_load(File, &width, &height, &numOfChannels, 0);
+		unsigned char* data = stbi_load(Filename.c_str(), &width, &height, &numOfChannels, 0);
 
 		if (data) // If the data is valid
 		{
@@ -103,12 +103,12 @@ GLint Texture::LoadResource(const GLchar* File)
 			if (GenerateMipMaps)
 				glGenerateMipmap(type);
 
-			Log::PrintInfo("Texture successfully loaded '" + std::string(File) + "'");
-			success = 1;
+			Log::PrintInfo("Texture successfully loaded '" + Filename + "'");
+			bSuccess = true;
 		}
 		else
 		{
-			Log::PrintError("Failed to load texture '" + std::string(File) + "'");
+			Log::PrintError("Failed to load texture '" + Filename + "'");
 		}
 
 		stbi_image_free(data); // Free up memory
@@ -116,7 +116,7 @@ GLint Texture::LoadResource(const GLchar* File)
 
 		if (displayName.length() <= 0 || displayName == DEFAULT_DISPLAY_NAME)
 		{
-			std::string name = File;
+			std::string name = Filename;
 			name = name.substr(name.rfind("/") + 1, name.length() - 1);
 			name = name.substr(0, name.find("."));
 			SetDisplayName(name);
@@ -124,10 +124,10 @@ GLint Texture::LoadResource(const GLchar* File)
 	}
 	else
 	{
-		Log::PrintError("Texture object invalid '" + std::string(File) + "'");
+		Log::PrintError("Texture object invalid '" + Filename + "'");
 	}
 
-	return success;
+	return bSuccess;
 }
 
 void Texture::SetFormat(const Format & NewFormat, const GLboolean & SetInternalFormat)

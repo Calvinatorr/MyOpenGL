@@ -5,7 +5,7 @@
 
 #include "stb_image.h"
 
-class Texture : public Asset
+class Texture : public Asset, public _BindableBase
 {
 
 public:
@@ -57,8 +57,6 @@ private:
 	Filter filter = Filter::Linear;
 	
 	GLint width, height, numOfChannels = 0;
-	std::string source;
-
 
 public:
 	
@@ -71,17 +69,19 @@ public:
 
 	// Constructors & destructors
 	Texture();
-	Texture(const GLchar* File);
+	Texture(const std::string& Filename);
 	~Texture();
 
 
 	// Methods
-	void Bind();
-	void Unbind();
+	void Bind() override;
+	void Unbind() override;
 	void SetType(const Type& TextureType);
 	void SetWrapMode(const WrapMode& TextureWrapMode);
 	void SetFilter(const Filter& TextureFilter);
-	GLint LoadResource(const GLchar* File);
+
+	/* Import Texture asset from file */
+	bool Import(const std::string& Filename) override;
 
 
 	// Setters

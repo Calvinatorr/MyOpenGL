@@ -8,7 +8,6 @@ protected:
 
 public:
 	Texture2D();
-	Texture2D(const GLchar* File);
 	~Texture2D();
 };
 
