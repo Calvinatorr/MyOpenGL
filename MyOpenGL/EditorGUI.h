@@ -204,10 +204,31 @@ public:
 		ImGui::Begin("Content Browser", &bIsVisible, ImGuiWindowFlags_NoCollapse);
 
 		filter.Draw();
-		ImGui::Columns(2);
-		DrawTreeNodesInDirectory(CONTENT_PATH);
-		ImGui::NextColumn();
-		ImGui::Button("hello");
+
+		uint index = 0;
+		for (auto& a : AssetManager::GetAssetMap())
+		{
+			if (a == nullptr)
+				continue;
+
+			ImGui::Columns(2);
+			ImGui::Text(a->GetClassNameA().c_str());
+			ImGui::NextColumn();
+			ImGui::Selectable((a->GetDisplayName() + "##" + std::to_string(index)).c_str());
+			
+			if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left) && ImGui::IsItemHovered(ImGuiHoveredFlags_None))
+			{
+				a->OpenWindow();
+			}
+
+			ImGui::NextColumn();
+			++index;
+		}
+
+		//ImGui::Columns(2);
+		//DrawTreeNodesInDirectory(CONTENT_PATH);
+		//ImGui::NextColumn();
+		//ImGui::Button("hello");
 
 		ImGui::End();
 	}
