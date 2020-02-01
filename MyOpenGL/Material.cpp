@@ -123,6 +123,19 @@ Material * Material::GetCurrent()
 	return current;
 }
 
+bool Material::Reimport()
+{
+	if (shader != nullptr)
+	{
+		return shader->Recompile();
+	}
+	else
+	{
+		return false;
+	}
+}
+
+
 void Material::DrawDetails()
 {
 #if WITH_EDITOR
@@ -141,49 +154,23 @@ void Material::DrawDetails()
 
 
 
+std::string Material::GetAssetWindowTitle()
+{
+	std::string shaderName = shader != nullptr ? shader->GetDisplayName() : "NULL_SHADER";
+	return (GetDisplayName() + " (Material: " + shaderName + ")").c_str();
+}
+
 
 void Material::DrawWindow()
 {
 #if WITH_EDITOR
-	std::string shaderName = shader != nullptr ? shader->GetDisplayName() : "NULL_SHADER";
-	ImGui::Begin((GetDisplayName() + " (Material: " + shaderName + ")").c_str(), &bIsVisible, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_MenuBar);
-
-	// Menu bar
-	if (ImGui::BeginMenuBar())
-	{
-		if (ImGui::BeginMenu("File"))
-		{
-			ImGui::Separator();
-
-			// Close editor
-			if (ImGui::MenuItem("Exit"))
-			{
-				SetVisible(false);
-			}
-
-			ImGui::EndMenu();
-		}
-
-		if (ImGui::BeginMenu("Edit"))
-		{
-			ImGui::EndMenu();
-		}
-
-		if (ImGui::Button("Recompile Shader"))
-		{
-			if (shader != nullptr)
-				shader->Recompile();
-		}
-
-		ImGui::EndMenuBar();
-	}
-
+	BeginAssetWindow();
 
 	const float ITEM_WIDTH = 200.0f;
 
 
 	// Float parameters
-	if (floatParameters.size() > 0 && ImGui::TreeNodeEx(("Float Parameters (" + std::to_string(floatParameters.size()) + ")").c_str(), panelFlags))
+	if (floatParameters.size() > 0 && Editor::DrawPanel("Float Parameters (" + std::to_string(floatParameters.size()) + ")"))
 	{
 		for (auto& parm : floatParameters)
 		{
@@ -199,7 +186,7 @@ void Material::DrawWindow()
 
 
 	// Int parameters
-	if (intParameters.size() > 0 && ImGui::TreeNodeEx(("Integer Parameters (" + std::to_string(intParameters.size()) + ")").c_str(), panelFlags))
+	if (intParameters.size() > 0 && Editor::DrawPanel("Integer Parameters (" + std::to_string(intParameters.size()) + ")"))
 	{
 		for (auto& parm : intParameters)
 		{
@@ -215,7 +202,7 @@ void Material::DrawWindow()
 
 
 	// Vector parameters
-	if (vectorParameters.size() > 0 && ImGui::TreeNodeEx(("Vector Parameters (" + std::to_string(vectorParameters.size()) + ")").c_str(), panelFlags))
+	if (vectorParameters.size() > 0 && Editor::DrawPanel("Vector Parameters (" + std::to_string(vectorParameters.size()) + ")"))
 	{
 		for (auto& parm : vectorParameters)
 		{
@@ -231,7 +218,7 @@ void Material::DrawWindow()
 
 
 	// Vector4 parameters
-	if (vector4Parameters.size() > 0 && ImGui::TreeNodeEx(("Vector4 Parameters (" + std::to_string(vector4Parameters.size()) + ")").c_str(), panelFlags))
+	if (vector4Parameters.size() > 0 && Editor::DrawPanel("Vector4 Parameters (" + std::to_string(vector4Parameters.size()) + ")"))
 	{
 		for (auto& parm : vector4Parameters)
 		{
@@ -246,16 +233,24 @@ void Material::DrawWindow()
 	}
 
 	// Texture parameters
-	if (textureParameters.size() > 0 && ImGui::TreeNodeEx(("Texture Parameters (" + std::to_string(textureParameters.size()) + ")").c_str(), panelFlags))
+	if (textureParameters.size() > 0 && Editor::DrawPanel("Texture Parameters (" + std::to_string(textureParameters.size()) + ")"))
 	{
 		for (auto& parm : textureParameters)
 		{
 			ImGui::PushItemWidth(ITEM_WIDTH);
 			std::string texName = parm.value == nullptr ? "NULL" : parm.value->GetClassNameA();
-			ImGui::ImageButton(ImTextureID(parm.value->GetID()), ImVec2(96, 96));
+			if (ImGui::ImageButton(ImTextureID(parm.value->GetID()), ImVec2(96, 96), ImVec2(0, 1), ImVec2(1, 0)))
+			{
+				parm.value->OpenWindow();
+			}
 			ImGui::SameLine();
 			ImGui::Text(parm.name.c_str());
 			ImGui::PopItemWidth();
+
+			if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left) && ImGui::IsItemHovered())
+			{
+				parm.value->OpenWindow();
+			}
 
 			AssetManager::DrawAssetBrowserContextMenu(&(parm.value));
 		}
@@ -265,6 +260,6 @@ void Material::DrawWindow()
 		ImGui::NewLine();
 	}
 
-	ImGui::End();
+	EndAssetWindow();
 #endif
 }

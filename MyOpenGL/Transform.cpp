@@ -109,7 +109,7 @@ glm::mat4 Transform::GetMatrixWithoutScale() const
 void Transform::DrawDetails()
 {
 #if WITH_EDITOR
-	if (ImGui::TreeNodeEx("Transform", panelFlags))
+	if (Editor::DrawPanel("Transform"))
 	{
 		float alpha = .2f;
 

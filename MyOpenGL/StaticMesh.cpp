@@ -359,42 +359,13 @@ void StaticMesh::DrawDetails()
 void StaticMesh::DrawWindow()
 {
 #if WITH_EDITOR
+	BeginAssetWindow();
+
 	const ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DefaultOpen;
 
-	ImGui::Begin((GetDisplayName() + " (StaticMesh)").c_str(), &bIsVisible, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_MenuBar);
-
-	// Menu bar
-	if (ImGui::BeginMenuBar())
-	{
-		if (ImGui::BeginMenu("File"))
-		{
-			ImGui::Separator();
-
-			// Close window
-			if (ImGui::MenuItem("Exit"))
-			{
-				SetVisible(false);
-			}
-
-			ImGui::EndMenu();
-		}
-
-		if (ImGui::BeginMenu("Edit"))
-		{
-			ImGui::EndMenu();
-		}
-
-		if (ImGui::Button("Reimport"))
-		{
-			Reimport();
-		}
-
-		ImGui::EndMenuBar();
-	}
-
 	// Materials
-	
-	if (ImGui::TreeNodeEx(("Materials (" + std::to_string(GetMaterials().size()) + ")").c_str(), panelFlags | ImGuiTreeNodeFlags_DefaultOpen))
+	//if (ImGui::TreeNodeEx(("Materials (" + std::to_string(GetMaterials().size()) + ")").c_str(), panelFlags | ImGuiTreeNodeFlags_DefaultOpen))
+	if (Editor::DrawPanel("Materials (" + std::to_string(GetMaterials().size()) + ")"))
 	{
 		for (auto& meshSection : meshSections)
 		{
@@ -417,30 +388,6 @@ void StaticMesh::DrawWindow()
 	
 	ImGui::Separator();
 	ImGui::NewLine();
-	ImGui::LabelText("Source", source.c_str());
-	ImGui::SameLine();
-	if (ImGui::Button("..."))
-	{
-		/*#if OS_Windows
-					char filename[MAX_PATH] = "../";
-
-					OPENFILENAME ofn;
-					ZeroMemory(&filename, sizeof(filename));
-					ZeroMemory(&ofn, sizeof(ofn));
-					ofn.lStructSize = sizeof(ofn);
-					ofn.hwndOwner = NULL;  // If you have a window to center over, put its HANDLE here
-					ofn.lpstrFilter = "Text Files\0*.txt\0Any File\0*.*\0";
-					ofn.lpstrFile = filename;
-					ofn.nMaxFile = MAX_PATH;
-					ofn.lpstrTitle = "Select a File, yo!";
-					ofn.Flags = OFN_DONTADDTORECENT | OFN_FILEMUSTEXIST;
-
-					if (GetOpenFileNameA(&ofn))
-					{
-						std::cout << "You chose the file \"" << filename << "\"\n";
-					}
-		#endif*/
-	}
 
 	if (ImGui::TreeNodeEx("Import Settings", panelFlags ^ ImGuiTreeNodeFlags_DefaultOpen))
 	{
@@ -537,7 +484,7 @@ void StaticMesh::DrawWindow()
 		ImGui::TreePop();
 	}
 
-	ImGui::End();
+	EndAssetWindow();
 
 #endif
 }

@@ -68,10 +68,6 @@ protected:
 
 public:
 
-	// Properties
-	std::string source;
-	
-
 	// Constructors & destructors
 	StaticMesh();
 	~StaticMesh();

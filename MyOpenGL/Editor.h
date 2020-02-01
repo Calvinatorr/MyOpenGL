@@ -89,8 +89,6 @@ public:
 };
 
 
-
-
 class Object;
 
 class Editor
@@ -107,4 +105,7 @@ public:
 	static void RegisterDrawable(_DrawableBase* EditorObject);
 	static void UnregisterWindow(EditorWindow* EditorObject);
 	static void UnregisterDrawable(_DrawableBase* EditorObject);
+
+	/* Helper methods */
+	static bool DrawPanel(const std::string& PanelTitle);
 };

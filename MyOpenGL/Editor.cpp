@@ -177,3 +177,8 @@ void Editor::UnregisterDrawable(_DrawableBase * EditorObject)
 	Log::PrintInfo(ss.str());
 #endif
 }
+
+bool Editor::DrawPanel(const std::string & PanelTitle)
+{
+	return ImGui::TreeNodeEx(PanelTitle.c_str(), ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanFullWidth);
+}

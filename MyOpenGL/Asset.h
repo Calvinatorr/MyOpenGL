@@ -145,6 +145,15 @@ public:
 	/* Import from source */
 	virtual bool Import(const std::string& Filename) { return true; };
 	/* Reimport from source (if one exists) */
-	bool Reimport();
+	virtual bool Reimport();
 
+
+	// Asset window GUI
+	void DrawWindow() override;
+	/* Override this to change the window title (calculated for every frame the GUI is drawn so be careful) */
+	virtual std::string GetAssetWindowTitle();
+	/* ImGui::Begin(). Must end with ImGui::End() (EndAssetWindow()) */
+	void BeginAssetWindow();
+	/* ImnGui::End() */
+	void EndAssetWindow();
 };

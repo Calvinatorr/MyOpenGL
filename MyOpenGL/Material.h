@@ -93,7 +93,9 @@ public:
 
 	
 	// Interfaces
+	bool Reimport() override;
 	void DrawDetails() override;
+	std::string GetAssetWindowTitle() override;
 	void DrawWindow() override;
 };
 

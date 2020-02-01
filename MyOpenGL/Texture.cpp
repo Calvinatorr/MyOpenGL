@@ -93,14 +93,14 @@ bool Texture::Import(const std::string& Filename)
 
 	if (IsValid()) // If we have valid texture memory allocated first
 	{
-		stbi_set_flip_vertically_on_load(FlipVertical); // Fix flipping
+		stbi_set_flip_vertically_on_load(bFlipVertical); // Fix flipping
 		unsigned char* data = stbi_load(Filename.c_str(), &width, &height, &numOfChannels, 0);
 
 		if (data) // If the data is valid
 		{
 			glTexImage2D(type, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 
-			if (GenerateMipMaps)
+			if (bGenerateMipMaps)
 				glGenerateMipmap(type);
 
 			Log::PrintInfo("Texture successfully loaded '" + Filename + "'");
@@ -173,7 +173,35 @@ GLint Texture::GetHeight() const
 	return height;
 }
 
+glm::vec2 Texture::GetSize() const
+{
+	return glm::vec2(width, height);
+}
+
 GLint Texture::GetNumberOfChannels() const
 {
 	return numOfChannels;
+}
+
+void Texture::DrawWindow()
+{
+	BeginAssetWindow();
+
+
+	double ratio = width / height;
+	ImGui::Image(ImTextureID(GetID()), ImVec2(512, 512 / ratio), ImVec2(0, 1), ImVec2(1, 0)); // Flip UV
+
+	ImGui::NewLine();
+	ImGui::Separator();
+	ImGui::NewLine();
+
+	if (Editor::DrawPanel("Settings"))
+	{
+		ImGui::Checkbox("Generate Mipmaps", &bGenerateMipMaps);
+		ImGui::Checkbox("Flip Vertical", &bFlipVertical);
+
+		// Add wrap mode, format, filter etc here when data can be reflected in C++
+	}
+
+	EndAssetWindow();
 }

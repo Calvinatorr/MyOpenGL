@@ -61,8 +61,8 @@ private:
 public:
 	
 	// Properties
-	GLboolean GenerateMipMaps = GL_TRUE;
-	GLboolean FlipVertical = GL_TRUE;
+	bool bGenerateMipMaps = true;
+	bool bFlipVertical = true;
 	Format internalFormat = Format::RGB;
 	Format format = Format::RGB;
 
@@ -95,5 +95,10 @@ public:
 	Filter GetFilter() const;
 	GLint GetWidth() const;
 	GLint GetHeight() const;
+	glm::vec2 GetSize() const;
 	GLint GetNumberOfChannels() const;
+
+
+	// GUI
+	void DrawWindow() override;
 };
