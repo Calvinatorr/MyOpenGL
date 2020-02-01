@@ -10,6 +10,19 @@ vec3 PixelBitangent = normalize(cross(PixelNormal, PixelTangent));
 vec3 ViewDirection = normalize(CameraPosition - WorldPosition);
 
 
+/* Cubemaps */
+vec3 GetCustomReflectionVector(vec3 WorldNormal)
+{
+	return -ViewDirection + WorldNormal * dot(WorldNormal, ViewDirection) * 2.0f;
+}
+vec3 ReflectionVector = GetCustomReflectionVector(PixelNormal);
+vec4 SampleCubemapAsReflection(sampler2D TexCube)
+{
+	vec2 uv = SphericalUVsFromPosition(normalize(ReflectionVector));
+	return texture(TexCube, uv.xy);
+}
+
+
 /* Smooth step using inverse lerp. Only runs in pixel shader due to using fwidth() (ddx() & ddy()) */ 
 float StepAA(float In, float Gradient)
 {

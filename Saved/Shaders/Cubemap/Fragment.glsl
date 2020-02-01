@@ -48,7 +48,6 @@ vec2 SphericalUVsFromPosition(vec3 v)
 	return uv;
 }
 
-
 #define saturate(x) clamp(x, 0.0f, 1.0f)
 #define sqr(x)
 
@@ -61,6 +60,19 @@ vec3 PixelBitangent = normalize(cross(PixelNormal, PixelTangent));
 #endif*/
 
 vec3 ViewDirection = normalize(CameraPosition - WorldPosition);
+
+
+/* Cubemaps */
+vec3 GetCustomReflectionVector(vec3 WorldNormal)
+{
+	return -ViewDirection + WorldNormal * dot(WorldNormal, ViewDirection) * 2.0f;
+}
+vec3 ReflectionVector = GetCustomReflectionVector(PixelNormal);
+vec4 SampleCubemapAsReflection(sampler2D TexCube)
+{
+	vec2 uv = SphericalUVsFromPosition(normalize(ReflectionVector));
+	return texture(TexCube, uv.xy);
+}
 
 
 /* Smooth step using inverse lerp. Only runs in pixel shader due to using fwidth() (ddx() & ddy()) */ 
@@ -106,12 +118,15 @@ void ClampMaterialProperties(in out Material InMat)
 
 
 
+
 void main()
 {
 	outMaterial = inMaterial;
 	
-	vec2 uv = SphericalUVsFromPosition(normalize(LocalPosition));
 	
-	FragColour = texture(EquirectangularMap, uv.xy);
+	
+	
+	
+	FragColour = SampleCubemapAsReflection(EquirectangularMap);
 	
 } 

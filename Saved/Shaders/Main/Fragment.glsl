@@ -48,7 +48,6 @@ vec2 SphericalUVsFromPosition(vec3 v)
 	return uv;
 }
 
-
 #define saturate(x) clamp(x, 0.0f, 1.0f)
 #define sqr(x)
 
@@ -61,6 +60,13 @@ vec3 PixelBitangent = normalize(cross(PixelNormal, PixelTangent));
 #endif*/
 
 vec3 ViewDirection = normalize(CameraPosition - WorldPosition);
+
+vec3 GetCustomReflectionVector(vec3 WorldNormal)
+{
+	return -ViewDirection + WorldNormal * dot(WorldNormal, ViewDirection) * 2.0f;
+}
+
+vec3 ReflectionVector = GetCustomReflectionVector(PixelNormal);
 
 
 /* Smooth step using inverse lerp. Only runs in pixel shader due to using fwidth() (ddx() & ddy()) */ 

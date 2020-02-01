@@ -34,6 +34,5 @@ vec2 SphericalUVsFromPosition(vec3 v)
 	return uv;
 }
 
-
 #define saturate(x) clamp(x, 0.0f, 1.0f)
 #define sqr(x)
