@@ -236,7 +236,7 @@ int main(int argc, char* argv[])
 	Level level;
 	//level.AddSceneObject(&testObject);
 	//level.AddSceneObject(&testObject2);
-	level.LoadFromDisk("../LoadFrom.json");
+	level.Import("../LoadFrom.json");
 	//level.SaveToDisk("../SaveTo.json");
 	//std::system("pause");
 
@@ -283,9 +283,9 @@ int main(int argc, char* argv[])
 	// ===================================== SHADERS & MATERIALS ============================================
 
 
-	shaderProgram.Compile(SHADER_PATH + "Main");
-	unlitShader.Compile(SHADER_PATH + "Unlit");
-	cubemapShader.Compile(SHADER_PATH + "Cubemap");
+	shaderProgram.Import(SHADER_PATH + "Main");
+	unlitShader.Import(SHADER_PATH + "Unlit");
+	cubemapShader.Import(SHADER_PATH + "Cubemap");
 
 
 	Material unlitMaterial(&unlitShader);
@@ -325,12 +325,7 @@ int main(int argc, char* argv[])
 
 
 	StaticMesh boxMesh;
-	//boxMesh.LoadMeshObj("../Content/Box_SM.obj");
-	//box.transform.rotation = glm::quat(glm::radians(glm::vec3(0.0f, 45.0f, 0.0f)));
-	//box.transform.position = glm::vec3(-5.0f, 0.0f, 0.0f);
-	//boxMesh.LoadMeshFromDisk(CONTENT_PATH + "Box_SM.obj");
-	//boxMesh.LoadMeshFromDisk(CONTENT_PATH + "Sphere_SM.obj");
-	boxMesh.LoadMeshFromDisk(CONTENT_PATH + "BD1_SM.FBX");
+	boxMesh.Import(CONTENT_PATH + "BD1_SM.FBX");
 	for (uint i = 0; i < boxMesh.GetMeshSections().size(); i++)
 	{
 		boxMesh.SetMaterial(i, &sphereMaterial);

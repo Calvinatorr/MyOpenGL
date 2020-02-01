@@ -78,7 +78,7 @@ void Level::SaveToDisk(const std::string & Filename)
 }
 
 
-void Level::LoadFromDisk(const std::string & Filename)
+bool Level::Import(const std::string & Filename)
 {
 	std::ifstream file(Filename);
 	if (file.is_open())
@@ -92,10 +92,12 @@ void Level::LoadFromDisk(const std::string & Filename)
 		Deserialize(jsonData);
 
 		Log::PrintInfo("Loaded level '" + Filename + "'");
+		return true;
 	}
 	else
 	{
 		Log::PrintError("Failed to load level '" + Filename + "'", false);
+		return false;
 	}
 }
 

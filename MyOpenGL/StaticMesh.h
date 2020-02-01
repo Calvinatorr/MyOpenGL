@@ -22,16 +22,6 @@ private:
 
 	friend class MeshSection;
 
-	// OBJ parser methods
-	std::vector<std::string> ConvertToTokens(const std::string& Line, const char& Deliminator = ' ');
-	int FindToken(const std::vector<std::string>& Tokens, const std::string& Snippet);
-	std::string CleanupToken(std::string Token);
-	float FloatToken(std::string Token);
-	int IntToken(std::string Token);
-	glm::vec3 Vec3Token(const std::vector<std::string>& Tokens);
-	glm::vec2 Vec2Token(const std::vector<std::string>& Tokens);
-	std::vector<int> DecodeIndicesFromToken(const std::string& Token);
-
 	/* Process aiMesh from assimp */
 	void ProcessMeshSection(MeshSection* MeshSection, aiMesh* Mesh, const aiScene* Scene);
 	/* Process aiNode from assimp */
@@ -88,10 +78,8 @@ public:
 
 
 	// Methods
-	/* DEPRECATED */
-	void LoadMeshObj(const std::string& File);
 	/* Implements assimp - http://www.assimp.org/ */
-	bool LoadMeshFromDisk(const std::string& Filename);
+	bool Import(const std::string& Filename) override;
 	/* Reimports from disk */
 	bool Reimport();
 
@@ -104,11 +92,11 @@ public:
 	void Construct() override;
 
 
-
 	/* Return list of materials */
 	std::vector<Material*> GetMaterials() const;
 	/* Set material at mesh section index */
 	bool SetMaterial(const uint& Index, Material* NewMaterial);
+
 
 	/* Return unmodifiable list of mesh sections */
 	const std::vector<MeshSection>& GetMeshSections() const;
@@ -116,7 +104,6 @@ public:
 	std::vector<MeshSection>& GetMeshSections_Modifiable();
 	/* Clear mesh sections */
 	void ClearMeshSections();
-
 
 
 	/* Get min bounds */

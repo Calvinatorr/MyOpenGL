@@ -23,5 +23,8 @@ void StaticMeshObject::DrawDetails()
 	SceneObject::DrawDetails();
 
 	if (staticMeshComponent.staticMesh != nullptr)
+	{
 		staticMeshComponent.staticMesh->DrawDetails();
+		AssetManager::DrawAssetBrowserContextMenu(&staticMeshComponent.staticMesh);
+	}
 }

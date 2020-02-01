@@ -9,6 +9,7 @@
 
 #include "Serialization.h"
 #include "SceneObject.h"
+#include "Asset.h"
 
 
 class Level;
@@ -17,7 +18,7 @@ class LevelManager;
 
 // ===================================== LEVEL ============================================
 
-class Level : public Object, public _DrawableBase
+class Level : public Asset, public _DrawableBase
 {
 private:
 	bool loaded = false;
@@ -40,7 +41,8 @@ public:
 		json Serialize() override;
 		void Deserialize(const json& Data) override;
 		void SaveToDisk(const std::string& Filename);
-		void LoadFromDisk(const std::string& Filename);
+		/* Import level from disk */
+		bool Import(const std::string& Filename) override;
 		void AddSceneObject(SceneObject* Object);
 		void Clear();
 

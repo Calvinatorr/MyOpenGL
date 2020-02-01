@@ -32,7 +32,7 @@ EditorGrid::EditorGrid()
 
 	// ===================================== SHADER ============================================
 
-	gridShader.Compile(SHADER_PATH + "EditorGrid");
+	gridShader.Import(SHADER_PATH + "EditorGrid");
 	gridMaterial = Material(&gridShader);
 	plane.SetMaterial(&gridMaterial);
 

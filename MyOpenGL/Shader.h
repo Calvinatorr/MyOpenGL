@@ -92,7 +92,6 @@ public:
 
 	// Properties
 	SubShader vertexShader, fragmentShader; // All sub-shaders
-	std::string source;
 
 
 	// Constructors & destructors
@@ -104,9 +103,12 @@ public:
 	// Methods
 	GLint CompileShadersFromFolder(const std::string& Folder);
 	GLint LinkShaders();
-	GLint Compile(const std::string& Folder);
-	GLint Recompile();
+	bool Import(const std::string& Folder) override;
+	/* Recompile this shader from source */
+	bool Recompile();
+	/* Recompile all current shaders */
 	static void RecompileAll();
+
 	void Bind() override;
 	void Destroy();
 	static void Cleanup();

@@ -36,4 +36,5 @@ void StaticMeshComponent::DrawDetails()
 {
 	SceneComponent::DrawDetails();
 	staticMesh->DrawDetails();
+	AssetManager::DrawAssetBrowserContextMenu(&staticMesh);
 }

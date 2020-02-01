@@ -240,7 +240,7 @@ Shader::Shader()
 Shader::Shader(const std::string & Folder)
 {
 	Create();
-	CompileShadersFromFolder(Folder);
+	Import(Folder);
 }
 
 
@@ -297,23 +297,23 @@ GLint Shader::LinkShaders()
 	return success;
 }
 
-GLint Shader::Compile(const std::string & Folder)
+bool Shader::Import(const std::string & Folder)
 {
-	GLint success = 1;
-	success = success && CompileShadersFromFolder(Folder);
+	bool bSuccess = true;
+	bSuccess = bSuccess && CompileShadersFromFolder(Folder);
 	SetDisplayName(Folder.substr(Folder.rfind("/") + 1, Folder.length() - 1));
 	LinkShaders();
 		
-	return success;
+	return bSuccess;
 }
 
-GLint Shader::Recompile()
+bool Shader::Recompile()
 {
-	GLint success = 1;
+	GLint bSuccess = true;
 	if (!source.empty())
-		success = success && Compile(source);
+		bSuccess = bSuccess && Import(source);
 
-	return success;
+	return bSuccess;
 }
 
 void Shader::RecompileAll()
@@ -438,5 +438,5 @@ Shader Shader::DefaultShader;
 
 void Shader::Initialize()
 {
-	DefaultShader.Compile(SHADER_PATH + "Default");
+	DefaultShader.Import(SHADER_PATH + "Default");
 }
