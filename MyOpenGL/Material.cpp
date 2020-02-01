@@ -127,34 +127,10 @@ void Material::DrawDetails()
 {
 #if WITH_EDITOR
 	std::string shaderName = shader != nullptr ? shader->GetDisplayName() : "NULL_SHADER";
-	if (ImGui::TreeNodeEx((GetDisplayName() + " (" + shaderName + ")").c_str(), ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_Leaf | ImGuiSelectableFlags_AllowDoubleClick))
+	if (ImGui::TreeNodeEx((GetDisplayName() + " (" + shaderName + ")##").c_str(), ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_Leaf | ImGuiSelectableFlags_AllowDoubleClick))
 	{
 		ImGui::TreePop();
 	}
-
-
-	//AssetManager::DrawAssetBrowserContextMenu<Material>();
-
-	/*if (ImGui::BeginPopupContextItem("Asset Browser##"))
-	{
-		std::set<Material*> assets = AssetManager::GetAssetsByType<Material>();
-
-		for (auto& a : assets)
-		{
-			if (a != nullptr)
-			{
-				if (ImGui::Selectable((a->GetDisplayName() + "##").c_str()))
-				{
-					ImGui::CloseCurrentPopup();
-				}
-
-				ImGui::SetNextItemWidth(-1);
-			}
-		}
-
-		ImGui::EndPopup();
-	}*/
-
 
 	if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left) && ImGui::IsItemHovered(ImGuiHoveredFlags_None))
 	{

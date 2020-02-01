@@ -287,10 +287,12 @@ int main(int argc, char* argv[])
 
 	Material unlitMaterial(&unlitShader);
 	unlitMaterial.SetDisplayName("Unlit_MI");
+	AssetManager::Register(&unlitMaterial);
 
 	Material cubemapMaterial(&cubemapShader);
 	cubemapMaterial.SetDisplayName("Cubemap_MI");
 	cubemapMaterial.SetTextureParameter("EquirectangularMap", &environmentMap);
+	AssetManager::Register(&cubemapMaterial);
 
 	Material checkerMaterial(&shaderProgram);
 	checkerMaterial.SetDisplayName("Checker_MI");
@@ -300,6 +302,7 @@ int main(int argc, char* argv[])
 	checkerMaterial.SetFloatParameter("inMaterial.Metalness", 0.0f);
 	checkerMaterial.SetFloatParameter("inMaterial.Roughness", 0.25f);
 	checkerMaterial.SetFloatParameter("inMaterial.AmbientOcclusion", 1.0f);
+	AssetManager::Register(&checkerMaterial);
 
 	Material sphereMaterial(&shaderProgram);
 	sphereMaterial.SetDisplayName("Sphere_MI");
@@ -311,6 +314,7 @@ int main(int argc, char* argv[])
 	sphereMaterial.SetFloatParameter("inMaterial.Anisotropic", 0.0f);
 	sphereMaterial.SetFloatParameter("inMaterial.AnisotropicDirection", 0.0f);
 	sphereMaterial.SetFloatParameter("inMaterial.AmbientOcclusion", 1.0f);
+	AssetManager::Register(&sphereMaterial);
 
 
 	// ===================================== VAO & VBO ============================================
@@ -329,7 +333,6 @@ int main(int argc, char* argv[])
 	{
 		boxMesh.SetMaterial(i, &sphereMaterial);
 	}
-		//boxMesh.material = &unlitMaterial;
 
 	StaticMesh sphereMesh;
 	//sphereMesh.LoadMeshObj("../Content/Sphere_SM.obj");
@@ -493,6 +496,9 @@ int main(int argc, char* argv[])
 
 		// Safely unbind last shader
 		Shader::UnbindCurrent();
+
+		// Reset asset manager's states
+		AssetManager::ResetState();
 	}
 
 

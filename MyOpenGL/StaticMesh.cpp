@@ -582,25 +582,18 @@ void StaticMesh::DrawWindow()
 
 	// Materials
 	
-	if (ImGui::TreeNodeEx(("Materials (" + std::to_string(GetMaterials().size()) + ")").c_str(), panelFlags ^ ImGuiTreeNodeFlags_DefaultOpen))
+	if (ImGui::TreeNodeEx(("Materials (" + std::to_string(GetMaterials().size()) + ")").c_str(), panelFlags | ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		//ImGui::Text("0");
-		//ImGui::SameLine();
-
-		for (auto& m : GetMaterials())
+		for (auto& meshSection : meshSections)
 		{
-			std::string materialName = "NULL_MATERIAL";
-			std::string shaderName = "NULL_SHADER";
-			if (m != nullptr)
+			if (meshSection.material != nullptr)
 			{
-				m->DrawDetails();
-				materialName = m->GetDisplayName();
-				if (m->shader != nullptr)
-					shaderName = m->shader->GetDisplayName();
+				meshSection.material->DrawDetails();
+				AssetManager::DrawAssetBrowserContextMenu(&meshSection.material);
 			}
 			else
 			{
-				if (ImGui::TreeNodeEx(materialName.c_str(), flags ^ ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Leaf))
+				if (ImGui::TreeNodeEx("NULL", flags ^ ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Leaf))
 				{
 					ImGui::TreePop();
 				}
