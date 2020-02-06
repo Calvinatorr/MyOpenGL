@@ -201,6 +201,8 @@ void Texture::DrawWindow()
 		ImGui::Checkbox("Flip Vertical", &bFlipVertical);
 
 		// Add wrap mode, format, filter etc here when data can be reflected in C++
+
+		Editor::EndPanel();
 	}
 
 	EndAssetWindow();

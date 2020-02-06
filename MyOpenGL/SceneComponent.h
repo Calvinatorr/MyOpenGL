@@ -35,6 +35,7 @@ public:
 	virtual void Draw() override;
 	virtual void Update() override;
 	virtual void Cleanup() override;
+	virtual void DrawSceneComponentDetails();
 	virtual void DrawDetails() override;
 };
 

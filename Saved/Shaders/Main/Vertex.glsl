@@ -27,6 +27,9 @@ uniform float ElapsedTime;
 #define DEG_TO_RAD 0.0174533
 #define RAD_TO_DEG 57.2958
 
+#define saturate(x) clamp(x, 0.0f, 1.0f)
+#define sqr(x)
+
 
 
 vec3 GetLocalUVW(vec3 LocalPosition)
@@ -46,8 +49,11 @@ vec2 SphericalUVsFromPosition(vec3 v)
 	return uv;
 }
 
-#define saturate(x) clamp(x, 0.0f, 1.0f)
-#define sqr(x)
+vec4 SampleCubemap(sampler2D TexCube, vec3 Position)
+{
+	vec2 uv = SphericalUVsFromPosition(Position);
+	return texture(TexCube, uv.xy);
+}
 
 
 

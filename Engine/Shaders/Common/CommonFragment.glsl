@@ -18,9 +18,9 @@ vec3 GetCustomReflectionVector(vec3 WorldNormal)
 vec3 ReflectionVector = GetCustomReflectionVector(PixelNormal);
 vec4 SampleCubemapAsReflection(sampler2D TexCube)
 {
-	vec2 uv = SphericalUVsFromPosition(normalize(ReflectionVector));
-	return texture(TexCube, uv.xy);
+	return SampleCubemap(TexCube, normalize(ReflectionVector));
 }
+
 
 
 /* Smooth step using inverse lerp. Only runs in pixel shader due to using fwidth() (ddx() & ddy()) */ 

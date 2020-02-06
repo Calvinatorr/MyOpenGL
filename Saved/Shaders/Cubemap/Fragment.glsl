@@ -1,14 +1,7 @@
 #version 330 core
 out vec4 FragColour; 
 
-
-in vec2 TexCoord;
-in vec4 VertexColour;
-in vec3 VertexNormal;
-
-in mat4 LocalToWorld;
 in vec3 LocalPosition;
-in vec3 WorldPosition;
 
 
 
@@ -29,6 +22,9 @@ uniform float ElapsedTime;
 #define DEG_TO_RAD 0.0174533
 #define RAD_TO_DEG 57.2958
 
+#define saturate(x) clamp(x, 0.0f, 1.0f)
+#define sqr(x)
+
 
 
 vec3 GetLocalUVW(vec3 LocalPosition)
@@ -48,85 +44,25 @@ vec2 SphericalUVsFromPosition(vec3 v)
 	return uv;
 }
 
-#define saturate(x) clamp(x, 0.0f, 1.0f)
-#define sqr(x)
-
-
-
-vec3 PixelNormal = normalize(VertexNormal); 
-/*#ifdef VertexTangent
-vec3 PixelTangent = normalize(VertexTangent);
-vec3 PixelBitangent = normalize(cross(PixelNormal, PixelTangent));
-#endif*/
-
-vec3 ViewDirection = normalize(CameraPosition - WorldPosition);
-
-
-/* Cubemaps */
-vec3 GetCustomReflectionVector(vec3 WorldNormal)
+vec4 SampleCubemap(sampler2D TexCube, vec3 Position)
 {
-	return -ViewDirection + WorldNormal * dot(WorldNormal, ViewDirection) * 2.0f;
-}
-vec3 ReflectionVector = GetCustomReflectionVector(PixelNormal);
-vec4 SampleCubemapAsReflection(sampler2D TexCube)
-{
-	vec2 uv = SphericalUVsFromPosition(normalize(ReflectionVector));
+	vec2 uv = SphericalUVsFromPosition(Position);
 	return texture(TexCube, uv.xy);
 }
 
 
-/* Smooth step using inverse lerp. Only runs in pixel shader due to using fwidth() (ddx() & ddy()) */ 
-float StepAA(float In, float Gradient)
-{
-	float halfChange = fwidth(Gradient) / 2;
-	
-	float lowerEdge = In - halfChange;
-	float upperEdge = In + halfChange;
-	
-	float stepped = (Gradient - lowerEdge) / (upperEdge - lowerEdge);
-	stepped = saturate(stepped);
-	return stepped;
-}
 
-
-uniform sampler2D EquirectangularMap;
-
-
-
-struct Material
-{
-	vec3 Albedo;
-	float Metalness;
-	float Roughness;
-	float Anisotropic;
-	float AnisotropicDirection;
-	float AmbientOcclusion;
-};
-
-uniform Material inMaterial;
-Material outMaterial;
-
-void ClampMaterialProperties(in out Material InMat)
-{
-	InMat.Albedo = clamp(InMat.Albedo, 0.0f, 1.0f);
-	InMat.Metalness = clamp(InMat.Metalness, 0.0f, 1.0f);
-	InMat.Roughness = clamp(InMat.Roughness, 0.0f, 1.0f);
-	InMat.Anisotropic = clamp(InMat.Anisotropic, 0.0f, 1.0f);
-	InMat.AnisotropicDirection = clamp(InMat.AnisotropicDirection, 0.0f, 1.0f);
-	InMat.AmbientOcclusion = clamp(InMat.AmbientOcclusion, 0.0f, 1.0f);
-}
+uniform samplerCube EnvironmentMap;
 
 
 
 
 void main()
 {
-	outMaterial = inMaterial;
+	vec3 envColour = vec3(1.0f, 0.0f, 0.0f);
 	
+	envColour = envColour / (envColour + vec3(1.0f));
+	envColour = pow(envColour, vec3(1.0f / 2.2f));
 	
-	
-	
-	
-	FragColour = SampleCubemapAsReflection(EquirectangularMap);
-	
-} 
+	FragColour = vec4(envColour, 1.0f);
+}

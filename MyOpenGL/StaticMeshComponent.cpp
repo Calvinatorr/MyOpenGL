@@ -9,7 +9,8 @@ StaticMeshComponent::StaticMeshComponent()
 
 StaticMeshComponent::StaticMeshComponent(StaticMesh * StaticMesh)
 {
-	this->staticMesh = StaticMesh;
+	SetStaticMesh(StaticMesh);
+	StaticMeshComponent();
 }
 
 
@@ -18,11 +19,32 @@ StaticMeshComponent::~StaticMeshComponent()
 	//Cleanup(); // Don't do this - it destroys our static mesh when this goes out of scope?
 }
 
+void StaticMeshComponent::SetStaticMesh(StaticMesh* NewStaticMesh)
+{
+	staticMesh = NewStaticMesh;
+
+	materialOverrides.resize(staticMesh->GetMaterials().size()); // Resize overrides array
+	uint index = 0;
+	for (auto& m : materialOverrides)
+	{
+		if (m == nullptr)
+		{
+			materialOverrides[index] = NewStaticMesh->GetMaterials()[index];
+		}
+		++index;
+	}
+}
+
+StaticMesh * StaticMeshComponent::GetStaticMesh()
+{
+	return staticMesh;
+}
+
 void StaticMeshComponent::Draw()
 {
 	// Render our static mesh
 	if (staticMesh != nullptr)
-		staticMesh->Draw(GetWorldTransformMatrix());
+		staticMesh->Draw(GetWorldTransformMatrix(), materialOverrides);
 }
 
 void StaticMeshComponent::Cleanup()
@@ -32,9 +54,35 @@ void StaticMeshComponent::Cleanup()
 	//delete(staticMesh);
 }
 
-void StaticMeshComponent::DrawDetails()
+void StaticMeshComponent::DrawSceneComponentDetails()
 {
-	SceneComponent::DrawDetails();
 	staticMesh->DrawDetails();
+	StaticMesh* cached = staticMesh;
 	AssetManager::DrawAssetBrowserContextMenu(&staticMesh);
+	// Trigger material override reordering
+	if (cached != staticMesh)
+	{
+		SetStaticMesh(staticMesh);
+	}
+
+
+	// Materials
+	if (Editor::DrawPanel("Material Overrides (" + std::to_string(materialOverrides.size()) + ")"))
+	{
+		for (auto& m : materialOverrides)
+		{
+			if (m != nullptr)
+			{
+				m->DrawDetails();
+				AssetManager::DrawAssetBrowserContextMenu(&m);
+			}
+			else
+			{
+				ImGui::Selectable("NULL");
+				AssetManager::DrawAssetBrowserContextMenu<Material>(&m);
+			}
+		}
+
+		ImGui::TreePop();
+	}
 }

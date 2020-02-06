@@ -59,7 +59,7 @@ public:
 class EditorWindow : public _ObjectBase  //, public _EditorWindowBase
 {
 protected:
-	bool bIsVisible = true;
+	bool bIsWindowVisible = true;
 
 public:
 
@@ -76,12 +76,12 @@ public:
 
 
 	// Getters
-	bool IsVisible();
+	bool IsWindowVisible();
 
 
 	// Setters
-	void SetVisible(bool NewVisibility);
-	void ToggleVisibility();
+	void SetWindowVisible(bool NewVisibility);
+	void ToggleWindowVisibility();
 
 
 	// Implementable methods
@@ -108,4 +108,5 @@ public:
 
 	/* Helper methods */
 	static bool DrawPanel(const std::string& PanelTitle);
+	static void EndPanel();
 };

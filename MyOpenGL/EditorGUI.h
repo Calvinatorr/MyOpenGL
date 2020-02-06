@@ -22,7 +22,7 @@ public:
 
 	void DrawWindow() override
 	{
-		ImGui::Begin("Scene Outliner", &bIsVisible, ImGuiWindowFlags_NoCollapse);
+		ImGui::Begin("Scene Outliner", &bIsWindowVisible, ImGuiWindowFlags_NoCollapse);
 
 		// For each level
 		for (auto level : SceneOutliner::GetLoadedLevels())
@@ -73,7 +73,7 @@ public:
 
 	void DrawWindow() override
 	{
-		ImGui::Begin("Object Details", &bIsVisible, ImGuiWindowFlags_NoCollapse);
+		ImGui::Begin("Object Details", &bIsWindowVisible, ImGuiWindowFlags_NoCollapse);
 
 		auto selection = SceneOutliner::GetSelection();
 		//if (ImGui::TreeNodeEx((object->GetDisplayName()).c_str(), flags))
@@ -201,7 +201,7 @@ public:
 
 	void DrawWindow() override
 	{
-		ImGui::Begin("Content Browser", &bIsVisible, ImGuiWindowFlags_NoCollapse);
+		ImGui::Begin("Content Browser", &bIsWindowVisible, ImGuiWindowFlags_NoCollapse);
 
 		filter.Draw();
 
@@ -245,7 +245,7 @@ public:
 
 	void DrawWindow() override
 	{
-		ImGui::Begin("Console Log", &bIsVisible, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_MenuBar);
+		ImGui::Begin("Console Log", &bIsWindowVisible, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_MenuBar);
 		/*ImGuiContext& context = *ImGui::GetCurrentContext();
 		float cachedFontSize = context.Font->FontSize;
 		context.Font->FontSize = 10*/
@@ -287,6 +287,21 @@ public:
 
 
 
+class EditorGrid : public StaticMeshComponent
+{
+private:
+	Shader gridShader;
+	Material gridMaterial;
+
+
+public:
+
+	friend class StaticMesh;
+
+	EditorGrid();
+};
+
+
 
 class EditorGUI : public EditorWindow
 {
@@ -299,7 +314,6 @@ private:
 	float wireframeWidth = 1.0f;
 
 
-
 public:
 
 	// Properties
@@ -310,6 +324,7 @@ public:
 	ObjectDetailsGUI objectDetails = ObjectDetailsGUI();
 	ContentBrowserGUI contentBrowser = ContentBrowserGUI();
 	SceneOutlinerGUI sceneOutliner = SceneOutlinerGUI();
+	EditorGrid editorGrid;
 
 
 	void DrawWindow() override
@@ -346,16 +361,16 @@ public:
 			if (ImGui::BeginMenu("Windows"))
 			{
 				if (ImGui::MenuItem("Content Browser", ""))
-					contentBrowser.ToggleVisibility();
+					contentBrowser.ToggleWindowVisibility();
 
 				if (ImGui::MenuItem("Scene Outliner", ""))
-					sceneOutliner.ToggleVisibility();
+					sceneOutliner.ToggleWindowVisibility();
 
 				if (ImGui::MenuItem("Object Details", ""))
-					objectDetails.ToggleVisibility();
+					objectDetails.ToggleWindowVisibility();
 
 				if (ImGui::MenuItem("Console Log", ""))
-					consoleLog.ToggleVisibility();
+					consoleLog.ToggleWindowVisibility();
 
 				ImGui::Separator();
 
@@ -459,6 +474,14 @@ public:
 			}
 
 
+			if (ImGui::BeginMenu("Grid"))
+			{
+				ImGui::Checkbox("Show Grid", &editorGrid.bIsVisible);
+
+				ImGui::EndMenu();
+			}
+			
+
 			ImGui::EndMainMenuBar();
 		}
 
@@ -486,23 +509,4 @@ public:
 			ImGui::ShowDemoWindow(&bShowDemoWindow);
 		}
 	};
-};
-
-
-
-
-
-class EditorGrid : public StaticMeshComponent
-{
-private:
-	Shader gridShader;
-	Material gridMaterial;
-
-	
-public:
-
-	friend class StaticMesh;
-
-
-	EditorGrid();
 };

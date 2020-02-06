@@ -27,6 +27,11 @@
 #include <filesystem>
 
 
+class Texture;
+class Texture2D;
+class TextureCube;
+
+
 // ===================================== SUB-SHADER ============================================
 
 #ifndef SHADER_PATH

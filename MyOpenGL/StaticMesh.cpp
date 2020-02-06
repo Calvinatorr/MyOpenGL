@@ -242,34 +242,54 @@ bool StaticMesh::Reimport()
 }
 
 
-void StaticMesh::Draw(const glm::mat4& Transform)
+void StaticMesh::Draw(const glm::mat4& Transform, const std::vector<Material*>& MaterialOverrides)
 {
-	for (auto& m : meshSections)
+	if (bIsVisible)
 	{
-		if (m.material != nullptr)
+		uint index = 0;
+		for (auto& m : meshSections)
 		{
-			m.material->Bind();
+			// Material binding & overrides
+			Material* materialToBind = nullptr;
+			if (index < MaterialOverrides.size())
+			{
+				materialToBind = MaterialOverrides[index];
+			}
+			else
+			{
+				materialToBind = m.material;
+			}
+			if (materialToBind != nullptr)
+			{
+				materialToBind->Bind();
+			}
+			else
+			{
+				Shader::DefaultShader.Bind();
+			}
+
+
+			// Bind static mesh specific uniforms
+			Shader* shaderProgram = Shader::GetCurrent();
+			if (shaderProgram != nullptr && shaderProgram->IsValid())
+			{
+				// Set uniforms specific to this mesh
+				shaderProgram->SetModelMatrix(Transform);
+
+				// Move this to object?
+				shaderProgram->SetVec3("MinBounds", minBounds);
+				shaderProgram->SetVec3("MaxBounds", maxBounds);
+			}
+
+			m.Draw(drawMode);
+			++index;
 		}
-		else
-		{
-			Shader::DefaultShader.Bind();
-		}
-
-
-		// Bind static mesh specific uniforms
-		Shader* shaderProgram = Shader::GetCurrent();
-		if (shaderProgram != nullptr && shaderProgram->IsValid())
-		{
-			// Set uniforms specific to this mesh
-			shaderProgram->SetModelMatrix(Transform);
-
-			// Move this to object?
-			shaderProgram->SetVec3("MinBounds", minBounds);
-			shaderProgram->SetVec3("MaxBounds", maxBounds);
-		}
-
-		m.Draw(drawMode);
 	}
+}
+
+void StaticMesh::Draw()
+{
+	Draw(glm::mat4(1.0f));
 }
 
 void StaticMesh::ClearMeshSections()
@@ -364,7 +384,6 @@ void StaticMesh::DrawWindow()
 	const ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DefaultOpen;
 
 	// Materials
-	//if (ImGui::TreeNodeEx(("Materials (" + std::to_string(GetMaterials().size()) + ")").c_str(), panelFlags | ImGuiTreeNodeFlags_DefaultOpen))
 	if (Editor::DrawPanel("Materials (" + std::to_string(GetMaterials().size()) + ")"))
 	{
 		for (auto& meshSection : meshSections)
@@ -376,10 +395,8 @@ void StaticMesh::DrawWindow()
 			}
 			else
 			{
-				if (ImGui::TreeNodeEx("NULL", flags ^ ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Leaf))
-				{
-					ImGui::TreePop();
-				}
+				ImGui::Selectable("NULL");
+				AssetManager::DrawAssetBrowserContextMenu<Material>(&meshSection.material);
 			}
 		}
 

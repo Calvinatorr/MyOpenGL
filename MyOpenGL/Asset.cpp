@@ -69,7 +69,7 @@ bool Asset::Reimport()
 
 void Asset::BeginAssetWindow()
 {
-	ImGui::Begin(GetAssetWindowTitle().c_str(), &bIsVisible, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_MenuBar);
+	ImGui::Begin(GetAssetWindowTitle().c_str(), &bIsWindowVisible, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_MenuBar);
 
 	// Menu bar
 	if (ImGui::BeginMenuBar())
@@ -81,7 +81,7 @@ void Asset::BeginAssetWindow()
 			// Close window
 			if (ImGui::MenuItem("Exit"))
 			{
-				SetVisible(false);
+				SetWindowVisible(false);
 			}
 
 			ImGui::EndMenu();

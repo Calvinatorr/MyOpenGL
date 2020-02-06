@@ -27,9 +27,13 @@
 #include "EditorGUI.h"
 #include "Window.h"
 #include "Shader.h"
-#include "Texture2D.h"
+#include "TextureCube.h"
 #include "EditorCamera.h"
 #include "StaticMeshObject.h"
+
+#include "Primitives.h"
+#include "Skybox.h"
+
 #include "Level.h"
 
 
@@ -136,7 +140,6 @@ int main(int argc, char* argv[])
 		Log::PrintInfo(s.str());
 	}
 
-	glEnable(GL_DEPTH_TEST);
 
 
 	// Setup Dear ImGUI context
@@ -215,9 +218,9 @@ int main(int argc, char* argv[])
 	// ===================================== EDITOR ============================================
 
 	Shader::Initialize();
+	Primitives::Initialize();
 
 #if WITH_EDITOR
-	EditorGrid editorGrid = EditorGrid();
 	EditorGUI editorGUI;
 #endif
 
@@ -272,12 +275,12 @@ int main(int argc, char* argv[])
 	tex2.Import("../Content/houdini-763d999dfe.png");
 	AssetManager::Register(&tex2);
 
-	Texture environmentMap;
-	environmentMap.SetFormatHDR();
-	environmentMap.SetWrapMode(Texture::WrapMode::ClampToEdge);
+	TextureCube environmentMap;
+	//environmentMap.SetFormatHDR();
+	//environmentMap.SetWrapMode(Texture::WrapMode::ClampToEdge);
 	environmentMap.Import("../Content/small_hangar_01_1k.hdr");
+	environmentMap.ConvertTexture2DToCubemap();
 	AssetManager::Register(&environmentMap);
-
 
 
 	// ===================================== SHADERS & MATERIALS ============================================
@@ -334,8 +337,9 @@ int main(int argc, char* argv[])
 
 	StaticMesh sphereMesh;
 	AssetManager::Register(&sphereMesh);
-	//sphereMesh.LoadMeshObj("../Content/Sphere_SM.obj");
-	//sphereMesh.LoadMeshObj("../Content/MaterialTest_SM.obj");
+	sphereMesh.Import("../Content/Sphere_SM.obj");
+	sphereMesh.SetMaterial(0, &sphereMaterial);
+	//sphereMesh.Import("../Content/MaterialTest_SM.obj");
 		//sphereMesh.material = &sphereMaterial;
 	//sphere.transform.position = glm::vec3(-2.0f, -.3f, 1.0f);
 
@@ -443,11 +447,22 @@ int main(int argc, char* argv[])
 	SceneOutliner::Select(&boxMeshObject);
 
 
+	// SKYBOX
+	Skybox skybox;
+	skybox.SetDisplayName("HDRI Environment");
+	skybox.SetEnvironmentMap(&environmentMap);
+	skybox.Construct();
+	level.AddSceneObject(&skybox);
+
+
 	// ===================================== MAIN THREAD ============================================
 
 	Game::Initialize();
 
 	window.Bind();
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LEQUAL); // set depth function to less than AND equal for skybox depth trick.
+	glViewport(0, 0, window.GetSize().x, window.GetSize().y);
 	defaultCamera->Bind();
 
 

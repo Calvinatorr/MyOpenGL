@@ -37,6 +37,8 @@ class _DrawableBase
 {
 public:
 	virtual void Draw();
+
+	bool bIsVisible = true;
 };
 
 

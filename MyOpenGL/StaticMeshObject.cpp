@@ -21,10 +21,13 @@ void StaticMeshObject::Construct()
 void StaticMeshObject::DrawDetails()
 {
 	SceneObject::DrawDetails();
-
-	if (staticMeshComponent.staticMesh != nullptr)
+	staticMeshComponent.DrawSceneComponentDetails();
+	/*
+	if (staticMeshComponent.GetStaticMesh() != nullptr)
 	{
-		staticMeshComponent.staticMesh->DrawDetails();
-		AssetManager::DrawAssetBrowserContextMenu(&staticMeshComponent.staticMesh);
+		StaticMesh* tmp = staticMeshComponent.GetStaticMesh();
+		tmp->DrawDetails();
+		AssetManager::DrawAssetBrowserContextMenu(&tmp);
 	}
+	*/
 }

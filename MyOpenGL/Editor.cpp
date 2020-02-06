@@ -11,7 +11,7 @@ void GLFW_ErrorCallback(int Error, const char * Description)
 EditorWindow::EditorWindow(const bool& bOpen)
 {
 #if WITH_EDITOR
-	SetVisible(bOpen);
+	SetWindowVisible(bOpen);
 	if (bOpen)
 	{
 		Editor::RegisterWindow(this);
@@ -30,7 +30,7 @@ void EditorWindow::OpenWindow()
 {
 #if WITH_EDITOR
 	Editor::RegisterWindow(this);
-	SetVisible(true);
+	SetWindowVisible(true);
 #endif
 }
 
@@ -38,7 +38,7 @@ void EditorWindow::CloseWindow()
 {
 #if WITH_EDITOR
 	Editor::UnregisterWindow(this);
-	SetVisible(false);
+	SetWindowVisible(false);
 #endif
 }
 
@@ -57,21 +57,21 @@ void EditorWindow::ToggleWindow()
 }
 
 
-bool EditorWindow::IsVisible()
+bool EditorWindow::IsWindowVisible()
 {
-	return bIsVisible;
+	return bIsWindowVisible;
 }
 
 
-void EditorWindow::SetVisible(bool NewVisibility)
+void EditorWindow::SetWindowVisible(bool NewVisibility)
 {
-	bIsVisible = NewVisibility;
+	bIsWindowVisible = NewVisibility;
 }
 
 
-void EditorWindow::ToggleVisibility()
+void EditorWindow::ToggleWindowVisibility()
 {
-	bIsVisible = !bIsVisible;
+	bIsWindowVisible = !bIsWindowVisible;
 }
 
 
@@ -99,7 +99,7 @@ void Editor::DrawWidgets()
 	{
 		if (x != nullptr)
 		{
-			if (x->IsVisible())
+			if (x->IsWindowVisible())
 			{
 				x->DrawWindow();
 			}
@@ -181,4 +181,9 @@ void Editor::UnregisterDrawable(_DrawableBase * EditorObject)
 bool Editor::DrawPanel(const std::string & PanelTitle)
 {
 	return ImGui::TreeNodeEx(PanelTitle.c_str(), ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanFullWidth);
+}
+
+void Editor::EndPanel()
+{
+	ImGui::TreePop();
 }

@@ -5,6 +5,7 @@
 
 #include "stb_image.h"
 
+
 class Texture : public Asset, public _BindableBase
 {
 
@@ -46,7 +47,7 @@ public:
 
 protected:
 	void Generate();
-	void Init();
+	virtual void Init();
 
 private:
 	static Texture* current;
@@ -101,4 +102,13 @@ public:
 
 	// GUI
 	void DrawWindow() override;
+};
+
+
+
+
+class Texture2D : public Texture
+{
+protected:
+	Type type = Type::Texture2D;
 };

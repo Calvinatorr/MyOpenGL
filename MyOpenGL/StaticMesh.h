@@ -16,7 +16,7 @@
 
 
 
-class StaticMesh : public Asset, public _EditorDetailsBase
+class StaticMesh : public Asset, public _DrawableBase, public _EditorDetailsBase
 {
 private:
 
@@ -80,8 +80,10 @@ public:
 	bool Reimport();
 
 
-	/*Draws all mesh sections */
-	void Draw(const glm::mat4& Transform = glm::mat4());
+	/* Draws all mesh sections */
+	void Draw(const glm::mat4& Transform = glm::mat4(1.0f), const std::vector<Material*>& MaterialOverrides = std::vector<Material*>());
+	/* Draws all mesh sections */
+	void Draw() override;
 	/* Cleanup method */
 	void Cleanup() override;
 	/* Construct mesh - calls CalculateMetaData() */

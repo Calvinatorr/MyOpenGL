@@ -28,6 +28,13 @@
 // Container for static mesh in the scene
 class StaticMeshComponent : public SceneComponent
 {
+protected:
+
+	// Properties
+	StaticMesh* staticMesh;
+	std::vector<Material*> materialOverrides;
+
+
 public:
 
 	// Constructors & Destructors
@@ -36,13 +43,14 @@ public:
 	~StaticMeshComponent();
 
 
-	// Properties
-	StaticMesh* staticMesh;
+	/* Set static mesh */
+	void SetStaticMesh(StaticMesh* NewStaticMesh);
+	StaticMesh* GetStaticMesh();
 
 
 	// Events
 	void Draw() override;
 	void Cleanup() override;
-	void DrawDetails() override;
+	void DrawSceneComponentDetails() override;
 };
 
