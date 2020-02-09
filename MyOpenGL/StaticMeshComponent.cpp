@@ -40,6 +40,31 @@ StaticMesh * StaticMeshComponent::GetStaticMesh()
 	return staticMesh;
 }
 
+void StaticMeshComponent::SetMaterialOverride(const uint & Index, Material * NewMaterial)
+{
+	if (Index < materialOverrides.size())
+	{
+		materialOverrides[Index] = NewMaterial;
+	}
+}
+
+Material * StaticMeshComponent::GetMaterialOverride(const uint& Index) const
+{
+	if (Index < materialOverrides.size())
+	{
+		return materialOverrides[Index];
+	}
+	else
+	{
+		return nullptr;
+	}
+}
+
+std::vector<Material*>& StaticMeshComponent::GetMaterialOverrides()
+{
+	return materialOverrides;
+}
+
 void StaticMeshComponent::Draw()
 {
 	// Render our static mesh

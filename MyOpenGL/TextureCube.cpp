@@ -3,10 +3,10 @@
 
 
 Shader TextureCube::equirectangularToCubemapShader;
-bool TextureCube::bInitializedEquirectangularToCubemapShader = false;
 
 void TextureCube::InitializeEquirectangularToCubemapShader()
 {
+	static bool bInitializedEquirectangularToCubemapShader = false;
 	if (!bInitializedEquirectangularToCubemapShader)
 	{
 		equirectangularToCubemapShader.Import(SHADER_PATH + "EquirectangularToCubemap");
@@ -15,18 +15,39 @@ void TextureCube::InitializeEquirectangularToCubemapShader()
 	}
 }
 
-void TextureCube::ConvertTexture2DToCubemap()
+TextureCube::TextureCube()
+	: Texture()
 {
-	// Generate framebuffer & renderbuffer
-	uint captureFBO, captureRBO;
-	glGenFramebuffers(1, &captureFBO);
-	glGenFramebuffers(1, &captureRBO);
+	SetType(Type::TextureCube);
+	SetWrapMode(WrapMode::ClampToEdge);
+	SetFormat(Format::RGB);
+	internalFormat = Format::HDR;
+}
 
-	// Bind framebuffer & renderbuffers
-	glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
-	glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 512, 512);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO);
+bool TextureCube::Import(const std::string & Filename)
+{
+	// Load the HDR environment map
+	Texture hdrTexture;
+	hdrTexture.bGenerateMipMaps = false;
+	hdrTexture.SetFormat(Format::RGB);
+	hdrTexture.internalFormat = Format::HDR;
+	hdrTexture.SetType(Type::Texture2D);
+	hdrTexture.SetWrapMode(WrapMode::ClampToEdge);
+	bool bSuccess = hdrTexture.Import(Filename); // Import HDR texture
+	// Early out
+	if (!bSuccess)
+		return false;
+	else
+	{
+		source = Filename;
+		if (displayName.length() <= 0 || displayName == DEFAULT_DISPLAY_NAME)
+		{
+			std::string name = Filename;
+			name = name.substr(name.rfind("/") + 1, name.length() - 1);
+			name = name.substr(0, name.find("."));
+			SetDisplayName(name);
+		}
+	}
 
 
 	// Generate cubemap
@@ -38,12 +59,12 @@ void TextureCube::ConvertTexture2DToCubemap()
 	{
 		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, 512, 512, 0, GL_RGB, GL_FLOAT, nullptr);
 	}
-
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
 
 
 	glm::mat4 captureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
@@ -60,25 +81,41 @@ void TextureCube::ConvertTexture2DToCubemap()
 
 
 	InitializeEquirectangularToCubemapShader(); // Initialize our conversion shader if not already initialized (we only do this once)
+	equirectangularToCubemapShader.Bind();
+	equirectangularToCubemapShader.SetProjectionMatrix(captureProjection);
 	equirectangularToCubemapShader.SetInt("EquirectangularMap", 0);
-	equirectangularToCubemapShader.SetMatrix4x4("Projection", captureProjection);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, ID); // Bind our texture object
+	hdrTexture.Bind();
 
+
+	// Generate framebuffer & renderbuffer
+	uint captureFBO, captureRBO;
+	glGenFramebuffers(1, &captureFBO);
+	glGenRenderbuffers(1, &captureRBO);
+	// Bind buffers
+	glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
+	glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 512, 512);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO);
 	// Configure viewport & bind framebuffer
 	glViewport(0, 0, 512, 512);
 	glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
 
 	// Capture each face
-	for (uint i = 0; i < 6; i++)
+	for (uint i = 0; i < 6; ++i)
 	{
-		equirectangularToCubemapShader.SetMatrix4x4("View", captureViews[i]);
+		equirectangularToCubemapShader.SetViewMatrix(captureViews[i]);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, envCubemap, 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// TODO: RENDER CUBE HERE
+		Primitives::cube.Draw(glm::mat4(1.0f), {}, false, false);
 	}
 
 	// Unbind framebuffer
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	// Assign the temp env cubemap to our ID
+	ID = envCubemap;
+
+	return bSuccess;
 }

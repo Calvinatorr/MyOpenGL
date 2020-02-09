@@ -242,7 +242,7 @@ bool StaticMesh::Reimport()
 }
 
 
-void StaticMesh::Draw(const glm::mat4& Transform, const std::vector<Material*>& MaterialOverrides)
+void StaticMesh::Draw(const glm::mat4& Transform, const std::vector<Material*>& MaterialOverrides, const bool& bBindMaterials, const bool& bBindDefaultShader)
 {
 	if (bIsVisible)
 	{
@@ -259,11 +259,11 @@ void StaticMesh::Draw(const glm::mat4& Transform, const std::vector<Material*>& 
 			{
 				materialToBind = m.material;
 			}
-			if (materialToBind != nullptr)
+			if (materialToBind != nullptr && bBindMaterials)
 			{
 				materialToBind->Bind();
 			}
-			else
+			else if (bBindDefaultShader)
 			{
 				Shader::DefaultShader.Bind();
 			}

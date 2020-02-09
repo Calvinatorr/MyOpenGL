@@ -17,6 +17,8 @@ void Skybox::Construct()
 	material.shader = &skyboxShader;
 	material.SetTextureParameter("EnvironmentMap", environmentMap);
 
+	// Set material override
+	staticMeshComponent.SetMaterialOverride(0, &material);
 
 	RegisterSceneComponent(&staticMeshComponent);
 	SceneObject::Construct();

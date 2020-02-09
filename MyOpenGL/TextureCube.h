@@ -14,21 +14,11 @@ class TextureCube : public Texture
 {
 private:
 	static Shader equirectangularToCubemapShader;
-	static bool bInitializedEquirectangularToCubemapShader;
 	static void InitializeEquirectangularToCubemapShader();
-
-protected:
-	Type type = Type::TextureCube;
-	WrapMode wrapMode = WrapMode::ClampToEdge;
-
 
 public:
 
-	TextureCube() : Texture() {};
+	TextureCube();
 
-	Format format = Format::RGB;
-	Format interlaFormat = Format::HDR;
-
-	void ConvertTexture2DToCubemap();
-
+	virtual bool Import(const std::string& Filename) override;
 };

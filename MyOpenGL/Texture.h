@@ -82,7 +82,7 @@ public:
 	void SetFilter(const Filter& TextureFilter);
 
 	/* Import Texture asset from file */
-	bool Import(const std::string& Filename) override;
+	virtual bool Import(const std::string& Filename) override;
 
 
 	// Setters

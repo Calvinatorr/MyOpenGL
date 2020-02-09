@@ -195,8 +195,16 @@ void Texture::DrawWindow()
 	ImGui::Separator();
 	ImGui::NewLine();
 
+	if (Editor::DrawPanel("Metadata"))
+	{
+		ImGui::LabelText("Texture Object ID", std::to_string(ID).c_str());
+
+		Editor::EndPanel();
+	}
+
 	if (Editor::DrawPanel("Settings"))
 	{
+
 		ImGui::Checkbox("Generate Mipmaps", &bGenerateMipMaps);
 		ImGui::Checkbox("Flip Vertical", &bFlipVertical);
 

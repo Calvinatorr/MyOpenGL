@@ -22,7 +22,6 @@ class SceneObject : public Object, public _DrawableBase, public _EditorDetailsBa
 private:
 	std::set<SceneComponent*> sceneComponents;
 
-
 protected:
 	// Register newly created scene component with internal set
 	void RegisterSceneComponent(SceneComponent* NewComponent);

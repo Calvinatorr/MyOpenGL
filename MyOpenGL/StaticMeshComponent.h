@@ -45,7 +45,14 @@ public:
 
 	/* Set static mesh */
 	void SetStaticMesh(StaticMesh* NewStaticMesh);
+	/* Return static mesh asset */
 	StaticMesh* GetStaticMesh();
+	/* Set override */
+	void SetMaterialOverride(const uint& Index, Material* NewMaterial);
+	/* Get material override */
+	Material* GetMaterialOverride(const uint& Index) const;
+	/* Get all material overrides */
+	std::vector<Material*>& GetMaterialOverrides();
 
 
 	// Events

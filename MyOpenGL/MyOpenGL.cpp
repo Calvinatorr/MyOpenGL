@@ -279,7 +279,6 @@ int main(int argc, char* argv[])
 	//environmentMap.SetFormatHDR();
 	//environmentMap.SetWrapMode(Texture::WrapMode::ClampToEdge);
 	environmentMap.Import("../Content/small_hangar_01_1k.hdr");
-	environmentMap.ConvertTexture2DToCubemap();
 	AssetManager::Register(&environmentMap);
 
 

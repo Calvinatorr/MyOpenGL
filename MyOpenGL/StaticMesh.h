@@ -81,7 +81,7 @@ public:
 
 
 	/* Draws all mesh sections */
-	void Draw(const glm::mat4& Transform = glm::mat4(1.0f), const std::vector<Material*>& MaterialOverrides = std::vector<Material*>());
+	void Draw(const glm::mat4& Transform = glm::mat4(1.0f), const std::vector<Material*>& MaterialOverrides = std::vector<Material*>(), const bool& bBindMaterials = true, const bool& bBindDefaultShader = true);
 	/* Draws all mesh sections */
 	void Draw() override;
 	/* Cleanup method */
