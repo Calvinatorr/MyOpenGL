@@ -27,13 +27,12 @@ TextureCube::TextureCube()
 bool TextureCube::Import(const std::string & Filename)
 {
 	// Load the HDR environment map
-	Texture hdrTexture;
-	hdrTexture.bGenerateMipMaps = false;
-	hdrTexture.SetFormat(Format::RGB);
-	hdrTexture.internalFormat = Format::HDR;
-	hdrTexture.SetType(Type::Texture2D);
-	hdrTexture.SetWrapMode(WrapMode::ClampToEdge);
-	bool bSuccess = hdrTexture.Import(Filename); // Import HDR texture
+	equirectangularMap.bGenerateMipMaps = false;
+	equirectangularMap.SetFormat(Format::RGB);
+	equirectangularMap.internalFormat = Format::HDR;
+	equirectangularMap.SetType(Type::Texture2D);
+	equirectangularMap.SetWrapMode(WrapMode::ClampToEdge);
+	bool bSuccess = equirectangularMap.Import(Filename); // Import HDR texture
 	// Early out
 	if (!bSuccess)
 		return false;
@@ -85,7 +84,7 @@ bool TextureCube::Import(const std::string & Filename)
 	equirectangularToCubemapShader.SetProjectionMatrix(captureProjection);
 	equirectangularToCubemapShader.SetInt("EquirectangularMap", 0);
 	glActiveTexture(GL_TEXTURE0);
-	hdrTexture.Bind();
+	equirectangularMap.Bind();
 
 
 	// Generate framebuffer & renderbuffer
@@ -118,4 +117,14 @@ bool TextureCube::Import(const std::string & Filename)
 	ID = envCubemap;
 
 	return bSuccess;
+}
+
+Texture & const TextureCube::GetEquirectangularMap()
+{
+	return equirectangularMap;
+}
+
+GLint TextureCube::GetPreviewID()
+{
+	return equirectangularMap.GetID();
 }

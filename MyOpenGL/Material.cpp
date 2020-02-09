@@ -239,7 +239,7 @@ void Material::DrawWindow()
 		{
 			ImGui::PushItemWidth(ITEM_WIDTH);
 			std::string texName = parm.value == nullptr ? "NULL" : parm.value->GetClassNameA();
-			if (ImGui::ImageButton(ImTextureID(parm.value->GetID()), ImVec2(96, 96), ImVec2(0, 1), ImVec2(1, 0)))
+			if (ImGui::ImageButton(ImTextureID(parm.value->GetPreviewID()), ImVec2(96, 96), ImVec2(0, 1), ImVec2(1, 0)))
 			{
 				parm.value->OpenWindow();
 			}

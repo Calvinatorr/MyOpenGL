@@ -98,6 +98,8 @@ public:
 	GLint GetHeight() const;
 	glm::vec2 GetSize() const;
 	GLint GetNumberOfChannels() const;
+	/* Get ID for previewing the texture in editor */
+	virtual GLint GetPreviewID();
 
 
 	// GUI

@@ -183,13 +183,18 @@ GLint Texture::GetNumberOfChannels() const
 	return numOfChannels;
 }
 
+GLint Texture::GetPreviewID()
+{
+	return GetID();
+}
+
 void Texture::DrawWindow()
 {
 	BeginAssetWindow();
 
 
 	double ratio = width / height;
-	ImGui::Image(ImTextureID(GetID()), ImVec2(512, 512 / ratio), ImVec2(0, 1), ImVec2(1, 0)); // Flip UV
+	ImGui::Image(ImTextureID(GetPreviewID()), ImVec2(512, 512 / ratio), ImVec2(0, 1), ImVec2(1, 0)); // Flip UV
 
 	ImGui::NewLine();
 	ImGui::Separator();
