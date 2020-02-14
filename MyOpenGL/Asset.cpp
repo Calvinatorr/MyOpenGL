@@ -133,7 +133,7 @@ void Asset::BeginAssetWindow()
 void Asset::DrawWindow()
 {
 	BeginAssetWindow();
-
+	DrawWindowContents();
 	EndAssetWindow();
 }
 

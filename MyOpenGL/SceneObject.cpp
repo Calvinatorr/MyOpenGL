@@ -14,9 +14,10 @@ void SceneObject::Draw()
 	auto it = components.begin(); // Return iterator for this set type
 	while (it != components.end())
 	{
-
-		if ((*it) != nullptr)
+		if ((*it) != nullptr && (*it)->bIsVisible)
+		{
 			(*it)->Draw();
+		}
 
 		it++; // Move to next element in set
 	}

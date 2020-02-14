@@ -27,7 +27,7 @@
 #include "EditorGUI.h"
 #include "Window.h"
 #include "Shader.h"
-#include "TextureCube.h"
+#include "EnvironmentMap.h"
 #include "EditorCamera.h"
 #include "StaticMeshObject.h"
 
@@ -275,9 +275,7 @@ int main(int argc, char* argv[])
 	tex2.Import("../Content/houdini-763d999dfe.png");
 	AssetManager::Register(&tex2);
 
-	TextureCube environmentMap;
-	//environmentMap.SetFormatHDR();
-	//environmentMap.SetWrapMode(Texture::WrapMode::ClampToEdge);
+	IrradianceMap environmentMap;
 	environmentMap.Import("../Content/small_hangar_01_1k.hdr");
 	AssetManager::Register(&environmentMap);
 
@@ -307,6 +305,7 @@ int main(int argc, char* argv[])
 	checkerMaterial.SetFloatParameter("inMaterial.Metalness", 0.0f);
 	checkerMaterial.SetFloatParameter("inMaterial.Roughness", 0.25f);
 	checkerMaterial.SetFloatParameter("inMaterial.AmbientOcclusion", 1.0f);
+	checkerMaterial.SetTextureParameter("IrradianceMap", &environmentMap);
 	AssetManager::Register(&checkerMaterial);
 
 	Material sphereMaterial(&shaderProgram);
@@ -319,6 +318,7 @@ int main(int argc, char* argv[])
 	sphereMaterial.SetFloatParameter("inMaterial.Anisotropic", 0.0f);
 	sphereMaterial.SetFloatParameter("inMaterial.AnisotropicDirection", 0.0f);
 	sphereMaterial.SetFloatParameter("inMaterial.AmbientOcclusion", 1.0f);
+	sphereMaterial.SetTextureParameter("IrradianceMap", &environmentMap);
 	AssetManager::Register(&sphereMaterial);
 
 

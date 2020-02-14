@@ -135,6 +135,7 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="EditorCamera.h" />
     <ClInclude Include="EditorGUI.h" />
+    <ClInclude Include="EnvironmentMap.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Editor.h" />
     <ClInclude Include="Level.h" />
@@ -167,6 +168,7 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="EditorCamera.cpp" />
     <ClCompile Include="EditorGUI.cpp" />
+    <ClCompile Include="EnvironmentMap.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="Editor.cpp" />

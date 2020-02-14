@@ -13,10 +13,8 @@ class TextureCube;
 class TextureCube : public Texture
 {
 private:
-	static Shader equirectangularToCubemapShader;
-	static void InitializeEquirectangularToCubemapShader();
+	int targetResolution = 512;
 	Texture equirectangularMap;
-
 
 public:
 
@@ -29,4 +27,7 @@ public:
 
 	/* Return the equirectangular map ID for previewing */
 	GLint GetPreviewID() override;
+
+
+	void DrawWindowContents() override;
 };

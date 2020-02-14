@@ -188,11 +188,8 @@ GLint Texture::GetPreviewID()
 	return GetID();
 }
 
-void Texture::DrawWindow()
+void Texture::DrawWindowContents()
 {
-	BeginAssetWindow();
-
-
 	double ratio = width / height;
 	ImGui::Image(ImTextureID(GetPreviewID()), ImVec2(512, 512 / ratio), ImVec2(0, 1), ImVec2(1, 0)); // Flip UV
 
@@ -217,6 +214,4 @@ void Texture::DrawWindow()
 
 		Editor::EndPanel();
 	}
-
-	EndAssetWindow();
 }

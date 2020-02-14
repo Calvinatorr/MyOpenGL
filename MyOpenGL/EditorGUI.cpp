@@ -42,3 +42,11 @@ EditorGrid::EditorGrid()
 	// Register self with Editor::Widgets
 	Editor::RegisterDrawable(this);
 }
+
+void EditorGrid::Draw()
+{
+	if (bIsVisible)
+	{
+		StaticMeshComponent::Draw();
+	}
+}

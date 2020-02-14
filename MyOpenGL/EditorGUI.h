@@ -299,6 +299,8 @@ public:
 	friend class StaticMesh;
 
 	EditorGrid();
+
+	void Draw() override;
 };
 
 

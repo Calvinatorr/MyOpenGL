@@ -114,6 +114,6 @@ public:
 	// Interface implementations
 	/* Draw editor GUI */
 	virtual void DrawDetails() override;
-	virtual void DrawWindow() override;
+	virtual void DrawWindowContents() override;
 };
 

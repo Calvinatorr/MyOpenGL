@@ -63,7 +63,7 @@ vec3 DefaultShading(vec3 N, vec3 InTangent, vec3 V, vec3 L, vec3 Radiance, Mater
 		NDF = DistributionGGX(NoH, Mat.Roughness);
 	}
 	float G = 	GeometrySmith(NoV, NoL, Mat.Roughness);
-	vec3  F =	FresnelSchlick(HoV, F0, Mat.Roughness);
+	vec3  F =	FresnelSchlickRoughness(HoV, F0, Mat.Roughness);
 	
 	
 	vec3 kS = F;
@@ -72,7 +72,7 @@ vec3 DefaultShading(vec3 N, vec3 InTangent, vec3 V, vec3 L, vec3 Radiance, Mater
 	
 	
 	vec3 numerator = NDF * G * F;
-	float denominator = 4.0f * NoV * NoL;
+	float denominator = 4.0f * NoV * NoL + 0.001f;
 	vec3 specular = numerator / max(denominator, 0.001f); // Avoid division by zero
 	
 	vec3 Lo = ((kD * Mat.Albedo / PI) + specular) * Radiance * NoL;

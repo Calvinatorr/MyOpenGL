@@ -108,6 +108,14 @@ void StaticMeshComponent::DrawSceneComponentDetails()
 			}
 		}
 
-		ImGui::TreePop();
+		Editor::EndPanel();
+	}
+
+	// Rendering
+	if (Editor::DrawPanel("Rendering"))
+	{
+		ImGui::Checkbox("Visible", &bIsVisible);
+
+		Editor::EndPanel();
 	}
 }

@@ -149,7 +149,10 @@ public:
 
 
 	// Asset window GUI
-	void DrawWindow() override;
+	/* Draw asset window itself */
+	void DrawWindow();
+	/* Draw contents of asset window */
+	virtual void DrawWindowContents() {};
 	/* Override this to change the window title (calculated for every frame the GUI is drawn so be careful) */
 	virtual std::string GetAssetWindowTitle();
 	/* ImGui::Begin(). Must end with ImGui::End() (EndAssetWindow()) */

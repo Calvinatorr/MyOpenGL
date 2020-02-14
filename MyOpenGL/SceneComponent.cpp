@@ -4,6 +4,7 @@
 
 void SceneComponent::Draw()
 {
+	
 }
 
 void SceneComponent::Update()

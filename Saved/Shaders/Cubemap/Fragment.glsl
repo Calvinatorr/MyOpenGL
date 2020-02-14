@@ -2,6 +2,7 @@
 out vec4 FragColour; 
 
 in vec3 LocalPosition;
+in vec2 TexCoord;
 
 
 
@@ -57,12 +58,14 @@ uniform samplerCube EnvironmentMap;
 
 
 
+
 void main()
 {
 	vec3 envColour = vec3(1.0f, 0.0f, 0.0f);
+	envColour = texture(EnvironmentMap, LocalPosition.xyz).rgb;
 	
-	envColour = envColour / (envColour + vec3(1.0f));
-	envColour = pow(envColour, vec3(1.0f / 2.2f));
+	
+	
 	
 	FragColour = vec4(envColour, 1.0f);
 }

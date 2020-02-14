@@ -21,6 +21,7 @@ uniform sampler2D tex2;
 
 #include "Common/Material.glsl"
 #include "Common/BRDFs.glsl"
+#include "Common/IBL.glsl"
 #include "Common/Lights.glsl"
 
 
@@ -61,7 +62,7 @@ void main()
 	
 	// Lights
 	DirectionalLight dirLight;
-	dirLight.Radiance = vec3(1.0f);
+	dirLight.Radiance = vec3(1.0f * PI);
 	dirLight.Direction = normalize(vec3(-.333f, -.3333f, -.333f));
 	float angle = ElapsedTime * .5f;
 	float cosAngle = cos(angle);
@@ -73,9 +74,9 @@ void main()
 		0.0f, 0.0f, 0.0f, 1.0f
 	);
 	dirLight.Direction = vec3(rot * vec4(dirLight.Direction, 1.0f));
-	//Lo += CalculateDirectionalLight(dirLight);
+	Lo += CalculateDirectionalLight(dirLight);
 	
-	for (int i = 0; i < NUM_OF_LIGHTS; i++)
+	/*for (int i = 0; i < NUM_OF_LIGHTS; i++)
 	{
 		float a = float(i) / float(NUM_OF_LIGHTS);
 		a *= 2.0f * PI;
@@ -83,7 +84,7 @@ void main()
 		lights[i].Radiance = vec3(20.0f);
 		lights[i].Position = vec3(sin(a) * freq, 5.0f, cos(a) * freq);
 		Lo += CalculatePointLight(lights[i]);
-	}
+	}/*
 	
 	/*SpotLight spotLight;
 	spotLight.Radiance = vec3(32.0f);
@@ -91,10 +92,18 @@ void main()
 	spotLight.Direction = vec3(0.0f, .3333f, 1.0f);
 	spotLight.CosAngle = cos(12.5 * DEG_TO_RAD);
 	Lo += CalculateSpotLight(spotLight);*/
-	
 
-	vec3 ambient = vec3(0.005f) * outMaterial.Albedo; // Apply ambient lighting
-	vec3 colour = ambient + Lo * outMaterial.AmbientOcclusion;
+
+	//vec3 ambient = vec3(0.005f) * outMaterial.Albedo; // Apply ambient lighting
+	vec3 F0 = GetF0(outMaterial.Albedo, outMaterial.Metalness);
+	vec3 kS = FresnelSchlick(max(dot(PixelNormal, ViewDirection), 0.0f), F0);
+	vec3 kD = 1.0f - kS;
+	kD *= 1.0f - outMaterial.Metalness;
+	vec3 irradiance = GetIrradianceIBL(WorldPosition);
+	vec3 diffuse = irradiance * outMaterial.Albedo;
+	vec3 ambient = (kD * diffuse) * outMaterial.AmbientOcclusion;	
+	
+	vec3 colour = ambient + Lo;// * outMaterial.AmbientOcclusion;
 	
 	// Gamma tonemapping
 	// Use this or not??

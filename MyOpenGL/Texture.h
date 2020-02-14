@@ -103,7 +103,7 @@ public:
 
 
 	// GUI
-	void DrawWindow() override;
+	void DrawWindowContents() override;	
 };
 
 

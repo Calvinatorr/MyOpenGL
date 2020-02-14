@@ -13,6 +13,11 @@ struct Material
 uniform Material inMaterial;
 Material outMaterial;
 
+vec3 GetF0(vec3 Albedo, float Metalness)
+{
+	return mix(vec3(0.04f), Albedo.rgb, Metalness.r).rgb;
+}
+
 void ClampMaterialProperties(in out Material InMat)
 {
 	InMat.Albedo = clamp(InMat.Albedo, 0.0f, 1.0f);

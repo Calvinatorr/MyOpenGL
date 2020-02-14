@@ -1,20 +1,6 @@
 #include "TextureCube.h"
 
 
-
-Shader TextureCube::equirectangularToCubemapShader;
-
-void TextureCube::InitializeEquirectangularToCubemapShader()
-{
-	static bool bInitializedEquirectangularToCubemapShader = false;
-	if (!bInitializedEquirectangularToCubemapShader)
-	{
-		equirectangularToCubemapShader.Import(SHADER_PATH + "EquirectangularToCubemap");
-
-		bInitializedEquirectangularToCubemapShader = true;
-	}
-}
-
 TextureCube::TextureCube()
 	: Texture()
 {
@@ -56,7 +42,7 @@ bool TextureCube::Import(const std::string & Filename)
 	// Generate each face texture
 	for (uint i = 0; i < 6; ++i)
 	{
-		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, 512, 512, 0, GL_RGB, GL_FLOAT, nullptr);
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, targetResolution, targetResolution, 0, GL_RGB, GL_FLOAT, nullptr);
 	}
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -79,7 +65,16 @@ bool TextureCube::Import(const std::string & Filename)
 	};
 
 
-	InitializeEquirectangularToCubemapShader(); // Initialize our conversion shader if not already initialized (we only do this once)
+	// Initialize our conversion shader if not already initialized (we only do this once)
+	static Shader equirectangularToCubemapShader;
+	static bool bInitialized = false;
+	if (!bInitialized)
+	{
+		equirectangularToCubemapShader.Import(SHADER_PATH + "EquirectangularToCubemap");
+		bInitialized = true;
+	}
+
+	// Bind our shader
 	equirectangularToCubemapShader.Bind();
 	equirectangularToCubemapShader.SetProjectionMatrix(captureProjection);
 	equirectangularToCubemapShader.SetInt("EquirectangularMap", 0);
@@ -94,10 +89,10 @@ bool TextureCube::Import(const std::string & Filename)
 	// Bind buffers
 	glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
 	glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 512, 512);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, targetResolution, targetResolution);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO);
 	// Configure viewport & bind framebuffer
-	glViewport(0, 0, 512, 512);
+	glViewport(0, 0, targetResolution, targetResolution);
 	glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
 
 	// Capture each face
@@ -127,4 +122,34 @@ Texture & const TextureCube::GetEquirectangularMap()
 GLint TextureCube::GetPreviewID()
 {
 	return equirectangularMap.GetID();
+}
+
+void TextureCube::DrawWindowContents()
+{
+	Texture::DrawWindowContents();
+
+	if (Editor::DrawPanel("Cubemap"))
+	{
+		const char* items[] = { "16", "32", "64", "128", "256", "512", "1024", "2048", "4096" };
+		static const char* currentItem = items[5];
+		if (ImGui::BeginCombo("Target Resolution##combo", currentItem))
+		{
+			for (int n = 0; n < IM_ARRAYSIZE(items); n++)
+			{
+				bool isSelected = (currentItem == items[n]);
+				if (ImGui::Selectable(items[n], isSelected))
+				{
+					currentItem = items[n];
+				}
+				if (isSelected)
+					ImGui::SetItemDefaultFocus();
+
+			}
+			ImGui::EndCombo();
+		}
+
+		ImGui::DragInt("Target Resolution", &targetResolution);
+
+		Editor::EndPanel();
+	}
 }

@@ -161,11 +161,9 @@ std::string Material::GetAssetWindowTitle()
 }
 
 
-void Material::DrawWindow()
+void Material::DrawWindowContents()
 {
 #if WITH_EDITOR
-	BeginAssetWindow();
-
 	const float ITEM_WIDTH = 200.0f;
 
 
@@ -259,7 +257,5 @@ void Material::DrawWindow()
 		ImGui::Separator();
 		ImGui::NewLine();
 	}
-
-	EndAssetWindow();
 #endif
 }

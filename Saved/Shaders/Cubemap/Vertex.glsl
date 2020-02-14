@@ -1,5 +1,6 @@
 #version 330 core
 layout (location = 0) in vec3 aPos; 	 
+layout (location = 1) in vec2 aTexCoord; 
 
 
 
@@ -50,6 +51,7 @@ vec4 SampleCubemap(sampler2D TexCube, vec3 Position)
 	return texture(TexCube, uv.xy);
 }
 
+out vec2 TexCoord;
 
 
 out vec3 LocalPosition;
@@ -61,6 +63,7 @@ void main()
 	
 	mat4 rotView = mat4(mat3(View));
 	vec4 clipPos = Projection * rotView * vec4(LocalPosition, 1.0f);
+	TexCoord = aTexCoord;
 
 	gl_Position = clipPos.xyww;
 }

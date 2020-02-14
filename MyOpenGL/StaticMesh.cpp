@@ -376,11 +376,9 @@ void StaticMesh::DrawDetails()
 #endif
 }
 
-void StaticMesh::DrawWindow()
+void StaticMesh::DrawWindowContents()
 {
 #if WITH_EDITOR
-	BeginAssetWindow();
-
 	const ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DefaultOpen;
 
 	// Materials
@@ -500,8 +498,6 @@ void StaticMesh::DrawWindow()
 		}
 		ImGui::TreePop();
 	}
-
-	EndAssetWindow();
 
 #endif
 }
