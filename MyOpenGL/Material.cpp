@@ -250,7 +250,7 @@ void Material::DrawWindowContents()
 				parm.value->OpenWindow();
 			}
 
-			AssetManager::DrawAssetBrowserContextMenu(&(parm.value));
+			AssetManager::DrawAssetBrowserContextMenu(&parm.value);
 		}
 		ImGui::TreePop();
 		ImGui::NewLine();

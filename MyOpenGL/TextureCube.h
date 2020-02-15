@@ -12,6 +12,10 @@ class TextureCube;
 
 class TextureCube : public Texture
 {
+protected:
+	void ApplyShader(Shader* ShaderToApply, Texture* SourceTextureMap = nullptr, const uint& TargetResolution = 512);
+
+
 private:
 	int targetResolution = 512;
 	Texture equirectangularMap;

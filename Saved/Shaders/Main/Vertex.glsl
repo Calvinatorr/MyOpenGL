@@ -57,6 +57,19 @@ vec4 SampleCubemap(sampler2D TexCube, vec3 Position)
 
 
 
+/* Transforms vector by matrix */
+vec3 TransformVector(vec3 InVector, mat4 Matrix)
+{
+	return mul(vec4(InVector, 0.0f), Matrix).xyz;
+}
+/* Transforms position by matrix */
+vec3 TransformPosition(vec3 InPosition, mat4 Matrix)
+{
+	return mul(vec4(InPosition, 1.0f), Matrix).xyz;
+}
+
+
+
 out vec2 TexCoord;
 out vec4 VertexColour;
 out vec3 VertexNormal;

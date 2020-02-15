@@ -2,7 +2,6 @@
 out vec4 FragColour; 
 
 in vec3 LocalPosition;
-in vec2 TexCoord;
 
 
 
@@ -49,6 +48,19 @@ vec4 SampleCubemap(sampler2D TexCube, vec3 Position)
 {
 	vec2 uv = SphericalUVsFromPosition(Position);
 	return texture(TexCube, uv.xy);
+}
+
+
+
+/* Transforms vector by matrix */
+vec3 TransformVector(vec3 InVector, mat4 Matrix)
+{
+	return mul(vec4(InVector, 0.0f), Matrix).xyz;
+}
+/* Transforms position by matrix */
+vec3 TransformPosition(vec3 InPosition, mat4 Matrix)
+{
+	return mul(vec4(InPosition, 1.0f), Matrix).xyz;
 }
 
 

@@ -15,7 +15,6 @@ public:
 };
 
 
-
 class EnvironmentMap : public Asset
 {
 public:

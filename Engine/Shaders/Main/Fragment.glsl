@@ -96,7 +96,7 @@ void main()
 
 	//vec3 ambient = vec3(0.005f) * outMaterial.Albedo; // Apply ambient lighting
 	vec3 F0 = GetF0(outMaterial.Albedo, outMaterial.Metalness);
-	vec3 kS = FresnelSchlick(max(dot(PixelNormal, ViewDirection), 0.0f), F0);
+	vec3 kS = FresnelSchlickRoughness(max(dot(PixelNormal, ViewDirection), 0.0f), F0, outMaterial.Roughness);
 	vec3 kD = 1.0f - kS;
 	kD *= 1.0f - outMaterial.Metalness;
 	vec3 irradiance = GetIrradianceIBL(WorldPosition);

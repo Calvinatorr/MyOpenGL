@@ -59,6 +59,19 @@ vec4 SampleCubemap(sampler2D TexCube, vec3 Position)
 
 
 
+/* Transforms vector by matrix */
+vec3 TransformVector(vec3 InVector, mat4 Matrix)
+{
+	return mul(vec4(InVector, 0.0f), Matrix).xyz;
+}
+/* Transforms position by matrix */
+vec3 TransformPosition(vec3 InPosition, mat4 Matrix)
+{
+	return mul(vec4(InPosition, 1.0f), Matrix).xyz;
+}
+
+
+
 vec3 PixelNormal = normalize(VertexNormal); 
 /*#ifdef VertexTangent
 vec3 PixelTangent = normalize(VertexTangent);
@@ -112,6 +125,11 @@ struct Material
 
 uniform Material inMaterial;
 Material outMaterial;
+
+vec3 GetF0(vec3 Albedo, float Metalness)
+{
+	return mix(vec3(0.04f), Albedo.rgb, Metalness.r).rgb;
+}
 
 void ClampMaterialProperties(in out Material InMat)
 {

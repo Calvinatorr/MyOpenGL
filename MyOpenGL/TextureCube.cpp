@@ -1,6 +1,90 @@
 #include "TextureCube.h"
 
 
+void TextureCube::ApplyShader(Shader * ShaderToApply, Texture* SourceTextureMap, const uint & TargetResolution)
+{
+	// Early out
+	if (ShaderToApply == nullptr)
+	{
+		return;
+	}
+
+	// Apply to this by default
+	if (SourceTextureMap == nullptr)
+	{
+		SourceTextureMap = this;
+	}
+
+
+	// Generate irradiance cubemap faces
+	uint targetMap;
+	glGenTextures(1, &targetMap);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, targetMap);
+	for (uint i = 0; i < 6; ++i)
+	{
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, TargetResolution, TargetResolution, 0, GL_RGB, GL_FLOAT, nullptr);
+	}
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+
+	glm::mat4 captureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
+	// Projection matrices for each side
+	glm::mat4 captureViews[] =
+	{
+	   glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+	   glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+	   glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  0.0f,  1.0f)),
+	   glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f,  0.0f), glm::vec3(0.0f,  0.0f, -1.0f)),
+	   glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+	   glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))
+	};
+
+
+	ShaderToApply->Bind();
+	ShaderToApply->SetProjectionMatrix(captureProjection);
+	ShaderToApply->SetInt("MapToProcess", 0);
+	SourceTextureMap->Bind();
+	//glActiveTexture(GL_TEXTURE0);
+	//glBindTexture(GL_TEXTURE_CUBE_MAP, GetID());
+
+
+	// Generate framebuffer & renderbuffer
+	uint captureFBO, captureRBO;
+	glGenFramebuffers(1, &captureFBO);
+	glGenRenderbuffers(1, &captureRBO);
+	// Bind buffers
+	glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
+	glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, TargetResolution, TargetResolution);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO);
+	// Configure viewport & bind framebuffer
+	glViewport(0, 0, TargetResolution, TargetResolution);
+	glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
+
+
+	// Capture each face
+	for (uint i = 0; i < 6; ++i)
+	{
+		ShaderToApply->SetViewMatrix(captureViews[i]);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, targetMap, 0);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		Primitives::cube.Draw(glm::mat4(1.0f), {}, false, false);
+	}
+
+	// Unbind framebuffer
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	// Assign the temp env cubemap to our ID
+	ID = targetMap;
+}
+
+
+
 TextureCube::TextureCube()
 	: Texture()
 {
@@ -9,6 +93,8 @@ TextureCube::TextureCube()
 	SetFormat(Format::RGB);
 	internalFormat = Format::HDR;
 }
+
+
 
 bool TextureCube::Import(const std::string & Filename)
 {
@@ -24,6 +110,7 @@ bool TextureCube::Import(const std::string & Filename)
 		return false;
 	else
 	{
+		// Set-up source
 		source = Filename;
 		if (displayName.length() <= 0 || displayName == DEFAULT_DISPLAY_NAME)
 		{
@@ -34,7 +121,19 @@ bool TextureCube::Import(const std::string & Filename)
 		}
 	}
 
+	// Initialize our conversion shader if not already initialized (we only do this once)
+	static Shader equirectangularToCubemapShader;
+	static bool bInitialized = false;
+	if (!bInitialized)
+	{
+		equirectangularToCubemapShader.Import(SHADER_PATH + "EquirectangularToCubemap");
+		bInitialized = true;
+	}
 
+
+	ApplyShader(&equirectangularToCubemapShader, &equirectangularMap, targetResolution);
+
+	/*
 	// Generate cubemap
 	uint envCubemap;
 	glGenTextures(1, &envCubemap);
@@ -65,19 +164,10 @@ bool TextureCube::Import(const std::string & Filename)
 	};
 
 
-	// Initialize our conversion shader if not already initialized (we only do this once)
-	static Shader equirectangularToCubemapShader;
-	static bool bInitialized = false;
-	if (!bInitialized)
-	{
-		equirectangularToCubemapShader.Import(SHADER_PATH + "EquirectangularToCubemap");
-		bInitialized = true;
-	}
-
 	// Bind our shader
 	equirectangularToCubemapShader.Bind();
 	equirectangularToCubemapShader.SetProjectionMatrix(captureProjection);
-	equirectangularToCubemapShader.SetInt("EquirectangularMap", 0);
+	equirectangularToCubemapShader.SetInt("MapToProcess", 0);
 	glActiveTexture(GL_TEXTURE0);
 	equirectangularMap.Bind();
 
@@ -110,6 +200,7 @@ bool TextureCube::Import(const std::string & Filename)
 
 	// Assign the temp env cubemap to our ID
 	ID = envCubemap;
+	*/
 
 	return bSuccess;
 }

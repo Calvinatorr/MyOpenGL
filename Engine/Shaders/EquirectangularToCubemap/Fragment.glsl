@@ -9,12 +9,12 @@ in vec3 LocalPosition;
 //#include "Common/CommonFragment.glsl"
 
 // Samplers
-uniform sampler2D EquirectangularMap;
+uniform sampler2D MapToProcess;
 
 
 // ========================================= MAIN RENDER =============================================
 
 void main()
 {
-	FragColor = vec4(SampleCubemap(EquirectangularMap, normalize(LocalPosition).xyz).xyz, 1.0f);
+	FragColor = vec4(SampleCubemap(MapToProcess, normalize(LocalPosition).xyz).xyz, 1.0f);
 } 
